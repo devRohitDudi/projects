@@ -1,0 +1,119 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+body {
+    height: 100vh;
+    background-color: black;
+    overflow: hidden;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+}
+
+.navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid rgb(121, 121, 121);
+    color: white;
+    padding: 10px 0px;
+}
+
+.heading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: rgb(208, 79, 255);
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    padding: 10px 0px;
+    font-stretch: expanded;
+    font-weight: 600;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-top: 320px;
+}
+
+.sun {
+    height: 140px;
+    width: 140px;
+    border-radius: 50%;
+    background-color: yellow;
+    box-shadow: 0 0 48px rgb(255, 255, 255);
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.earth,
+.moon {
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+    border-width: 2px 2px 0 0;
+    border-radius: 50%;
+    position: absolute;
+    /* background-color: rgb(172, 93, 93, 20%); */
+}
+
+.earth {
+    /* top: -160px; */
+    /* right: -160px; */
+    /*sun div is flex to center*/
+    height: 480px;
+    width: 480px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: orbit 48s linear infinite;
+}
+
+.moon {
+    top: 4px;
+    right: 4px;
+    height: 130px;
+    width: 130px;
+    animation: orbit 4s linear infinite;
+
+}
+
+.earth::before,
+.moon::before {
+    content: ' ';
+    border-radius: 50%;
+    position: absolute;
+}
+
+.earth::before {
+    top: 45px;
+    right: 45px;
+    height: 50px;
+    width: 50px;
+    background-color: rgb(17, 17, 223);
+}
+
+.moon::before {
+    top: 13px;
+    right: 4px;
+    height: 20px;
+    width: 20px;
+    background-color: rgb(175, 212, 255);
+}
+
+@keyframes orbit {
+    0% {
+        transform: rotate(0deg);
+
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
