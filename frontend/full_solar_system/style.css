@@ -1,0 +1,300 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+:root {
+    /* distance ratio in AU*/
+    --mercury-distance: 0.39;
+    --venus-distance: 0.72;
+    --earth-distance: 1;
+    --mars-distance: 1.52;
+    --jupiter-distance: 5.20;
+    --saturn-distance: 9.54;
+    --uranus-distance: 19.2;
+    --neptune-distance: 30.1;
+    --mercury-distance: 0.39;
+
+    /* size ratio  */
+    --earth-size: 22px;
+    --mercury-size: calc(var(--earth-size)* 38/100);
+    --venus-size: calc(var(--earth-size)* 95/100);
+    --mars-size: calc(var(--earth-size)* 200/100);
+    --jupiter-size: calc(var(--earth-size)* 1100/100);
+    --saturn-size: calc(var(--earth-size)* 900/100);
+    --uranus-size: calc(var(--earth-size)* 400/100);
+    --neptune-size: calc(var(--earth-size)* 390/100);
+
+    /* orbit speed ratio */
+    --earth-speed: 30s;
+    --mercury-speed: calc(var(--earth-speed) * 0.24);
+    /* Mercury is fastest */
+    --venus-speed: calc(var(--earth-speed) * 0.62);
+    --moon-speed: calc(var(--earth-speed) * 0.08);
+    /* Moon's speed relative to Earth's orbit */
+    --mars-speed: calc(var(--earth-speed) * 1.88);
+    --jupiter-speed: calc(var(--earth-speed) * 11.86);
+    --saturn-speed: calc(var(--earth-speed) * 29.46);
+    --uranus-speed: calc(var(--earth-speed) * 84.01);
+    --neptune-speed: calc(var(--earth-speed) * 164.79);
+    /* Neptune is slowest */
+
+}
+
+body {
+    background-color: black;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    padding: 3px 0;
+    color: white;
+    border-bottom: 1px solid rgb(132, 132, 132);
+}
+
+.solar-system {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.sun {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 20em;
+    left: 43em;
+    width: 4.5em;
+    height: 4.5em;
+    border-radius: 50%;
+    box-shadow: 0em 0em 4em rgb(255, 128, 000);
+    animation: orbit 50s linear infinite;
+
+    .sun-png {
+        height: 6em;
+        width: 6em;
+    }
+}
+
+.star {
+    background-color: white;
+    position: absolute;
+    border-radius: 50%;
+    z-index: -1;
+}
+
+/* .planets {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+} */
+
+.mercury,
+.venus,
+.earth,
+.moon,
+.mars,
+.jupiter,
+.saturn,
+.uranus,
+.neptune {
+    position: absolute;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+    border-width: 0.1em 0.1em 0 0;
+    border-radius: 50%;
+    /* background-color: rgb(61, 61, 140, 30%); */
+}
+
+.mercury {
+    @keyframes orbit {
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    top: 17.2em;
+    left: 40em;
+    width: 10em;
+    height: 10em;
+    animation: orbit var(--mercury-speed) linear infinite;
+}
+
+.venus {
+    top: 15.3em;
+    left: 38em;
+    width: 14em;
+    height: 14em;
+    animation: orbit var(--venus-speed) linear infinite;
+}
+
+.earth {
+    top: 12.5em;
+    left: 35em;
+    width: 20em;
+    height: 20em;
+    animation: orbit var(--earth-speed) linear infinite;
+}
+
+/* moon */
+.moon {
+    top: 0.9em;
+    left: 15.3em;
+    width: 3.5em;
+    height: 3.5em;
+    animation: orbit var(--moon-speed) linear infinite;
+}
+
+.mars {
+    top: 9em;
+    left: 31em;
+    width: 28em;
+    height: 28em;
+    animation: orbit var(--mars-speed) linear infinite;
+}
+
+.jupiter {
+    top: 7em;
+    left: 28.5em;
+    width: 33em;
+    height: 33em;
+    animation: orbit var(--jupiter-speed) linear infinite;
+}
+
+.saturn {
+    top: 4.9em;
+    left: 26.4em;
+    width: 37.5em;
+    height: 37.5em;
+    animation: orbit var(--saturn-speed) linear infinite;
+}
+
+.uranus {
+    top: 2.8em;
+    left: 24.2em;
+    width: 41.9em;
+    height: 41.9em;
+    animation: orbit var(--uranus-speed) linear infinite;
+}
+
+.neptune {
+    top: 1em;
+    left: 22.3em;
+    width: 45.5em;
+    height: 45.5em;
+    animation: orbit var(--neptune-speed) linear infinite;
+}
+
+.mercury::before,
+.venus::before,
+.earth::before,
+.moon::before,
+.mars::before,
+.jupiter::before,
+.saturn::before,
+.uranus::before,
+.neptune::before {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    animation: orbit 30s linear infinite;
+}
+
+.mercury::before {
+    top: 1em;
+    right: 1em;
+    height: 1em;
+    width: 1em;
+    background-image: url(mercury.png);
+    background-size: cover;
+}
+
+.venus::before {
+    top: 1.6em;
+    right: 1.2em;
+    height: 1.2em;
+    width: 1.2em;
+    background-image: url(venus.png);
+    background-size: cover;
+
+}
+
+.earth::before {
+    top: 2em;
+    right: 2.2em;
+    height: 1.5em;
+    width: 1.5em;
+    background-image: url(earth.png);
+    background-size: cover;
+}
+
+.moon::before {
+    top: 0.4em;
+    right: -0.4em;
+    height: 1em;
+    width: 1em;
+    background-image: url(moon.png);
+    background-size: cover;
+}
+
+.mars::before {
+    top: 3em;
+    right: 3.5em;
+    height: 1.7em;
+    width: 1.7em;
+    background-image: url(mars.png);
+    background-size: cover;
+}
+
+.jupiter::before {
+    top: 3em;
+    right: 4.2em;
+    height: 2.4em;
+    width: 2.4em;
+    background-image: url(Jupiter_\(transparent\).png);
+    background-size: cover;
+}
+
+.saturn::before {
+    top: 4em;
+    right: 4.2em;
+    height: 2.5em;
+    width: 2.5em;
+    background-image: url(saturn.webp);
+    background-size: cover;
+    rotate: 90deg;
+}
+
+.uranus::before {
+    top: 5.5em;
+    right: 5.2em;
+    height: 1.5em;
+    width: 1.5em;
+    background-image: url(uranus.webp);
+    background-size: cover;
+}
+
+.neptune::before {
+    top: 6em;
+    right: 5.7em;
+    height: 1.6em;
+    width: 1.6em;
+    background-image: url(3D_Neptune.png);
+    background-size: cover;
+    rotate: 90deg;
+}
+
+@keyframes orbit {
+    100% {
+        transform: rotate(360deg);
+    }
+}
