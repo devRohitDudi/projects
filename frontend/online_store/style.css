@@ -1,0 +1,131 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+body {
+    background-color: rgb(185, 185, 185);
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
+    background-color: rgb(75, 42, 0);
+    padding: 5px 25px;
+}
+
+.store-name {
+    text-decoration: none;
+    color: white;
+    font-size: 1.6em;
+    font-weight: bold;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.nav-button {
+    text-decoration: none;
+    color: white;
+    font-size: 1em;
+}
+
+.nav-button:hover {
+    color: rgb(130, 130, 255);
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 25px;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 20px;
+}
+
+.product {
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 20px;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-in-out;
+}
+
+.product:hover {
+    cursor: pointer;
+    transform: translateY(-5px);
+    box-shadow: 3px 5px 8px rgb(114, 114, 114);
+}
+
+.product1-img {
+    height: 200px;
+    width: 280px;
+    background-image: url(https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg);
+    background-size: cover;
+    border-radius: 5px;
+}
+
+.product2-img {
+    height: 200px;
+    width: 280px;
+    background-image: url(https://images.pexels.com/photos/336232/pexels-photo-336232.jpeg);
+    background-size: cover;
+    border-radius: 5px;
+}
+
+.product3-img {
+    height: 200px;
+    width: 280px;
+    background-image: url(https://images.pexels.com/photos/1203803/pexels-photo-1203803.jpeg);
+    background-size: cover;
+    border-radius: 5px;
+}
+
+.product4-img {
+    height: 200px;
+    width: 280px;
+    background-image: url(https://images.pexels.com/photos/51383/photo-camera-subject-photographer-51383.jpeg);
+    background-size: cover;
+    border-radius: 5px;
+}
+
+.title {
+    font-size: 1.2em;
+    margin-top: 5px;
+}
+
+.price {
+    color: rgb(39, 39, 255);
+}
+
+.cart {
+    padding: 5px 10px;
+    background-color: rgb(0, 146, 0);
+    border-radius: 5px;
+    border: none;
+    color: white;
+    transition-duration: 0.2s;
+    font-weight: bold;
+}
+
+.cart:hover {
+    cursor: pointer;
+    background-color: darkgreen;
+}
+
+.footer {
+    height: 50px;
+    background-color: rgb(61, 59, 58);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    color: white;
+}
