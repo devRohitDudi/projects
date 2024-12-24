@@ -1,0 +1,171 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+body {
+    color: rgb(114, 114, 114);
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: darkblue;
+    color: white;
+    padding: 10px 30px;
+}
+
+.buttons a {
+    padding-right: 20px;
+    color: white;
+    font-size: 1.2em;
+    gap: 20px;
+    text-decoration: none;
+}
+
+.buttons a:hover {
+    color: rgb(188, 116, 255);
+}
+
+.container {
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.player {
+    background-color: rgb(153, 80, 80);
+    height: 80vmin;
+    width: 55vh;
+    padding: 30px;
+    margin: 30px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* align-items: space-between; */
+}
+
+.menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.photo {
+    align-self: center;
+    height: 350px;
+    width: 350px;
+    background-image: url(https://images.pexels.com/photos/164769/pexels-photo-164769.jpeg?auto=compress&cs=tinysrgb&w=600);
+    background-size: cover;
+    border-radius: 50%;
+    border: 5px solid white;
+}
+
+.name {
+    text-align: center;
+    color: white;
+    font-size: 2em;
+    margin-top: 10px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.artist {
+    text-align: center;
+    color: white;
+    text-decoration: none;
+}
+
+.artist:hover {
+    color: rgb(69, 69, 255);
+}
+
+.seeking {
+    display: flex;
+    flex-direction: column;
+}
+
+.speed {
+    text-align: end;
+    color: white;
+    border: none;
+    background: none;
+}
+
+#progress {
+    appearance: none;
+    -webkit-appearance: none;
+    height: 6px;
+    width: 100%;
+    background-color: rgb(137, 139, 248);
+    border-radius: 20px;
+}
+
+
+#progress::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background-color: purple;
+    box-shadow: 0 2px 5px rgb(36, 36, 36);
+    cursor: pointer;
+}
+
+#progress::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background-color: purple;
+    box-shadow: 0 2px 5px rgb(36, 36, 36);
+    cursor: pointer;
+}
+
+.timing {
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    padding: 10px;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.playing {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+}
+
+.interactions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.fa-play {
+    font-size: 2em;
+    color: rgb(0, 0, 0);
+    background-color: white;
+    padding: 20px;
+    border-radius: 50%;
+}
+
+.fa-pause {
+    font-size: 2em;
+    color: rgb(0, 0, 0);
+    background-color: white;
+    padding: 20px;
+    border-radius: 50%;
+}
+
+.footer {
+    text-align: center;
+    color: black;
+}
