@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=content_copy" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=check" />
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="title">Password Generator</h1>
+        <div>
+            <input class="passBox" type="text">
+            <span id="copyIcon" class="material-symbols-outlined">
+                content_copy
+            </span>
+
+        </div>
+
+        <input id="slider" type="range" max="30" min="6" value="10">
+        <div class="lengthdiv">
+            <label for="count" class="length">Password length</label>
+            <p id="value"></p>
+        </div>
+
+        <div class="checkpoint">
+            <label class="hover" for="lowercase">Include lowercase (a-z)</label>
+            <input type="checkbox" id="lowercase" checked>
+        </div>
+
+        <div class="checkpoint">
+            <label class="hover" for="uppercase">Include uppercase (A-Z)</label>
+            <input type="checkbox" id="uppercase" checked>
+        </div>
+
+        <div class="checkpoint">
+            <label class="hover" for="numeric">Include numeric (0-9)</label>
+            <input type="checkbox" id="numeric" checked>
+        </div>
+
+        <div class="checkpoint">
+            <label class="hover" for="symbol">Include symbols (@-#)</label>
+            <input type="checkbox" id="symbol" checked>
+        </div>
+
+        <button class="generate">Generate password</button>
+
+        <script src="script.js"></script>
+    </div>
+</body>
+
+</html>
