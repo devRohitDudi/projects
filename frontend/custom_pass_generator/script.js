@@ -47,7 +47,7 @@ function generatePass() {
 copybtn.addEventListener("click", () => {
     if (passBox.value != "" || passBox.value.length >= 1) {
         navigator.clipboard.writeText(passBox.value);
-        copybtn.innerHTML = "check";
+        copybtn.innerHTML = "check", "done_all";
         copybtn.title = "Password copied";
 
         setTimeout(() => {

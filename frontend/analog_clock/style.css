@@ -1,0 +1,75 @@
+* {
+    padding: 0px;
+    margin: 0px;
+    font-family: sans-serif;
+    box-sizing: border-box;
+    color: #ffff;
+}
+
+body {
+    background-color: rgb(40, 40, 44);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    position: relative;
+}
+
+.clock {
+    height: 300px;
+    width: 300px;
+    border-radius: 50%;
+    background-color: rgb(50, 50, 50);
+    border: 2px solid rgb(88, 88, 88);
+    box-shadow: 0 0 20px rgb(10, 10, 10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clock span {
+    position: absolute;
+    transform: rotate(calc(30deg * var(--i)));
+    text-align: center;
+    inset: 12px;
+    /* background-color: rgb(16, 16, 255, 0.1); */
+}
+
+.clock span b {
+    transform: rotate(calc(-30deg * var(--i)));
+    display: inline-block;
+    /* background-color: rgba(120, 255, 16, 0.1); */
+}
+
+.clock::before {
+    content: "";
+    position: absolute;
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    background-color: white;
+    z-index: 1;
+}
+
+.hand {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    transform-origin: bottom center;
+    /* Sets pivot at the bottom of the hand */
+    transform: rotate(0deg);
+    /* Initializes the rotation */
+
+}
+
+.hand i {
+    position: absolute;
+    width: 4px;
+    height: var(--h);
+    border-radius: 10px;
+    background-color: var(--clr);
+}
