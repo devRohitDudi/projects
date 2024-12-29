@@ -10,7 +10,7 @@ const moveSound = new Audio("https://rpg.hamsterrepublic.com/wiki-images/2/21/Co
 const gameoverSound = new Audio("http://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/explosion_02.wav")
 
 
-let speed = 5;
+let speed = 9;
 let score = 0;
 let highScoreVal = 0
 let highScoreDiv = document.querySelector("#highScoreDiv")
