@@ -1,0 +1,51 @@
+* {
+    padding: 0px;
+    margin: 0px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+body {
+    background-color: rgb(55, 55, 55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.clock {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    position: relative;
+    gap: 10px;
+    background-color: rgb(72, 67, 148);
+    color: rgb(255, 255, 255);
+    padding: 30px 25px;
+    border-radius: 20px;
+    border: 1px solid rgb(197, 197, 197);
+    box-shadow: 3px 3px 10px rgb(138, 138, 138);
+}
+
+.time {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.time p {
+    font-size: 45px;
+    font-weight: 600;
+}
+
+#format {
+    font-weight: 600;
+    font-size: 20px;
+    color: greenyellow;
+}
