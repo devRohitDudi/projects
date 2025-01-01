@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <header class="navbar">
+        <a id="name" href="#">SignCore</a>
+        <div class="btns">
+            <a href="#">Explore</a>
+            <a href="#">Docs</a>
+            <a href="#">Help</a>
+            <a href="#">Get API</a>
+            <a href="#">Switch</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <form class="signBox" action="#">
+            <h2 class="signup">Sign Up</h2>
+
+            <div class="input-div">
+                <p class="input-type-name">Full Name</p>
+                <input class="input" id="full-name" type="text" placeholder="full name">
+                <i class="fa-solid "></i>
+                <p class="error-message" id="name-error"></p>
+            </div>
+
+            <div class="input-div">
+                <p class="input-type-name">Email</p>
+                <input class="input" id="email" type="email" placeholder="abc@xyz.com">
+                <i class="fa-solid "></i>
+                <p class="error-message" id="email-error"></p>
+            </div>
+
+            <div class="input-div">
+                <p class="input-type-name">Password</p>
+                <input class="input" id="password" type="password" min="6" max="30" placeholder="At least 8 characters">
+                <i class="fa-solid "></i>
+                <p class="error-message" id="password-error"></p>
+            </div>
+            <div class="input-div">
+                <p class="input-type-name">Confirm Password</p>
+                <input class="input" id="confirm-password" type="password" min="6" max="30"
+                    placeholder="Same as password">
+                <i class="fa-solid "></i>
+                <p class="error-message" id="confirm-password-error"></p>
+            </div>
+
+            <button id="create">Create Account</button>
+            <div class="options">
+                <p>Already have an account?</p>
+                <a href="#">Login</a>
+            </div>
+
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
