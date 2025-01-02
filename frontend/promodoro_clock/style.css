@@ -1,0 +1,137 @@
+* {
+    padding: 0px;
+    margin: 0px;
+    color: white;
+}
+
+body {
+    background: url(hexagonal-geometric-background-with-wave-line-hexagon-genetic-social-network_618588-603.avif);
+    background-size: cover;
+    background-color: rgb(87, 87, 87);
+    height: 100vh;
+    /* width: 100vmax; */
+}
+
+.container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.clock {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+    padding: 120px;
+    background-color: rgb(50, 0, 50);
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0px 0px 20px rgb(191, 191, 191);
+}
+
+.time {
+    display: flex;
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+}
+
+.time h1 {
+    font-size: 60px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.time-type {
+    margin: 30px 20px 20px 20px;
+    font-size: 20px;
+}
+
+.btns {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.btns button {
+    padding: 8px 15px;
+    background-color: var(--clr);
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 18px;
+    /* text-shadow:2px 2px 7px black; */
+    transition-duration: 300ms;
+    transition-timing-function: ease-in-out;
+}
+
+.btns button:hover {
+    cursor: pointer;
+    transform: scale(1.06);
+}
+
+.promo-count {
+    display: none;
+    margin-top: 30px;
+}
+
+#completed {
+    display: none;
+}
+
+.promoDisplay {
+    animation: swipe-up 0.5s ease-in;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes swipe-up {
+    0% {
+        opacity: 0;
+        transform: translateY(50%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* let's make it responsive */
+@media screen and (max-width:520px) {
+    .btns button {
+        font-size: 15px;
+        padding: 8px 12px;
+    }
+
+    .btns {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .clock {
+        padding: 80px;
+    }
+
+    .time h1 {
+        font-size: 40px;
+    }
+
+    .time-type {
+        font-size: 15px;
+    }
+
+    .promoDisplay h3 {
+        font-size: 15px;
+    }
+
+    .promo-count {
+        font-size: 22px;
+    }
+}

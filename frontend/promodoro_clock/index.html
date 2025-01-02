@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promodoro Clock</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="clock">
+            <div class="time">
+                <h1 id="minute">00</h1>
+                <h1>:</h1>
+                <h1 id="second">00</h1>
+            </div>
+        </div>
+
+        <h3 class="time-type">It's work time.</h3>
+        <div class="btns">
+            <button style="--clr:rgb(0, 122, 0);" id="start">Start</button>
+            <button style="--clr:rgb(192, 128, 0);" id="pause">Pause</button>
+            <button style="--clr:rgb(0, 133, 174);" id="resume">Resume</button>
+            <button style="--clr:rgb(187, 0, 0);" id="reset">Reset</button>
+        </div>
+        <div class="promoDisplay">
+            <h1 class="promo-count">0</h1>
+            <h3 id="completed">Promodoros completed</h3>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
