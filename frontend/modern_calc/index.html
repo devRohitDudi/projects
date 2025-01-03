@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="calc">
+            <div class="row inputRow">
+                <input type="text" id="input" placeholder="0">
+            </div>
+            <div class="row 1st">
+                <div class="topDiv1">
+                    <button id="clear">C</button>
+                </div>
+                <div class="topDiv2">
+                    <button id="delete">
+                        <svg id="backspace" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                            <path
+                                d="m456-320 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56Zm-96 160q-19 0-36-8.5T296-192L80-480l216-288q11-15 28-23.5t36-8.5h440q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H360ZM180-480l180 240h440v-480H360L180-480Zm400 0Z" />
+                        </svg>
+                    </button>
+                    <button id="devide">%</button>
+                </div>
+            </div>
+            <div class="row 2nd">
+                <button class="value" id="seven">7</button>
+                <button class="value" id="eight">8</button>
+                <button class="value" id="nine">9</button>
+                <button id="multiply">*</button>
+            </div>
+            <div class="row 3rd">
+                <button class="value" id="four">4</button>
+                <button class="value" id="five">5</button>
+                <button class="value" id="six">6</button>
+                <button id="minus">-</button>
+            </div>
+            <div class="row 4th">
+                <button class="value" id="one">1</button>
+                <button class="value" id="two">2</button>
+                <button class="value" id="three">3</button>
+                <button id="plus">+</button>
+            </div>
+            <div class="row 5th">
+                <div class="bottomDiv1">
+                    <button class="value" id="dot">.</button>
+                    <button class="value" id="0">0</button>
+                </div>
+                <div class="bottomDiv2">
+                    <button id="equal">=</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
