@@ -1,0 +1,142 @@
+* {
+    padding: 0px;
+    margin: 0px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: rgb(22, 22, 44);
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: rgb(82, 59, 21);
+    color: white;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+    position: relative;
+
+}
+
+.inputDiv {
+    background-color: rgb(89, 0, 206);
+    padding: 15px 20px;
+    border-radius: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+}
+
+#inputBox {
+    padding: 10px;
+    border-radius: 20px;
+    border: none;
+    background-color: rgb(219, 219, 219);
+    font-size: 18px;
+}
+
+#addBTN {
+    padding: 9px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: 600;
+    background-color: rgb(42, 34, 255);
+    color: rgb(255, 255, 255);
+}
+
+#addBTN:hover {
+    background-color: rgb(5, 0, 145);
+    cursor: pointer;
+}
+
+#addBTN:active {
+    transform: scale(0.92);
+}
+
+
+#errorMessage {
+    margin-top: 10px;
+    color: rgb(255, 196, 0);
+    position: absolute;
+    top: 70px;
+}
+
+#toDoList {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.toDoBox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(237, 237, 237);
+    padding: 10px 20px;
+    border-radius: 10px;
+    width: 400px;
+    animation: swipefade 400ms ease-in;
+}
+
+.remove {
+    text-decoration: none;
+    font-weight: 600;
+    color: blue;
+    z-index: 2;
+}
+
+.remove:hover {
+    color: rgb(255, 0, 0);
+    cursor: pointer;
+}
+
+.toDoText {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.checkBox {
+    height: 21px;
+    width: 21px;
+    border-radius: 50%;
+}
+
+.toDoText p {
+    font-size: 20px;
+    padding: 5px 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* text-wrap: wrap; */
+    overflow-wrap: break-word;
+    /* word-wrap: break-word; */
+}
+
+@keyframes swipefade {
+    0% {
+        transform: translateY(15px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
