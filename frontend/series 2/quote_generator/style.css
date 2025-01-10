@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap');
+
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+body {
+    height: 100vh;
+    background: linear-gradient(45deg, rgb(132, 53, 132), rgb(54, 79, 149));
+}
+
+.container {
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.app {
+    margin-top: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    padding: 10px 20px;
+    width: 350px;
+    max-width: 400px;
+}
+
+.app h1 {
+    color: rgb(0, 0, 0);
+    border-bottom: 2px solid blue;
+    border-collapse: collapse;
+    padding: 20px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.line {
+    color: blue;
+}
+
+.quoteDiv {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.quote {
+    /* font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; */
+    font-size: 25px;
+    color: rgb(0, 0, 0);
+    text-align: center;
+    /* font-weight: 600; */
+    font-family: "Playfair Display", serif;
+
+}
+
+.author {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: 15px;
+    color: rgb(0, 0, 0);
+    text-align: end;
+
+}
+
+.btns {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 30px;
+}
+
+
+#newQuote {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 15px;
+    background-color: rgb(31, 14, 211);
+    color: white;
+}
+
+#tweet {
+    padding: 3px 15px;
+    border: 2px solid blue;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 15px;
+    background: transparent;
+    color: rgb(0, 0, 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.logo {
+    text-decoration: none;
+    color: rgb(60, 0, 255);
+    font-size: 20px;
+    font-weight: 400;
+}
+
+#newQuote:hover {
+    cursor: pointer;
+    background-color: rgba(36, 95, 36, 0.7);
+}
+
+#tweet:hover {
+    cursor: pointer;
+    background-color: rgba(80, 80, 80, 0.7);
+}
