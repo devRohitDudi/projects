@@ -1,0 +1,94 @@
+* {
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+body {
+    height: 100vh;
+    background: linear-gradient(45deg, rgb(109, 45, 109), rgb(57, 44, 123));
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.app {
+    margin-top: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 30px;
+    background-color: rgb(255, 255, 255, 0.3);
+    border-radius: 20px;
+}
+
+.app h1 {
+    color: rgb(0, 255, 128);
+}
+
+#status {
+    color: rgb(255, 255, 68);
+    font-size: 20px;
+    animation: fade 1s ease-in-out;
+}
+
+.timeBox {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.timeBox p {
+    background-color: aliceblue;
+    border-radius: 15px;
+    padding: 10px 20px;
+    font-size: 50px;
+    word-spacing: 10px;
+    font-weight: 600;
+    color: rgb(53, 53, 53);
+}
+
+.btns {
+    margin-top: 10px;
+    display: flex;
+    gap: 20px;
+}
+
+.btns button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 20px;
+    background-color: var(--clr);
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.btns button:hover {
+    cursor: pointer;
+    color: white;
+    background-color: rgb(100, 96, 50);
+    transition: 0.2s;
+}
+
+.btns button:active {
+    transform: scale(0.9);
+}
+
+
+@keyframes fade {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 100%;
+    }
+}

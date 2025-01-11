@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="app">
+            <h1 class="title">Precise Timer</h1>
+            <div class="timerBox">
+                <div class="hour">
+                    <p>Hours</p>
+                    <input id="hours" type="number" min="0" max="99" placeholder="00">
+                </div>
+                <div class="minute">
+                    <p>Minutes</p>
+                    <input id="minutes" type="number" min="0" max="60" placeholder="00">
+                </div>
+                <div class="second">
+                    <p>Seconds</p>
+                    <input id="seconds" type="number" min="0" max="60" placeholder="00">
+                </div>
+            </div>
+            <p id="status">Set your time!</p>
+            <div class="btns">
+                <button id="start" style="--clr:rgb(35, 212, 32);">Start</button>
+                <button id="pause" style="--clr:rgb(205, 205, 26);">pause</button>
+                <button id="reset" style="--clr:rgb(210, 26, 26);">Reset</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="script.js"></script>
+</body>
+
+</html>

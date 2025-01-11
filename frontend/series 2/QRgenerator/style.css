@@ -1,0 +1,66 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+body {
+    background: linear-gradient(45deg, rgb(161, 93, 105), rgb(147, 60, 147));
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.app {
+    margin-top: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    background-color: rgb(255, 255, 255, 0.7);
+    border-radius: 20px;
+    padding: 20px 10px;
+    width: 400px;
+}
+
+.title {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: 30px;
+}
+
+.inputBox {
+    width: 75%;
+    font-size: 20px;
+    padding: 10px;
+    border: 2px solid rgb(179, 179, 179);
+    border-radius: 10px;
+}
+
+.imageDiv {
+    display: flex;
+    align-self: center;
+    border: 2px solid grey;
+    padding: 10px;
+    border-radius: 10px;
+    display: none;
+}
+
+.generate {
+    padding: 10px 20px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 22px;
+    border: none;
+    border-radius: 15px;
+    background: rgb(0, 0, 217);
+}
+
+.generate:hover {
+    cursor: pointer;
+    /* color: black; */
+    background-color: #3013a0;
+}
