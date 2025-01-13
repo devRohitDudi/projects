@@ -5,6 +5,7 @@ const inputBox = document.querySelector(".inputBox");
 
 
 function generateQR() {
+    imageBox.innerHTML = "";
     console.log("Clicked");
     inputBox.value = "";
     new QRCode(imageBox, {
