@@ -1,0 +1,327 @@
+* {
+    margin: 0px;
+    color: rgb(223, 223, 223);
+    padding: 0px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+body {
+    height: 100vh;
+    background: rgb(0, 0, 0);
+}
+
+.container {
+    position: relative;
+}
+
+.videoDiv {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    z-index: -1;
+    object-fit: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+    overflow: hidden;
+    opacity: 0.7;
+}
+
+.videoDiv video {
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-attachment: fixed;
+
+    background-size: cover;
+    background-repeat: no-repeat;
+    object-fit: cover;
+}
+
+
+.app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 35px;
+    padding-top: 20px;
+}
+
+.bio {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    position: relative;
+    gap: 5px;
+}
+
+.profile-photo {
+    background-image: url(assets/pixelcut-export.png);
+    background-size: cover;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+}
+
+.name {
+    margin-top: 10px;
+    font-size: 23px;
+    color: #fff;
+    transition: 0.7s;
+}
+
+.about {
+    font-size: 18px;
+    color: aliceblue;
+    font-weight: 600;
+    transition: 0.7s;
+}
+
+/*options is pending */
+.options {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: none;
+    fill: #fff;
+    height: 30px;
+    width: 30px;
+}
+
+.icons {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    gap: 10px;
+    padding: 5px 10px 5px 10px;
+    border: 1px solid gray;
+    border-radius: 20px;
+    transition: all;
+    animation: colorChanging 1.5s linear infinite;
+    animation-direction: alternate;
+    border-radius: 30px;
+    transition: 0.7s;
+
+}
+
+.icons a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.2s;
+}
+
+.icons a:hover {
+    transform: scale(1.05);
+}
+
+@keyframes colorChanging {
+    0% {
+        border-top: 1px solid aqua;
+    }
+
+    25% {
+        border-right: 1px solid aqua;
+    }
+
+    50% {
+        border-bottom: 1px solid aqua;
+    }
+
+    75% {
+        border-left: 1px solid aqua;
+    }
+
+    100% {
+        border-top: 1px solid aqua;
+    }
+}
+
+.githubIcon {
+    fill: white;
+    height: 45px;
+    width: 45px;
+}
+
+.facebookIcon {
+    fill: white;
+    height: 45px;
+    width: 45px;
+}
+
+.instagramIcon {
+    fill: white;
+    height: 45px;
+    width: 45px;
+}
+
+.linkedinIcon {
+    fill: white;
+    height: 45px;
+    width: 45px;
+}
+
+.xIcon {
+    fill: white;
+    height: 28px;
+    width: 28px;
+}
+
+.youtubeIcon {
+    fill: white;
+    height: 45px;
+    width: 45px;
+}
+
+.pinterestIcon {
+    fill: white;
+    height: 45px;
+    width: 45px;
+}
+
+.websiteIcon {
+    fill: white;
+    height: 40px;
+    width: 40px;
+    padding: 2px;
+}
+
+.xPadding {
+    padding: 8px;
+}
+
+.links {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    gap: 20px;
+
+}
+
+.item {
+    width: 500px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 5px 5px 5px;
+    border: 1px solid rgb(255, 255, 255);
+    text-decoration: none;
+    border-radius: 25px;
+    background: rgb(0, 0, 0, 0.1);
+
+}
+
+.item:hover {
+
+    .linkName {
+        color: rgb(203, 148, 255);
+    }
+
+    border-color: grey;
+    background: rgb(0, 0, 0, 0.4);
+
+    .linkName {
+        font-size: 21px;
+    }
+}
+
+.item p {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    color: #fff;
+    font-size: 19px;
+    transition: 0.5s;
+}
+
+.threeDot {
+    height: 20px;
+}
+
+.optionBTN {
+    border: none;
+    padding: 5px;
+    border-radius: 15px;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+}
+
+.optionBTN:hover {
+    background-color: rgb(74, 74, 74);
+    cursor: pointer;
+
+    .optionBTN svg {
+        fill: #fff;
+    }
+}
+
+.optionBTN svg {
+    fill: rgb(182, 182, 182);
+}
+
+.pDiv {
+    display: flex;
+    gap: 5px;
+}
+
+#websiteP {
+    transition: all;
+    background: linear-gradient(90deg, rgb(252, 255, 91), violet);
+    background-clip: border-box;
+    -webkit-background-clip: text;
+    /* Ensures the gradient is applied to the text */
+    -webkit-text-fill-color: transparent;
+    animation: changeColor 2s linear infinite;
+    animation-direction: alternate;
+}
+
+@keyframes changeColor {
+    0% {
+        background: linear-gradient(90deg, rgb(252, 255, 91), violet);
+        -webkit-background-clip: text;
+        /* Ensures the gradient is applied to the text */
+        -webkit-text-fill-color: transparent;
+    }
+
+    50% {
+        background: linear-gradient(90deg, violet, rgb(252, 255, 91));
+        -webkit-background-clip: text;
+        /* Ensures the gradient is applied to the text */
+        -webkit-text-fill-color: transparent;
+    }
+
+    100% {
+        background: linear-gradient(90deg, rgb(252, 255, 91), violet);
+        -webkit-background-clip: text;
+        /* Ensures the gradient is applied to the text */
+        -webkit-text-fill-color: transparent;
+    }
+}
+
+.optionDiv {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    border-radius: 10px;
+    background-color: rgb(0, 0, 0, 0.5);
+    border: 1px solid grey;
+}
+
+
+footer {
+    position: static;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    bottom: 0px;
+}
