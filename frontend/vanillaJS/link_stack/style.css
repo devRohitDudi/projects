@@ -63,8 +63,8 @@ body {
 .profile-photo {
     background-image: url(assets/pixelcut-export.png);
     background-size: cover;
-    height: 100px;
-    width: 100px;
+    height: 110px;
+    width: 110px;
     border-radius: 50%;
 
 }
