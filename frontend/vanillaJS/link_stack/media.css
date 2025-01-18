@@ -1,0 +1,280 @@
+/* General responsive settings */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    .app {
+        padding-top: 50px;
+        gap: 35px;
+    }
+
+    .bio {
+        gap: 10px;
+    }
+
+    .profile-photo {
+        height: 90px;
+        width: 90px;
+    }
+
+    .name {
+        font-size: 19px;
+    }
+
+    .about {
+        font-size: 15px;
+    }
+
+    .icons {
+        gap: 5px;
+        padding: 5px 9px;
+    }
+
+    .icons a {
+        width: 45px;
+        height: 45px;
+    }
+
+    .item {
+        width: 90%;
+        padding: 10px;
+    }
+
+    .item p {
+        font-size: 17px;
+    }
+}
+
+/* Smaller mobile devices */
+@media (max-width: 480px) {
+    .app {
+        padding-top: 50px;
+        gap: 30px;
+    }
+
+    .bio {
+        gap: 8px;
+    }
+
+    .profile-photo {
+        height: 85px;
+        width: 85px;
+    }
+
+    .name {
+        margin-top: 5px;
+        font-size: 18px;
+    }
+
+    .about {
+        font-size: 14px;
+    }
+
+    .icons {
+        gap: 5px;
+        /* padding: 3px; */
+        padding: 4px 8px;
+    }
+
+    .icons a {
+        width: 38px;
+        height: 38px;
+    }
+
+    .xIcon {
+        fill: white;
+        height: 26px;
+        width: 26px;
+    }
+
+    .item {
+        width: 85%;
+        padding: 7px;
+    }
+
+    .item p {
+        font-size: 16px;
+    }
+}
+
+/* Fine-tuning for very small screens */
+@media (max-width: 320px) {
+    .name {
+        font-size: 14px;
+    }
+
+    .about {
+        font-size: 10px;
+    }
+
+    .profile-photo {
+        height: 60px;
+        width: 60px;
+    }
+
+    .icons a {
+        width: 25px;
+        height: 25px;
+    }
+
+    .item {
+        width: 90%;
+        padding: 7px;
+    }
+
+    .item p {
+        font-size: 12px;
+    }
+}
+
+/*media queries for popup css */
+
+/* General responsive styles for tablets and smaller screens */
+@media (max-width: 768px) {
+    .popup {
+        width: 80%;
+        padding: 15px;
+        gap: 15px;
+        border-radius: 15px;
+    }
+
+    #inputBox {
+        font-size: 16px;
+        padding: 8px;
+    }
+
+    .popbtns {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .popbtns button,
+    #close {
+        font-size: 18px;
+        padding: 8px;
+    }
+}
+
+/* Fine-tuning for mobile phones */
+@media (max-width: 480px) {
+    .popup {
+        width: 80%;
+        padding: 10px;
+        gap: 10px;
+    }
+
+    #inputBox {
+        font-size: 14px;
+        padding: 6px;
+    }
+
+    .popbtns button,
+    #close {
+        font-size: 16px;
+        padding: 6px;
+    }
+}
+
+/* Additional adjustments for very small devices */
+@media (max-width: 320px) {
+    .popup {
+        width: 100%;
+        padding: 8px;
+    }
+
+    #inputBox {
+        font-size: 12px;
+        padding: 5px;
+    }
+
+    .popbtns button,
+    #close {
+        font-size: 14px;
+        padding: 5px;
+    }
+}
+
+/* media queries for toast notifications */
+/* General responsive styles for tablets and smaller screens */
+@media (max-width: 768px) {
+    .snackBox {
+        bottom: 20px;
+        right: 20px;
+        padding: 15px;
+    }
+
+    .toast {
+        width: 250px;
+        padding: 8px 8px 12px 8px;
+        gap: 6px;
+        margin-top: 10px;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .toast img {
+        height: 30px;
+        width: 30px;
+    }
+
+    .toast p {
+        font-size: 18px;
+    }
+
+    .toast::after {
+        height: 4px;
+    }
+}
+
+/* Fine-tuning for mobile phones */
+@media (max-width: 480px) {
+    .snackBox {
+        bottom: 10px;
+        right: 10px;
+        padding: 10px;
+    }
+
+    .toast {
+        width: 200px;
+        padding: 6px 6px 10px 6px;
+        gap: 4px;
+        margin-top: 8px;
+        border-radius: 6px 6px 0 0;
+    }
+
+    .toast img {
+        height: 25px;
+        width: 25px;
+    }
+
+    .toast p {
+        font-size: 16px;
+    }
+
+    .toast::after {
+        height: 3px;
+    }
+}
+
+/* Additional adjustments for very small devices */
+@media (max-width: 320px) {
+    .toast {
+        width: 180px;
+        padding: 5px 5px 8px 5px;
+        gap: 3px;
+        margin-top: 5px;
+    }
+
+    .toast img {
+        height: 20px;
+        width: 20px;
+    }
+
+    .toast p {
+        font-size: 14px;
+    }
+
+    .toast::after {
+        height: 2px;
+    }
+}
