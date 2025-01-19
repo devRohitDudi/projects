@@ -1,0 +1,134 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+
+
+:root {
+    --primary-color: #edf2fc;
+    --secondary-color: #212121;
+}
+
+.dark-theme {
+    --primary-color: #000106;
+    --secondary-color: #fff;
+}
+
+body {
+    background-color: var(--primary-color);
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    padding-top: 20px;
+}
+
+.logo {
+    color: var(--secondary-color);
+    font-size: 23px;
+    font-weight: 600;
+
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.btns a {
+    text-decoration: none;
+    color: var(--secondary-color);
+    font-size: 19px;
+}
+
+.btns a:hover {
+    color: rgb(114, 156, 80);
+}
+
+.content {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    /* height: 100vh; */
+    margin-top: 50px;
+}
+
+.leftPanel {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    /* align-items: center; */
+    /* align-content: start; */
+    gap: 30px;
+    margin-top: 100px;
+
+}
+
+.rightPanel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.name {
+    color: var(--secondary-color);
+    /* text-align: center; */
+}
+
+.about {
+    color: var(--secondary-color);
+    width: 400px;
+    /* text-align: center; */
+}
+
+.joinButton {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: 600;
+    width: 100px;
+}
+
+.joinButton:hover {
+    cursor: pointer;
+    background-color: rgb(130, 130, 130);
+    color: black;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    width: 100px;
+}
+
+.image {
+    height: 400px;
+    border-radius: 20px;
+}
+
+.moon {
+    height: 24px;
+}
+
+.moon:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+.sun {
+    height: 24px;
+}
+
+.sun:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+}
