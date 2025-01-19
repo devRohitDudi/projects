@@ -1,10 +1,11 @@
 .snackBox {
-    position: absolute;
+    position: fixed;
     bottom: 30px;
     right: 30px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    overflow: hidden;
     overflow: hidden;
     padding: 20px;
 }
@@ -23,6 +24,8 @@
     transition: 0.4s;
     animation: slide 0.4s ease-out;
     position: relative;
+    overflow: hidden;
+
 }
 
 .toast::after {
