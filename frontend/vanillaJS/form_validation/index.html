@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey Form</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="form" action="submit">
+            <img id="logo" src="edit_square_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.svg" alt="icon">
+            <div class="nameDiv">
+                <label for="fullName">Full Name *</label>
+                <input id="fullName" type="text" placeholder="Alex Stark" required>
+                <p id="nameError"> </p>
+            </div>
+            <div class="phoneDiv">
+                <label for="phone">Phone number *</label>
+                <input id="phone" type="number" placeholder="0000000000 " required>
+                <p id="phoneError"> </p>
+            </div>
+            <div class="emailDiv">
+                <label for="email">Email *</label>
+                <input id="email" type="email" placeholder="abc@example.com" required>
+                <p id="emailError"></p>
+            </div>
+            <div class="messageDiv">
+                <label for="message">Message (optional) </label>
+                <textarea id="message" type="text"></textarea>
+            </div>
+            <button id="submit">Submit</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

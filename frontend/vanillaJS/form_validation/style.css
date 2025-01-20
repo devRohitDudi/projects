@@ -1,0 +1,114 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+body {
+    background-color: rgb(32, 32, 48);
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.form {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    padding-top: 40px;
+}
+
+#logo {
+    position: absolute;
+    top: -25px;
+    background-color: rgb(59, 159, 48);
+    padding: 10px;
+    border-radius: 50%;
+    height: 30px;
+    box-shadow: 0 0 5px black;
+}
+
+.form div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: start;
+    width: 100%;
+    gap: 5px;
+}
+
+.form label {
+    padding-left: 5px;
+    font-size: 17px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.form input {
+    /* width: 100%; */
+    border: none;
+    border-bottom: 1px solid grey;
+    font-size: 20px;
+    padding: 10px;
+    background-color: rgb(235, 235, 235);
+    border-radius: 10px;
+}
+
+#message {
+    border: none;
+    border-bottom: 1px solid grey;
+    font-size: 20px;
+    padding: 10px;
+    background-color: rgb(235, 235, 235);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 100%;
+    /* Full width */
+    min-height: 150px;
+    word-wrap: break-word;
+    /* Minimum height for multiple lines */
+    box-sizing: border-box;
+    outline: none;
+    overflow: hidden;
+}
+
+#submit {
+    padding: 6px 12px;
+    border: none;
+    font-size: 18px;
+    font-weight: 600;
+    color: rgb(255, 255, 255);
+    border-radius: 10px;
+    background-color: rgb(32, 20, 83);
+    transition: 0.3s;
+}
+
+#submit:hover {
+    cursor: pointer;
+    background-color: darkblue;
+}
+
+#nameError {
+    color: rgb(255, 20, 20);
+    text-align: center;
+    padding-left: 5px;
+}
+
+#phoneError {
+    color: rgb(255, 20, 20);
+    text-align: center;
+    padding-left: 5px;
+}
+
+#emailError {
+    color: rgb(255, 20, 20);
+    text-align: center;
+    padding-left: 5px;
+}
