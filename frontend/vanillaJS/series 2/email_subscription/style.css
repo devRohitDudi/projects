@@ -1,0 +1,84 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+body {
+    background: linear-gradient(45deg, rgb(84, 10, 133), rgb(31, 12, 100));
+    height: 100vh;
+    color: #fff;
+}
+
+.container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.app {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 20px;
+}
+
+.status {
+    font-size: 22px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.message {
+    font-size: 26px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+h6 {
+    font-size: 19px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.inputDiv {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+
+}
+
+#emailBox {
+    padding: 2px 12px;
+    border: none;
+    height: 40px;
+    border-radius: 5px 6px 6px 5px;
+    font-size: 19px;
+    width: 330px;
+}
+
+button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+}
+
+#submit {
+    position: absolute;
+    right: 0;
+    height: 40px;
+    padding: 2px 5px;
+    background-color: green;
+    border-radius: 0 5px 5px 0;
+}
+
+
+#submit:hover {
+    cursor: pointer;
+    background-color: darkgreen;
+}
+
+#emailError {
+    font-size: 18px;
+}
