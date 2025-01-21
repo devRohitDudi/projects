@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to speech</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="titleDiv">
+            <h1>Text to Speech</h1>
+            <h1 id="converter">Converter</h1>
+        </div>
+        <div class="inputDiv">
+            <textarea name="input" id="input" placeholder="Type here anything"></textarea>
+        </div>
+        <div class="actionDiv">
+
+            <select name="language" id="langSelect"></select>
+
+            <button id="listen">
+                <svg class="playIcon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960"
+                    width="24px" fill="#e8eaed">
+                    <path d="M320-200v-560l440 280-440 280Zm80-280Zm0 134 210-134-210-134v268Z" />
+                </svg>
+                Listen
+            </button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
