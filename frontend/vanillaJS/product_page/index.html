@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Page</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="product">
+
+            <div class="gallery">
+                <img id="currentImage" src="image1.jpg" alt="product" width="100%">
+                <div class="controls">
+                    <span class="btn active"></span>
+                    <span class="btn"></span>
+                    <span class="btn"></span>
+                </div>
+            </div>
+
+            <div class="detailsSection">
+                <h1 id="name">World is Flat</h1>
+                <h1 id="price">$10.00</h1>
+                <h3 id="discount">15% OFF</h3>
+                <p id="description">Thomas L. Friedman has been awarded the Pulitzer Prize three times for his work with
+                    The New York
+                    Times, where he serves as the foreign affairs columnist, and is read by everyone from small-business
+                    owners to President Obama.
+                </p>
+
+                <div class="sizeSelect">
+                    <p>Size</p>
+                    <label for="small">
+                        <input type="radio" name="size" id="small">
+                        <span>S</span>
+                    </label>
+                    <label for="medium">
+                        <input type="radio" name="size" id="medium">
+                        <span>M</span>
+                    </label>
+                    <label for="large">
+                        <input type="radio" name="size" id="large">
+                        <span>L</span>
+                    </label>
+                    <label for="xlarge">
+                        <input type="radio" name="size" id="xlarge">
+                        <span>XL</span>
+                    </label>
+                    <label for="xxlarge">
+                        <input type="radio" name="size" id="xxlarge">
+                        <span>XXL</span>
+                    </label>
+
+
+                </div>
+                <div class="colorSelect">
+                    <p>Color(?)</p>
+                    <label for="red">
+                        <input type="radio" name="color" id="red">
+                        <span class="color1"></span>
+                    </label>
+                    <label for="green">
+                        <input type="radio" name="color" id="green">
+                        <span class="color2"></span>
+                    </label>
+                    <label for="blue">
+                        <input type="radio" name="color" id="blue">
+                        <span class="color3"></span>
+                    </label>
+                    <label for="orange">
+                        <input type="radio" name="color" id="orange">
+                        <span class="color4"></span>
+                    </label>
+                </div>
+
+                <div class="quantity">
+                    <p>Quantity</p>
+                    <input type="number" name="quantity" id="quantity" value="1" min="1" max="100">
+                </div>
+                <button id="buy">Buy Now</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,231 @@
+* {
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #aabcc7;
+    height: 100vh;
+
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.product {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 550px;
+    /* padding: 10px; */
+    background: rgb(95, 87, 87);
+}
+
+.gallery {
+    display: flex;
+    flex-basis: 47%;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: #241e20;
+    position: relative;
+}
+
+.gallery img {
+    display: block;
+    width: 100%;
+    padding-top: 100px;
+}
+
+.controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.controls span {
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    background-color: #fff;
+    transition: 0.1s;
+}
+
+.controls span:hover {
+    cursor: pointer;
+    background-color: #9a8dfa;
+}
+
+.btn.active {
+    background-color: #553ff0;
+}
+
+
+/* styling details */
+
+.detailsSection {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    flex-basis: 53%;
+    background: white;
+    padding: 10px 20px 10px 20px;
+    gap: 10px;
+}
+
+#name {
+    text-align: center;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 30px;
+}
+
+#price {
+    text-align: center;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 27px;
+    color: #404040;
+}
+
+#discount {
+    text-align: center;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 17px;
+    color: #01a458;
+}
+
+#description {
+    text-align: start;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 14px;
+    color: #404040;
+}
+
+
+
+.sizeSelect {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
+}
+
+.sizeSelect p {
+    width: 70px;
+}
+
+.sizeSelect input {
+    display: none;
+}
+
+.sizeSelect label:hover {
+    cursor: pointer;
+}
+
+.sizeSelect input:checked+span {
+    color: blue;
+    font-weight: 600;
+}
+
+.sizeSelect p:hover {
+    cursor: pointer;
+}
+
+.colorSelect {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.colorSelect p {
+    width: 70px;
+}
+
+#red {
+    padding: 6px;
+    background-color: red;
+    border-radius: 50%;
+}
+
+.colorSelect input {
+    display: none;
+
+}
+
+.colorSelect span {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.color1 {
+    background-color: red;
+}
+
+.color2 {
+    background-color: green;
+}
+
+.color3 {
+    background-color: blue;
+}
+
+.color4 {
+    background-color: orange;
+}
+
+.colorSelect input:checked+span {
+    transform: scale(0.7);
+    box-shadow: 0 0 0 4px #ffffff, 0 0 0 6px #000;
+}
+
+.quantity {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    gap: 20px;
+
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+#quantity {
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    padding: 1px 3px;
+    background: #e1e1e1;
+}
+
+#buy {
+    width: 100%;
+    margin-top: 20px;
+    border: none;
+    border-radius: 20px;
+    padding: 10px;
+    background-color: blue;
+    color: #fff;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+#buy:hover {
+    cursor: pointer;
+    background: darkblue;
+}

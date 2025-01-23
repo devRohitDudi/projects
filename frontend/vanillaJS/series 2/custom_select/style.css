@@ -1,0 +1,109 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+body {
+    height: 100vh;
+    background: linear-gradient(45deg, rgb(127, 1, 186), rgb(49, 0, 139));
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+
+.app {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+}
+
+.selectBox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgb(255, 255, 255, 0.7);
+    padding: 8px 8px 8px 15px;
+    border-radius: 10px;
+    width: 100%;
+    transition: 0.5s;
+}
+
+.selectBox p {
+    font-size: 22px;
+    text-align: start;
+}
+
+.selectBox svg {
+    fill: black;
+    height: 30px;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    gap: 5px;
+    background: rgb(255, 255, 255, 0.7);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px 0 10px 0;
+    position: relative;
+}
+
+.item {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px 0 10px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.item:hover {
+    cursor: pointer;
+    background: #c2c2c2;
+}
+
+.item p {
+    text-align: start;
+    font-size: 20px;
+}
+
+.item svg {
+    height: 30px;
+    width: 30px;
+}
+
+#dropIcon {
+    transition: 0.2s;
+}
+
+.list {
+    transition: 0.5s;
+    animation: smooth 0.4s ease-in-out;
+}
+
+@keyframes smooth {
+    0% {
+        transform: translateY(20px);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translateX(0px);
+        opacity: 1;
+
+    }
+}
