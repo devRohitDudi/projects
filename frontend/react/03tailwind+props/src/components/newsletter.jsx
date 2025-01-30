@@ -14,7 +14,7 @@ function Newsletter({ username, btnText = "join" }) {  // direct destructuring
                                 Hello {username}
                             </h2>
                             <h2 className="text-4xl font-semibold tracking-tight text-white">
-                                Subscribe to our newsletter
+                                {btnText} to our newsletter
                             </h2>
                             <p className="mt-4 text-lg text-gray-300">
                                 Nostrud amet eu ullamco nisi aute in ad minim nostrud adipisicing velit quis. Duis tempor incididunt dolore.
