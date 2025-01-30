@@ -1,0 +1,22 @@
+#root {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+#input {
+    font-size: 20px;
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+}
+
+.loginDiv {
+    display: flex;
+    gap: 5px;
+}
+
+#message {
+    font-size: 25px;
+}
