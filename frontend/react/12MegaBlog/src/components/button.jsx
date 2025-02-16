@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 
 
@@ -16,5 +17,11 @@ function Button({
         </button>
     )
 }
-
+Button.propTypes = {
+    children: PropTypes.node.isRequired,
+    type: PropTypes.oneOf(['button', 'submit', 'reset']),
+    bgColor: PropTypes.string,
+    textColor: PropTypes.string,
+    className: PropTypes.string,
+}
 export default Button

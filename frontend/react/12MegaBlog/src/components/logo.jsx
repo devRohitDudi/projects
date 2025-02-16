@@ -2,7 +2,8 @@ import React from 'react'
 
 function Logo({ width = '100%' }) {
     return (
-        <div>logo</div>
+        <div className='text-white'>logo</div>
+        // <img src="../logo.jpg" alt="" />
     )
 }
 
