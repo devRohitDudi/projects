@@ -38,7 +38,7 @@ function App() {
         <>
             <div className='relative min-h-screen  bg-gray-600'>
                 {authStatus && <button className='bg-blue-800 text-white font-bold p-2 rounded-2xl absolute bottom-5 right-5 z-10'
-                    onClick={navigate('/')}>Create</button>}
+                    onClick={() => navigate('/')}>Create</button>}
                 <Header />
 
                 <main>
