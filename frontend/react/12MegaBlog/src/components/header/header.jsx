@@ -39,33 +39,61 @@ function Header() {
     ]
 
     return (
-        <header className='py-3 shadow bg-blue-900'>
-            <Container>
-                <nav className='flex h-9 items-center justify-center'>
-                    <div className='mr-4'>
+
+        <header className='py-3 shadow bg-blue-900 w-full overflow-hidden'>
+            <Container className="max-w-screen-xl mx-auto">
+                <nav className='flex h-9 items-center justify-between w-full'>
+                    <div className='flex items-center'>
                         <Link to='/'>
-                            <Logo className=' flex justify-center items-center' width='80px' />
+                            <Logo className='flex justify-center items-center' width='80px' />
                         </Link>
                     </div>
-                    <ul className='flex ml-auto items-center'>
+                    <ul className='flex items-center space-x-0.3 md:space-x-2'>
                         {navItems.map((item) =>
                             item.active ? (
-                                <li key={item.name} className=' flex items-center'>
-                                    <button className=' text-white text-[20px] font-bold inline-block px-6 py-2 duration-200 hover:bg-blue-100 hover:text-black hover:cursor-pointer rounded-full '
-                                        onClick={() => navigate(item.slug)} >
+                                <li key={item.name} className='flex items-center'>
+                                    <button
+                                        className='text-white text-sm md:text-[20px] font-bold px-4 py-2 duration-200 hover:bg-blue-100 hover:text-black hover:cursor-pointer rounded-full'
+                                        onClick={() => navigate(item.slug)}
+                                    >
                                         {item.name}
                                     </button>
                                 </li>
                             ) : null
                         )}
-
-                        {authStatus && (
-                            <LogoutBtn />
-                        )}
+                        {authStatus && <LogoutBtn />}
                     </ul>
                 </nav>
             </Container>
         </header>
+
+        // <header className='py-3 shadow bg-blue-900'>
+        //     <Container>
+        //         <nav className='flex h-9 items-center justify-center'>
+        //             <div className='mr-4'>
+        //                 <Link to='/'>
+        //                     <Logo className=' flex justify-center items-center' width='80px' />
+        //                 </Link>
+        //             </div>
+        //             <ul className='flex ml-auto items-center'>
+        //                 {navItems.map((item) =>
+        //                     item.active ? (
+        //                         <li key={item.name} className=' flex items-center'>
+        //                             <button className=' text-white text-[20px] font-bold inline-block px-6 py-2 duration-200 hover:bg-blue-100 hover:text-black hover:cursor-pointer rounded-full '
+        //                                 onClick={() => navigate(item.slug)} >
+        //                                 {item.name}
+        //                             </button>
+        //                         </li>
+        //                     ) : null
+        //                 )}
+
+        //                 {authStatus && (
+        //                     <LogoutBtn />
+        //                 )}
+        //             </ul>
+        //         </nav>
+        //     </Container>
+        // </header>
     )
 }
 
