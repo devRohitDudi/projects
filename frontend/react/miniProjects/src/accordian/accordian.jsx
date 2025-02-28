@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import Block from './components/Block'
+import Block from './Block'
 
-function App() {
+function Accordian() {
     const [blocks, setBlocks] = useState(Array(4).fill(false))
     const [multiSelection, setMultiSelection] = useState(false)
 
@@ -26,8 +26,6 @@ function App() {
     ]
 
     const handleExpand = (blockId) => {
-        console.log("the blocks are:", blocks);
-
 
         setBlocks(prevBlocks =>
             prevBlocks.map((value, index) =>
@@ -40,7 +38,7 @@ function App() {
 
     return (
         < >
-            <div className='bg-violet-900 h-screen w-full justify-center items-center flex flex-col hover:cursor-pointer'>
+            <div className='bg-violet-900 h-screen pb-20 pt-20 w-full justify-center items-center flex flex-col hover:cursor-pointer'>
                 <button onClick={() => setMultiSelection(e => !e)}
                     className={`p-2 rounded-xl  text-white font-bold hover:cursor-pointer 1 ${multiSelection ? "bg-green-900" : "bg-amber-600"}`}>
                     {multiSelection == true ? "Enable multi selection" : "disbale multi selection"}
@@ -55,4 +53,4 @@ function App() {
     )
 }
 
-export default App
+export default Accordian
