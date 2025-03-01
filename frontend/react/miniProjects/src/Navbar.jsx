@@ -11,6 +11,10 @@ function Navbar() {
             <Link to="/image-slider" > <button className={` ${location.pathname === '/image-slider' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>Image-Slider</button>  </Link>
             <Link to="/load-more" > <button className={` ${location.pathname === '/load-more' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>Load-More</button>  </Link>
             <Link to="/tree-view" > <button className={` ${location.pathname === '/tree-view' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>Tree-View</button>  </Link>
+            <Link to="/qr-code" > <button className={` ${location.pathname === '/qr-code' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>QR-Code</button>  </Link>
+            <Link to="/switch-theme" > <button className={` ${location.pathname === '/switch-theme' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>Switch-Theme</button>  </Link>
+            <Link to="/scroll-progress" > <button className={` ${location.pathname === '/scroll-progress' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>Scroll-Progress</button>  </Link>
+            <Link to="/custom-tabs" > <button className={` ${location.pathname === '/custom-tabs' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>Tabs</button>  </Link>
         </div >
     )
 }

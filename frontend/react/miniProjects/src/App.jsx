@@ -1,6 +1,7 @@
 import {
     Accordian, Rating, Random, Treepage,
-    Home, Navbar, Slider, Loadmore
+    Home, Navbar, Slider, Loadmore, QrGenerator, SwitchTheme, Scroll,
+    TabMenu
 } from './index.js'
 
 // import { createBrowserRouter, RouterProvider } from 'react-router-dom'
@@ -19,6 +20,10 @@ function App() {
     //             { path: "/image-slider", element: <Slider />, },
     //             { path: "/load-more", element: <Loadmore />, },
     //             { path: "/tree-view", element: <Treepage />, },
+    //             { path: "/qr-code", element: <QrGenerator />, },
+    //             { path: "/switch-theme", element: <SwitchTheme />, },
+    //             { path: "/scroll-progress", element: <Scroll />, },
+    //             { path: "/custom-tabs", element: <TabMenu />, },
     //         ]
     //     },
     // ])
@@ -39,6 +44,10 @@ function App() {
                         <Route path="/image-slider" element={<Slider />} />
                         <Route path="/load-more" element={<Loadmore />} />
                         <Route path="/tree-view" element={<Treepage />} />
+                        <Route path="/qr-code" element={<QrGenerator />} />
+                        <Route path="/switch-theme" element={<SwitchTheme />} />
+                        <Route path="/scroll-progress" element={<Scroll />} />
+                        <Route path="/custom-tabs" element={<TabMenu />} />
                     </Routes>
                 </div>
             </Router>
