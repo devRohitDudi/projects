@@ -15,6 +15,10 @@ function Navbar() {
             <Link to="/switch-theme" > <button className={` ${location.pathname === '/switch-theme' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>Switch-Theme</button>  </Link>
             <Link to="/scroll-progress" > <button className={` ${location.pathname === '/scroll-progress' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>Scroll-Progress</button>  </Link>
             <Link to="/custom-tabs" > <button className={` ${location.pathname === '/custom-tabs' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>Tabs</button>  </Link>
+            <Link to="/popup" > <button className={` ${location.pathname === '/popup' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>Popup</button>  </Link>
+            <Link to="/github-finder" > <button className={` ${location.pathname === '/github-finder' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>GithubFinder</button>  </Link>
+            <Link to="/tic-tac-toe" > <button className={` ${location.pathname === '/tic-tac-toe' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>TicTacToe</button>  </Link>
+            <Link to="/search-suggest" > <button className={` ${location.pathname === '/search-suggest' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>SearchSuggest</button>  </Link>
         </div >
     )
 }

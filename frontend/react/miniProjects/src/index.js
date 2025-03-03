@@ -10,8 +10,13 @@ import QrGenerator from './qrCode/QrCode.jsx'
 import SwitchTheme from './switchTheme/SwitchTheme.jsx'
 import Scroll from './scrollProgress/Scroll.jsx'
 import TabMenu from './customTabs/TabMenu.jsx'
+import PopupPage from './popupModal/PopupPage.jsx'
+import GithubFinder from './githubFinder/GithubFinder.jsx'
+import TicTacToe from './ticTacToe/TicTakToe.jsx'
+import SearchSuggest from './searchCompletion/SearchSuggest.jsx'
 
 export {
     Accordian, Rating, Random, Home, Navbar, Slider,
-    Loadmore, Treepage, QrGenerator, SwitchTheme, Scroll, TabMenu
+    Loadmore, Treepage, QrGenerator, SwitchTheme, Scroll, TabMenu,
+    PopupPage, GithubFinder, TicTacToe, SearchSuggest
 }

@@ -1,7 +1,7 @@
 import {
     Accordian, Rating, Random, Treepage,
     Home, Navbar, Slider, Loadmore, QrGenerator, SwitchTheme, Scroll,
-    TabMenu
+    TabMenu, PopupPage, GithubFinder, TicTacToe, SearchSuggest
 } from './index.js'
 
 // import { createBrowserRouter, RouterProvider } from 'react-router-dom'
@@ -24,6 +24,10 @@ function App() {
     //             { path: "/switch-theme", element: <SwitchTheme />, },
     //             { path: "/scroll-progress", element: <Scroll />, },
     //             { path: "/custom-tabs", element: <TabMenu />, },
+    //             { path: "/popup", element: <PopupPage />, },
+    //             { path: "/github-finder", element: <GithubFinder />, },
+    //             { path: "/tic-tac-toe", element: <TicTacToe />, },
+    //             { path: "/search-suggest", element: <SearchSuggest />, },
     //         ]
     //     },
     // ])
@@ -48,6 +52,10 @@ function App() {
                         <Route path="/switch-theme" element={<SwitchTheme />} />
                         <Route path="/scroll-progress" element={<Scroll />} />
                         <Route path="/custom-tabs" element={<TabMenu />} />
+                        <Route path="/popup" element={<PopupPage />} />
+                        <Route path="/github-finder" element={<GithubFinder />} />
+                        <Route path="/tic-tac-toe" element={<TicTacToe />} />
+                        <Route path="/search-suggest" element={<SearchSuggest />} />
                     </Routes>
                 </div>
             </Router>
