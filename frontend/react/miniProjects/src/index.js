@@ -14,9 +14,9 @@ import PopupPage from './popupModal/PopupPage.jsx'
 import GithubFinder from './githubFinder/GithubFinder.jsx'
 import TicTacToe from './ticTacToe/TicTakToe.jsx'
 import SearchSuggest from './searchCompletion/SearchSuggest.jsx'
-
+import FeatureFlag from './featureFlags/FeatureFlag.jsx'
 export {
     Accordian, Rating, Random, Home, Navbar, Slider,
     Loadmore, Treepage, QrGenerator, SwitchTheme, Scroll, TabMenu,
-    PopupPage, GithubFinder, TicTacToe, SearchSuggest
+    PopupPage, GithubFinder, TicTacToe, SearchSuggest, FeatureFlag,
 }

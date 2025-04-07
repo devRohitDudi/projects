@@ -73,6 +73,7 @@ function App() {
                 onChange={(e) => setSearch(e.target.value)}
             />
             <button onClick={() => { setButton(!searchButton) }} >Search</button>
+
             {loading && <h1>Loading...</h1>}
 
             {error && <h1>Something went wrong.</h1>}

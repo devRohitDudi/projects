@@ -19,6 +19,7 @@ function Navbar() {
             <Link to="/github-finder" > <button className={` ${location.pathname === '/github-finder' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>GithubFinder</button>  </Link>
             <Link to="/tic-tac-toe" > <button className={` ${location.pathname === '/tic-tac-toe' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>TicTacToe</button>  </Link>
             <Link to="/search-suggest" > <button className={` ${location.pathname === '/search-suggest' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>SearchSuggest</button>  </Link>
+            {/* <Link to="/feature-flags" > <button className={` ${location.pathname === '/feature-flag' ? "text-blue-500" : 'text-white'}  text-l font-bold hover:cursor-pointer`}>FeatureFlag</button>  </Link> */}
         </div >
     )
 }
