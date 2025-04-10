@@ -14,5 +14,5 @@ connectDB()
         });
     })
     .catch((error) => {
-        console.error("Error connecting to MongoDB:", error);
+        console.error("Error in database connecting method:", error);
     });

@@ -16,12 +16,10 @@ app.use(express.urlencoded({ limit: "16kb", extended: true }));
 app.use(cookieParser());
 app.use(express.static("public"));
 
-app.get("/", (req, res) => {
-    res.send("Express server is running");
-});
+// Routes import
+import userRouter from "./routes/user.routes.js";
 
-app.listen(port, () => {
-    console.log(`Server is listening on port ${port}`);
-});
+// router declaration
+app.use("/api/v1/users", userRouter);
 
 export default app;
