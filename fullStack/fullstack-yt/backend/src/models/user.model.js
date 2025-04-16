@@ -32,12 +32,14 @@ const userSchema = new Schema(
             min: 3,
             max: 40
         },
-        phone: {
-            type: String,
-            unique: true,
-            min: 10,
-            max: 15
-        },
+        // phone: {
+        //     type: String,
+        //     minlength: 10,
+        //     maxlength: 15,
+        //     required: false,
+        //     index: true,
+        //     sparse: true
+        // },
         password: {
             type: String,
             required: [true, "Password is required."],
@@ -127,4 +129,4 @@ userSchema.methods.generateRefreshToken = async function () {
     );
 };
 
-export const user = mongoose.model("User", userSchema);
+export const User = mongoose.model("User", userSchema);

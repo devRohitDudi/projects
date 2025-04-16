@@ -26,7 +26,8 @@ const uploadOnCloudinary = async (filePath) => {
         if (!filePath) return "Couldn't find the filePath parameter.";
         // Upload the file
         const result = await cloudinary.uploader.upload(filePath, options);
-        console.log("File has been uploaded successfully: ", result);
+        console.log("File has been uploaded successfully: ", result.url);
+        fs.unlinkSync(filePath);
         return result;
     } catch (error) {
         fs.unlinkSync(filePath);
