@@ -32,14 +32,7 @@ const userSchema = new Schema(
             min: 3,
             max: 40
         },
-        // phone: {
-        //     type: String,
-        //     minlength: 10,
-        //     maxlength: 15,
-        //     required: false,
-        //     index: true,
-        //     sparse: true
-        // },
+
         password: {
             type: String,
             required: [true, "Password is required."],

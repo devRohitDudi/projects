@@ -113,23 +113,28 @@ const loginUser = asyncHandler(async (req, res) => {
     // check password
     //  access & refresh token
     // return secure cookies
-    const { username, email, password } = req.body;
 
-    if (!email || !username) {
+    const { username = null, email = null, password = null } = req.body || {};
+
+    console.log("body: ", req.body);
+
+    if (!email && !username) {
         throw new ApiError(300, "username or email is required.");
     }
 
-    const userInstance = User.findOne({
+    const userInstance = await User.findOne({
         $or: [{ email }, { username }]
     });
 
     if (!userInstance) {
         throw new ApiError(404, "User does not exist");
     }
-    // using the injected method of bcrypt in userSchema
-    const isPasswordCorrect = await userInstance.isPasswordCorrect(password);
+    console.log("userInstance: ", userInstance);
 
-    if (!isPasswordCorrect) {
+    // using the injected method of bcrypt in userSchema
+    const isPasswordValid = await userInstance.isPasswordCorrect(password);
+
+    if (!isPasswordValid) {
         throw new ApiError(401, "Invalid password.");
     }
 
@@ -142,7 +147,7 @@ const loginUser = asyncHandler(async (req, res) => {
         secure: true
     };
 
-    const loggedInUser = User.findById(userInstance._id).select(
+    const loggedInUser = await User.findById(userInstance._id).select(
         "-password -refreshToken"
     );
 

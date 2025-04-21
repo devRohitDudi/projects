@@ -1,5 +1,5 @@
-import { ApiError } from "../utils/ApiError";
-import { asyncHandler } from "../utils/asyncHandler";
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 
@@ -22,7 +22,9 @@ const verifyJWT = asyncHandler(async (req, _, next) => {
             throw new ApiError(401, "Invalid accessToken");
         }
         req.user = authUser;
+        next();
     } catch (error) {
         throw new ApiError(400, error?.message || "couldn't verify user");
     }
 });
+export { verifyJWT };
