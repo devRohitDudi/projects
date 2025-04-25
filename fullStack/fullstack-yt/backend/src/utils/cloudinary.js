@@ -38,4 +38,20 @@ const uploadOnCloudinary = async (filePath) => {
     }
 };
 
-export { uploadOnCloudinary };
+const deleteOnCloudinary = async (filePath) => {
+    function extractPublicId(url) {
+        const parts = url.split("/upload/")[1]; // get after /upload
+        const withoutVersion = parts.replace(/^v\d+\//, ""); // remove version
+        const publicId = withoutVersion.replace(/\.[^/.]+$/, ""); // remove extension
+        return publicId;
+    }
+
+    const url = filePath;
+    console.log(extractPublicId(url));
+
+    cloudinary.uploader.destroy(extractPublicId(url), function (error, result) {
+        console.log(result, error);
+    });
+};
+
+export { uploadOnCloudinary, deleteOnCloudinary };

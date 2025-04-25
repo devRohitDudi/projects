@@ -10,6 +10,7 @@ import {
     updateAvatar,
     updateCoverImage
 } from "../controllers/user.controller.js";
+import { getChannelProfile } from "../controllers/subscription.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -34,17 +35,11 @@ router.route("/get-current-user").post(verifyJWT, getCurrentUser);
 router.route("/update-details").post(verifyJWT, updateDetails);
 router
     .route("/update-avatar")
-    .post(
-        verifyJWT,
-        upload.fields([{ name: "avatar", maxCount: 1 }]),
-        updateAvatar
-    );
+    .post(verifyJWT, upload.single("avatar"), updateAvatar);
 router
     .route("/update-coverImage")
-    .post(
-        verifyJWT,
-        upload.fields([{ name: "coverImage", maxCount: 1 }]),
-        updateCoverImage
-    );
+    .post(verifyJWT, upload.single("coverImage"), updateCoverImage);
+
+router.route("/channel-profile").post(getChannelProfile);
 
 export default router;
