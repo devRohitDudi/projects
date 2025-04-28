@@ -11,7 +11,10 @@ import {
     updateCoverImage,
     getWatchHistory
 } from "../controllers/user.controller.js";
-import { getChannelProfile } from "../controllers/subscription.controller.js";
+import {
+    getChannelProfile,
+    subscribeChannel
+} from "../controllers/subscription.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -45,5 +48,7 @@ router
 
 router.route("/channel/:username").get(getChannelProfile);
 router.route("/history").get(verifyJWT, getWatchHistory);
+
+router.route("/subscribe/:channelId").get(verifyJWT, subscribeChannel);
 
 export default router;

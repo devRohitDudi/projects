@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
-
+import { Subscription } from "../models/subscription.model.js";
 const getChannelProfile = asyncHandler(async (req, res) => {
     const { username } = req.params;
 
@@ -74,4 +74,37 @@ const getChannelProfile = asyncHandler(async (req, res) => {
         );
 });
 
-export { getChannelProfile };
+const subscribeChannel = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const channelId = req.params;
+
+    if (!channelId) {
+        throw new ApiError(300, "channel id is required to subscribe.");
+    }
+    //TODO: check if channel is exists or not
+    const channelExistence = await User.findOne({ username });
+
+    console.log("channelExistence: ", channelExistence);
+
+    if (channelExistence) {
+        throw new ApiError(
+            409,
+            "A user is already exists with this email or username."
+        );
+    }
+
+    const subscription = new Subscription({
+        subscriber: user._id,
+        channel: channelId
+    });
+
+    await subscription.save({ new: true });
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, { subscription }, "Subscribed successfully")
+        );
+});
+
+export { getChannelProfile, subscribeChannel };
