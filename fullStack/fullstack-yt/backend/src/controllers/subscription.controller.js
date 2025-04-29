@@ -81,30 +81,54 @@ const subscribeChannel = asyncHandler(async (req, res) => {
     if (!channelId) {
         throw new ApiError(300, "channel id is required to subscribe.");
     }
-    //TODO: check if channel is exists or not
+    //check if channel is exists or not
     const channelExistence = await User.findOne({ username });
+
+    if (!channelExistence) {
+        throw new ApiError(400, "channel doesn't exist anymore");
+    }
 
     console.log("channelExistence: ", channelExistence);
 
-    if (channelExistence) {
-        throw new ApiError(
-            409,
-            "A user is already exists with this email or username."
-        );
-    }
-
-    const subscription = new Subscription({
+    // check if already subscribed
+    const subscriptionExistence = await Subscription.findOne({
         subscriber: user._id,
         channel: channelId
     });
 
-    await subscription.save({ new: true });
+    if (subscriptionExistence) {
+        // if Subscription exists than unsubscribe
+        await Subscription.deleteOne({
+            subscriber: user._id,
+            channel: channelId
+        });
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    { subscriptionExistence },
+                    "Unsubscribed successfully"
+                )
+            );
+    } else {
+        // else subscribe
+        const subscription = new Subscription({
+            subscriber: user._id,
+            channel: channelId
+        });
+        await subscription.save({ new: true });
 
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, { subscription }, "Subscribed successfully")
-        );
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    { subscription },
+                    "Subscribed successfully"
+                )
+            );
+    }
 });
 
 export { getChannelProfile, subscribeChannel };
