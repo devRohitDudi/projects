@@ -3,7 +3,7 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const videoSchema = new Schema(
     {
-        videoFile: {
+        videoURL: {
             type: String, //cloudinary URL
             required: true
         },
@@ -30,10 +30,15 @@ const videoSchema = new Schema(
             type: Number,
             default: 0
         },
-        likes: {
-            type: Number,
-            default: 0
-        },
+        likes: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Likes"
+        }],
+
+        dislikes:[{ type: Number,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "dislikes"
+        }],
         isPublished: {
             type: String,
             enum: ["public", "private", "unlisted"],
