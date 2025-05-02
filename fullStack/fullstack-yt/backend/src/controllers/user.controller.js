@@ -171,7 +171,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     const userToLogout = await User.findByIdAndUpdate(
         req.user._id,
         {
-            $set: { refreshToken: undefined }
+            $unset: { refreshToken: 1 }
         },
         { new: true }
     );
@@ -200,6 +200,7 @@ const refreshTheAccessToken = asyncHandler(async (req, res) => {
         process.env.REFRESH_TOKEN_SECRET
     );
 
+    // instead of decryption & finding user, can use verifyJWT middleware
     const requesterUser = await User.findById(decodedRefreshToken._id);
 
     if (!requesterUser) {
@@ -255,6 +256,7 @@ const changeUserPassword = asyncHandler(async (req, res) => {
         throw new ApiError(300, "incorrect old password");
     }
 
+    // for encryption of password there's a method in Schema .pre on save()
     user.password = newPassword;
     await user.save({ validateBeforeSave: false });
 

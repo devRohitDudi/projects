@@ -30,15 +30,19 @@ const videoSchema = new Schema(
             type: Number,
             default: 0
         },
-        likes: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Likes"
-        }],
+        likes: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Likes"
+            }
+        ],
 
-        dislikes:[{ type: Number,
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "dislikes"
-        }],
+        dislikes: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "dislikes"
+            }
+        ],
         isPublished: {
             type: String,
             enum: ["public", "private", "unlisted"],
