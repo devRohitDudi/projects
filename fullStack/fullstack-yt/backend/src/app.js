@@ -18,7 +18,7 @@ app.use(express.static("public"));
 
 // Routes import
 import userRouter from "./routes/user.routes.js";
-import videosRouter from "./routes/videos.routes.js";
+import videosRouter from "./routes/video.routes.js";
 
 // router declaration
 app.use("/api/v1/users", userRouter);

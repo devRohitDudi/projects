@@ -18,10 +18,12 @@ const videoSchema = new Schema(
             min: 3,
             max: 500
         },
-        thumbnail: {
-            type: String, //cloudinary URL
-            required: true
-        },
+        thumbnail: [
+            {
+                type: String, //cloudinary URL
+                required: true
+            }
+        ],
         duration: {
             type: Number, //cloudinary URL
             required: true
