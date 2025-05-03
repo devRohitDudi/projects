@@ -4,8 +4,7 @@ import { User } from "./user.model.js";
 const subscriptionSchema = new Schema(
     {
         id: {
-            type: String,
-            required: true
+            type: String
         },
         subscriber: {
             type: Schema.Types.ObjectId,

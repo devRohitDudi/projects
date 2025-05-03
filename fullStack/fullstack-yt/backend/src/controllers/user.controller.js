@@ -77,7 +77,7 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(411, "avatar file is required on Cloud.");
     }
 
-    //create user in databse
+    // create user in databse
     const user = await User.create({
         fullName,
         avatar: avatarResult.url,
@@ -116,10 +116,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const { username = null, email = null, password = null } = req.body || {};
 
-    console.log("body: ", req.body);
+    console.log("req.body: ", req.body);
 
     if (!email && !username) {
-        throw new ApiError(300, "username or email is required.");
+        throw new ApiError(300, "username or email is required to login.");
     }
 
     const userInstance = await User.findOne({
@@ -356,7 +356,9 @@ const updateCoverImage = asyncHandler(async (req, res) => {
 
     await user.save({ validateBeforeSave: false });
 
-    await deleteOnCloudinary(oldURL);
+    if (oldURL) {
+        await deleteOnCloudinary(oldURL);
+    }
 
     res.status(200).json(
         new ApiResponse(
@@ -368,10 +370,54 @@ const updateCoverImage = asyncHandler(async (req, res) => {
 }); // success
 
 const getWatchHistory = asyncHandler(async (req, res) => {
+    if (!req.user._id) {
+        throw new ApiError(300, "login is required to get watchHistory");
+    }
+    // const user = await User.aggregate([
+    //     {
+    //         $match: {
+    //             _id: new mongoose.Types.ObjectId(req.user._id)
+    //         }
+    //     },
+
+    //     {
+    //         $lookup: {
+    //             from: "videos",
+    //             localField: "watchHistory",
+    //             foreignField: "_id",
+    //             as: "watchHistory",
+    //             pipeline: [
+    //                 {
+    //                     $lookup: {
+    //                         from: "users",
+    //                         localField: "owner",
+    //                         foreignField: "_id",
+    //                         as: "owner",
+    //                         pipeline: [
+    //                             {
+    //                                 $project: {
+    //                                     fullName: 1,
+    //                                     username: 1,
+    //                                     avatar: 1
+    //                                 }
+    //                             }
+    //                         ]
+    //                     }
+    //                 },
+    //                 {
+    //                     $addFields: {
+    //                         $first: "$owner"
+    //                     }
+    //                 }
+    //             ]
+    //         }
+    //     }
+    // ]);
+
     const user = await User.aggregate([
         {
             $match: {
-                _id: mongoose.Types.ObjectId(req.user._id)
+                _id: new mongoose.Types.ObjectId(req.user._id)
             }
         },
         {
@@ -400,7 +446,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                     },
                     {
                         $addFields: {
-                            $first: "$owner"
+                            owner: { $arrayElemAt: ["$owner", 0] } // Get the first element of the owner array
                         }
                     }
                 ]
@@ -414,7 +460,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
             new ApiResponse(
                 200,
                 user[0].watchHistory,
-                "User watchHistory found."
+                "User watchHistory fetched."
             )
         );
 });

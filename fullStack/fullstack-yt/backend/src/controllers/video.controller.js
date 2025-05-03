@@ -5,7 +5,7 @@ import { User } from "../models/user.model.js";
 import { Video } from "../models/video.model.js";
 import { Comment } from "../models/comment.model.js";
 import { Like } from "../models/like.model.js";
-import { Dislike } from "../models/dislikes.model.js";
+import { Dislike } from "../models/dislike.model.js";
 
 const getVideo = asyncHandler(async (req, res) => {
     const url = req.params;
