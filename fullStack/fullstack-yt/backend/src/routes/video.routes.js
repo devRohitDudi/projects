@@ -3,14 +3,22 @@ import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
     getVideo,
-    getVideoComments,
     addLike,
     addDislike,
-    addComment,
     uploadVideo
 } from "../controllers/video.controller.js";
+
+import {
+    likeComment,
+    addComment,
+    getVideoComments,
+    deleteComment,
+    dislikeComment
+} from "../controllers/comment.controller.js";
+
 const router = Router();
 
+//verified
 router.route("/upload").post(
     verifyJWT,
     upload.fields([
@@ -21,14 +29,32 @@ router.route("/upload").post(
     ]),
     uploadVideo
 );
-router.route("/watch/:video_id").get(getVideo);
+
+//verified
+router.route("/watch/:video_obj_id").get(getVideo);
 
 //add views count
 // if login then add to history
 
-router.route("/comments/:video_id").get(getVideoComments);
-router.route("/add-like/:video_id").post(verifyJWT, addLike);
-router.route("/add-dislike/:video_id").post(verifyJWT, addDislike);
-router.route("/add-comment/:video_id").post(verifyJWT, addComment);
+//verified
+router.route("/comments/:video_obj_id").get(getVideoComments);
+
+//verified
+router.route("/add-like/:video_obj_id").patch(verifyJWT, addLike);
+
+//verified
+router.route("/add-dislike/:video_obj_id").patch(verifyJWT, addDislike);
+
+// verified // can add middleware to filter bad comments
+router.route("/add-comment/:video_obj_id").post(verifyJWT, addComment);
+
+// verified
+router.route("/delete-comment/:comment_obj_id").patch(verifyJWT, deleteComment);
+
+router.route("/like-comment/:comment_obj_id").patch(verifyJWT, likeComment);
+
+router
+    .route("/dislike-comment/:comment_obj_id")
+    .patch(verifyJWT, dislikeComment);
 
 export default router;

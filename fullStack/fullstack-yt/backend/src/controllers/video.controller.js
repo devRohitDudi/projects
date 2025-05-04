@@ -96,8 +96,8 @@ const uploadVideo = asyncHandler(async (req, res) => {
 });
 
 const getVideo = asyncHandler(async (req, res) => {
-    const { video_id } = req.params;
-    const video = await Video.findOne({ videoAssetId: video_id }).select(
+    const { video_obj_id } = req.params;
+    const video = await Video.findById(video_obj_id).select(
         "-dislikes -likes -tags -comments"
     );
 
@@ -106,9 +106,13 @@ const getVideo = asyncHandler(async (req, res) => {
     }
 
     // how many Documents are in the Like schema in which this video url is available as onVideo
-    const likesCount = await Like.countDocuments({ onVideo: video._id });
-    const dislikesCount = await Dislike.countDocuments({ onVideo: video._id });
-    const commentsCount = await Comment.countDocuments({ onVideo: video._id });
+    const likesCount = await Like.countDocuments({ onVideo: video_obj_id });
+    const dislikesCount = await Dislike.countDocuments({
+        onVideo: video_obj_id
+    });
+    const commentsCount = await Comment.countDocuments({
+        onVideo: video_obj_id
+    });
 
     if (video.isPublished == "public") {
         // for unlisted videos show on frontend
@@ -128,98 +132,58 @@ const getVideo = asyncHandler(async (req, res) => {
     }
 });
 
-const getVideoComments = asyncHandler(async (req, res) => {
-    const url = req.params;
-    const comments = await Comment.find({ onVideo: url }).limit(20);
-    if (!comments) {
-        throw new ApiError(300, "something is wrong with comments");
-    }
-    return res
-        .status(200)
-        .json(new ApiResponse(200, { comments }, "some comments fetched"));
-});
-
 const addLike = asyncHandler(async (req, res) => {
-    const url = req.params;
+    const { video_obj_id } = req.params;
     const user = req.user;
-    const alreadyLiked = await Like.findOne({ onVideo: url, user: user });
 
-    if (!alreadyLiked) {
-        await Like.create({ onVideo: url, user: user });
-    } else {
-        await alreadyLiked.deleteOne();
+    if (!user) {
+        throw new ApiError(300, "login is required to like the video");
     }
 
-    const totalLikesOnVideo = await Like.countDocuments({ onVideo: url });
-
-    return res
-        .status(200)
-        .json(new ApiResponse(200, { totalLikesOnVideo }, "likes added"));
-});
-const addDislike = asyncHandler(async (req, res) => {
-    const url = req.params;
-    const user = req.user;
-    const alreadyDisliked = await Dislike.findOne({ onVideo: url, user: user });
-
-    if (!alreadyDisliked) {
-        await Dislike.create({ onVideo: url, user: user });
-    } else {
-        await alreadyDisliked.deleteOne();
-    }
-    const totalDislikesOnVideo = await Dislike.countDocuments({ onVideo: url });
-
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(
-                200,
-                { totalDislikesOnVideo },
-                "disliked successful"
-            )
-        );
-});
-
-const addComment = asyncHandler(async (req, res) => {
-    const url = req.params;
-    const user = req.user;
-    const message = req.message;
-    if (!message) {
-        throw new ApiError("Message is required to make comment");
-    }
-    const createdComment = await Comment.create({
-        onVideo: url,
-        message: message,
-        publisher: user
+    const alreadyLiked = await Like.findOne({
+        onVideo: video_obj_id,
+        user: user._id
     });
 
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(
-                200,
-                { createdComment },
-                "comment added successfully"
-            )
-        );
-});
+    if (!alreadyLiked) {
+        await Like.create({ onVideo: video_obj_id, user: user._id });
+        return res.status(200).json(new ApiResponse(200, {}, "like added"));
+    } else {
+        await alreadyLiked.deleteOne();
+        return res.status(200).json(new ApiResponse(200, {}, "like removed"));
+    }
 
-const deleteComment = asyncHandler(async (req, res) => {
-    const commentId = req.commentId;
-    const deletedComment = await Comment.deleteOne({ _id: commentId });
-    if (deletedComment.deletedCount === 1) {
+    // costly operation so can be handled on frontend eh?
+    // const totalLikesOnVideo = await Like.countDocuments({ onVideo: video_obj_id });
+});
+const addDislike = asyncHandler(async (req, res) => {
+    const { video_obj_id } = req.params;
+    const user = req.user;
+
+    if (!user) {
+        throw new ApiError(
+            300,
+            "in order to dislike this fucking video, login is required my friend."
+        );
+    }
+
+    const alreadyDisliked = await Dislike.findOne({
+        onVideo: video_obj_id,
+        user: user._id
+    });
+
+    if (!alreadyDisliked) {
+        await Dislike.create({ onVideo: video_obj_id, user: user._id });
+        return res.status(200).json(new ApiResponse(200, {}, "dislike added"));
+    } else {
+        await alreadyDisliked.deleteOne();
         return res
             .status(200)
-            .json(new ApiResponse(200, {}, "Comment deleted successfully"));
-    } else {
-        throw new ApiError("Couldn't delete comment");
+            .json(new ApiResponse(200, {}, "dislike removed"));
     }
+
+    // no need to show dislikes
+    // const totalDislikesOnVideo = await Dislike.countDocuments({ onVideo: url });
 });
 
-export {
-    getVideo,
-    getVideoComments,
-    addLike,
-    addDislike,
-    addComment,
-    uploadVideo
-};
+export { getVideo, addLike, addDislike, uploadVideo };

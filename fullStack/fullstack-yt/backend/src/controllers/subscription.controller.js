@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { Subscription } from "../models/subscription.model.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { Video } from "../models/video.model.js";
 
 //verified
 const getChannelProfile = asyncHandler(async (req, res) => {
@@ -133,12 +134,24 @@ const getChannelProfile = asyncHandler(async (req, res) => {
         throw new ApiError(400, "channel does not found");
     }
 
-    console.log("channel: ", channel);
+    const user = await User.findOne({ username: username });
+
+    if (!user) {
+        throw new ApiError(303, "channel does not exist");
+    }
+    console.log("Querying videos for:", user._id);
+
+    const videosCount = await Video.countDocuments({ owner: user._id });
+    channel.videosCount = videosCount;
 
     return res
         .status(200)
         .json(
-            new ApiResponse(200, { channel }, "channel fetched successfully")
+            new ApiResponse(
+                200,
+                { channel, videosCount },
+                "channel fetched successfully"
+            )
         );
 });
 
