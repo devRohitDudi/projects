@@ -7,6 +7,10 @@ const videoSchema = new Schema(
             type: String, //cloudinary URL
             required: true
         },
+        videoAssetId: {
+            type: String, //cloudinary asses_id
+            required: true
+        },
         title: {
             type: String,
             required: true,
@@ -18,12 +22,16 @@ const videoSchema = new Schema(
             min: 3,
             max: 500
         },
-        thumbnail: [
-            {
-                type: String, //cloudinary URL
-                required: true
-            }
-        ],
+        thumbnail1: {
+            type: String, //cloudinary URL
+            required: true
+        },
+        thumbnail2: {
+            type: String //cloudinary URL
+        },
+        thumbnail3: {
+            type: String //cloudinary URL
+        },
         duration: {
             type: Number, //cloudinary URL
             required: true

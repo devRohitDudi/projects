@@ -21,8 +21,8 @@ import userRouter from "./routes/user.routes.js";
 import videosRouter from "./routes/video.routes.js";
 
 // router declaration
-app.use("/api/v1/users", userRouter);
-app.use("/api/v1/videos", videosRouter);
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/video", videosRouter);
 // app.use("/api/v1", (req, res) => {
 //     return res.status(300).send("<h1>Server is listening</h1>");
 // });

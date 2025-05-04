@@ -11,20 +11,24 @@ import {
 } from "../controllers/video.controller.js";
 const router = Router();
 
-router.route("/video/:url").get(getVideo);
-
-router.route("/video/upload").post(
+router.route("/upload").post(
     verifyJWT,
     upload.fields([
         { name: "video", maxCount: 1 },
-        { name: "thumbnail", maxCount: 3 }
+        { name: "thumbnail1", maxCount: 1 },
+        { name: "thumbnail2", maxCount: 1 },
+        { name: "thumbnail3", maxCount: 1 }
     ]),
     uploadVideo
 );
+router.route("/watch/:video_id").get(getVideo);
 
-router.route("/comments/:url").get(getVideoComments);
-router.route("/add-like/:url").post(verifyJWT, addLike);
-router.route("/add-dislike/:url").post(verifyJWT, addDislike);
-router.route("/add-comment/:url").post(verifyJWT, addComment);
+//add views count
+// if login then add to history
+
+router.route("/comments/:video_id").get(getVideoComments);
+router.route("/add-like/:video_id").post(verifyJWT, addLike);
+router.route("/add-dislike/:video_id").post(verifyJWT, addDislike);
+router.route("/add-comment/:video_id").post(verifyJWT, addComment);
 
 export default router;

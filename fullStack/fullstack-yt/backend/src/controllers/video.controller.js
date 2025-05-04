@@ -1,5 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
+import path from "path";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { Video } from "../models/video.model.js";
@@ -7,54 +8,96 @@ import { Comment } from "../models/comment.model.js";
 import { Like } from "../models/like.model.js";
 import { Dislike } from "../models/dislike.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { v2 as cloudinary } from "cloudinary";
 
 const uploadVideo = asyncHandler(async (req, res) => {
-    const { title, description, tags, isPublished } = req.body;
+    const { title, description, tags = null, isPublished } = req.body;
+
+    if (!title) {
+        throw new ApiError("Title is required");
+    }
 
     const user = req.user;
     if (!user) {
         throw new ApiError("Login is required to upload videos");
     }
 
-    const videoFileLocalPath = req.files?.video[0]?.path;
-    const thumbnail1LocalPath = req.files?.avatar[0]?.path;
-    const thumbnail2LocalPath = req.files?.avatar[1]?.path;
-    const thumbnail3LocalPath = req.files?.avatar[2]?.path;
+    const videoFile = req.files?.video?.[0];
+    const videoFileLocalPath = videoFile.path;
+    const allowedVideoExtensions = [
+        ".mp4",
+        ".m4v",
+        ".mkv",
+        ".mov",
+        ".webm",
+        ".avi"
+    ];
 
-    if (!thumbnail1LocalPath && !thumbnail2LocalPath && !thumbnail3LocalPath) {
-        throw new ApiError(300, "At least 1 thumbnail is required");
-    }
     if (!videoFileLocalPath) {
         throw new ApiError(300, "Video file is required");
     }
 
-    const video = uploadOnCloudinary(videoFileLocalPath);
+    // Validate extension
+    const videoExt = path.extname(videoFile.originalname).toLowerCase();
+    if (!allowedVideoExtensions.includes(videoExt)) {
+        throw new ApiError(
+            415,
+            `Invalid video format. Allowed: ${allowedVideoExtensions.join(", ")}`
+        );
+    }
 
-    const thumbnail1 = thumbnail1LocalPath
-        ? uploadOnCloudinary(thumbnail1LocalPath)
-        : null;
+    const thumbnail1LocalPath = req.files?.thumbnail1[0]?.path;
+    const thumbnail2LocalPath = req.files?.thumbnail2[0]?.path;
+    const thumbnail3LocalPath = req.files?.thumbnail3[0]?.path;
+
+    if (!thumbnail1LocalPath) {
+        throw new ApiError(
+            300,
+            `At least 1 thumbnail is required, on frontend please provide item at "thumbnail1"`
+        );
+    }
+
+    const video = await uploadOnCloudinary(videoFileLocalPath);
+
+    const thumbnail1 = await uploadOnCloudinary(thumbnail1LocalPath);
+
     const thumbnail2 = thumbnail2LocalPath
-        ? uploadOnCloudinary(thumbnail2LocalPath)
+        ? await uploadOnCloudinary(thumbnail2LocalPath)
         : null;
     const thumbnail3 = thumbnail3LocalPath
-        ? uploadOnCloudinary(thumbnail3LocalPath)
+        ? await uploadOnCloudinary(thumbnail3LocalPath)
         : null;
+
+    console.log("thumbnail1 cloudinary: ", thumbnail1);
 
     const videosInSchema = await Video.create({
         videoURL: video.url,
+        videoAssetId: video.asset_id,
         title: title,
         description: description,
         tags: tags,
-        thumbnail: [thumbnail1, thumbnail2, thumbnail3],
+        thumbnail1: thumbnail1.url,
+        thumbnail2: thumbnail2.url ? thumbnail2.url : "",
+        thumbnail3: thumbnail3.url ? thumbnail3.url : "",
         duration: video.duration,
         isPublished: isPublished,
         owner: user._id
     });
+
+    return res
+        .status(200, "video has been uploaded ")
+        .json(
+            new ApiResponse(
+                200,
+                { videosInSchema },
+                "video file has been uploaded succesfully"
+            )
+        );
 });
 
 const getVideo = asyncHandler(async (req, res) => {
-    const url = req.params;
-    const video = await Video.findOne({ videoURL: url }).select(
+    const { video_id } = req.params;
+    const video = await Video.findOne({ videoAssetId: video_id }).select(
         "-dislikes -likes -tags -comments"
     );
 
@@ -63,24 +106,25 @@ const getVideo = asyncHandler(async (req, res) => {
     }
 
     // how many Documents are in the Like schema in which this video url is available as onVideo
-    const likesCount = await Like.countDocuments({ onVideo: url });
-    const dislikesCount = await Dislike.countDocuments({ onVideo: url });
-
-    const commentsCount = await Comment.countDocuments({ onVideo: url });
+    const likesCount = await Like.countDocuments({ onVideo: video._id });
+    const dislikesCount = await Dislike.countDocuments({ onVideo: video._id });
+    const commentsCount = await Comment.countDocuments({ onVideo: video._id });
 
     if (video.isPublished == "public") {
         // for unlisted videos show on frontend
-        return res
-            .status(200)
-            .json(
-                new ApiResponse(
-                    200,
-                    { video, commentsCount, likesCount, dislikesCount },
-                    "requested video fetched successfully"
-                )
-            );
+        return res.status(200).json(
+            new ApiResponse(
+                200,
+                // Host your own redirect endpoint
+                // load the video
+                { video, commentsCount, likesCount, dislikesCount },
+                "requested video fetched successfully, load video on player using provided videoURL"
+            )
+        );
     } else if (video.isPublished == "private") {
-        return res.status(300).json(300, {}, "requested video is private.");
+        return res
+            .status(300)
+            .json(new ApiResponse(200, {}, "requested video is private"));
     }
 });
 
@@ -90,7 +134,9 @@ const getVideoComments = asyncHandler(async (req, res) => {
     if (!comments) {
         throw new ApiError(300, "something is wrong with comments");
     }
-    return res.status(200).json(200, { comments }, "some comments fetched");
+    return res
+        .status(200)
+        .json(new ApiResponse(200, { comments }, "some comments fetched"));
 });
 
 const addLike = asyncHandler(async (req, res) => {
@@ -106,7 +152,9 @@ const addLike = asyncHandler(async (req, res) => {
 
     const totalLikesOnVideo = await Like.countDocuments({ onVideo: url });
 
-    return res.status(200).json(200, { totalLikesOnVideo }, "likes added");
+    return res
+        .status(200)
+        .json(new ApiResponse(200, { totalLikesOnVideo }, "likes added"));
 });
 const addDislike = asyncHandler(async (req, res) => {
     const url = req.params;
@@ -122,7 +170,13 @@ const addDislike = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .json(200, { totalDislikesOnVideo }, "disliked successful");
+        .json(
+            new ApiResponse(
+                200,
+                { totalDislikesOnVideo },
+                "disliked successful"
+            )
+        );
 });
 
 const addComment = asyncHandler(async (req, res) => {
@@ -140,14 +194,22 @@ const addComment = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .json(200, { createdComment }, "comment added successfully");
+        .json(
+            new ApiResponse(
+                200,
+                { createdComment },
+                "comment added successfully"
+            )
+        );
 });
 
 const deleteComment = asyncHandler(async (req, res) => {
     const commentId = req.commentId;
     const deletedComment = await Comment.deleteOne({ _id: commentId });
     if (deletedComment.deletedCount === 1) {
-        return res.status(200).json(200, {}, "Comment deleted successfully");
+        return res
+            .status(200)
+            .json(new ApiResponse(200, {}, "Comment deleted successfully"));
     } else {
         throw new ApiError("Couldn't delete comment");
     }
