@@ -136,7 +136,9 @@ const getChannelProfile = asyncHandler(async (req, res) => {
     const channel = await User.aggregate(pipeline);
 
     if (!channel?.length) {
-        throw new ApiError(400, "channel does not found");
+        return res
+            .status(303)
+            .json(new ApiError(400, "channel does not found"));
     }
 
     const user = await User.findOne({ username: username });
@@ -183,7 +185,7 @@ const getChannelVideos = asyncHandler(async (req, res) => {
 });
 
 const getChannelPlaylists = asyncHandler(async (req, res) => {
-    const { channel_obj_id } = req.params;
+    const { channel_obj_id } = req.body;
     if (!channel_obj_id) {
         throw new ApiError("channel_obj_id is required to get playlists");
     }
