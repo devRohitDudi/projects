@@ -5,6 +5,7 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary, deleteOnCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import { Playlist } from "../models/playlist.model.js";
 
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
@@ -28,7 +29,7 @@ const registerUser = asyncHandler(async (req, res) => {
     // validate data (valid, !emply)
     // check if user already exists (email, username)
     // upload image on Cloud
-    // create user in DB
+    // create user in DB with default playlist watchLater
     // remove password & refresh token from
     // return response
     const { fullName, email, password, username } = req.body;
@@ -84,12 +85,22 @@ const registerUser = asyncHandler(async (req, res) => {
         coverImage: coverImageResult.url || "",
         email: email,
         username: username.toLowerCase(),
-        password
+        password,
+        playlists: []
     });
+
+    const watchLaterPlaylist = Playlist.create({
+        name: "Watch later",
+        owner: user._id
+    });
+    user.watchLater = await watchLaterPlaylist;
+    user.playlists.push(await watchLaterPlaylist);
+    await user.save();
 
     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
     );
+
     if (!createdUser) {
         throw new ApiError(
             501,

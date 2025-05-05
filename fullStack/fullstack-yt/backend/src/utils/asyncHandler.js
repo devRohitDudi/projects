@@ -16,7 +16,7 @@ const asyncHandler = (fn) => async (req, res, next) => {
 
         res.status(500).json({
             success: false,
-            message: ("from asynchandler", error.message)
+            message: ("from asynchandler:", error.message)
         });
         console.error("Error in asyncHandler:", error);
     }

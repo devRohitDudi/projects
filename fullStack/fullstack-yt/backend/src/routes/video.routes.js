@@ -5,7 +5,9 @@ import {
     getVideo,
     addLike,
     addDislike,
-    uploadVideo
+    addViewAndHistory,
+    uploadVideo,
+    removeFromWatchHistory
 } from "../controllers/video.controller.js";
 
 import {
@@ -33,8 +35,15 @@ router.route("/upload").post(
 //verified
 router.route("/watch/:video_obj_id").get(getVideo);
 
-//add views count
-// if login then add to history
+//verified
+router
+    .route("/add-view&history/:video_obj_id")
+    .patch(verifyJWT, addViewAndHistory);
+
+//verified
+router
+    .route("/remove-watch-history/:video_obj_id")
+    .patch(verifyJWT, removeFromWatchHistory);
 
 //verified
 router.route("/comments/:video_obj_id").get(getVideoComments);
@@ -51,8 +60,10 @@ router.route("/add-comment/:video_obj_id").post(verifyJWT, addComment);
 // verified
 router.route("/delete-comment/:comment_obj_id").patch(verifyJWT, deleteComment);
 
+// verified
 router.route("/like-comment/:comment_obj_id").patch(verifyJWT, likeComment);
 
+//verified
 router
     .route("/dislike-comment/:comment_obj_id")
     .patch(verifyJWT, dislikeComment);

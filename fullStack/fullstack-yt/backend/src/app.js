@@ -18,11 +18,15 @@ app.use(express.static("public"));
 
 // Routes import
 import userRouter from "./routes/user.routes.js";
-import videosRouter from "./routes/video.routes.js";
+import videoRouter from "./routes/video.routes.js";
+import channelRouter from "./routes/channel.routes.js";
+import playlistRouter from "./routes/playlist.routes.js";
 
 // router declaration
 app.use("/api/v1/user", userRouter);
-app.use("/api/v1/video", videosRouter);
+app.use("/api/v1/video", videoRouter);
+app.use("/api/v1/channel", channelRouter);
+app.use("/api/v1/playlist", playlistRouter);
 // app.use("/api/v1", (req, res) => {
 //     return res.status(300).send("<h1>Server is listening</h1>");
 // });

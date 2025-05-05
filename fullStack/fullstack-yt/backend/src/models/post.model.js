@@ -8,8 +8,7 @@ const postSchema = new mongoose.Schema(
         },
         images: [
             {
-                Type: String,
-                required: true
+                Type: String
             }
         ],
         owner: {

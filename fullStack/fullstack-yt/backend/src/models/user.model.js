@@ -61,6 +61,12 @@ const userSchema = new Schema(
                 ref: "Video"
             }
         ],
+        playlists: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "Playlist"
+            }
+        ],
         isVerified: {
             type: Boolean,
             default: false

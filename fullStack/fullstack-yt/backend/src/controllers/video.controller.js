@@ -1,6 +1,5 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-import path from "path";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { Video } from "../models/video.model.js";
@@ -186,4 +185,88 @@ const addDislike = asyncHandler(async (req, res) => {
     // const totalDislikesOnVideo = await Dislike.countDocuments({ onVideo: url });
 });
 
-export { getVideo, addLike, addDislike, uploadVideo };
+const addViewAndHistory = asyncHandler(async (req, res) => {
+    const { video_obj_id } = req.params;
+    const user = req.user;
+    if (!video_obj_id) {
+        throw new ApiError("video_obj_id is required to add view into");
+    }
+    const video = await Video.findById(video_obj_id);
+    if (!video) {
+        throw new ApiError(300, "Requested video not found");
+    }
+    video.views += 1;
+
+    await video.save({ validateBeforeSave: false });
+
+    if (!user) {
+        return res
+            .status(200)
+            .json(new ApiResponse(200, {}, "Video view added"));
+    } else {
+        const addedToHistory = await User.findByIdAndUpdate(user._id, {
+            $addToSet: { watchHistory: video_obj_id }
+        });
+        if (addedToHistory) {
+            return res
+                .status(200)
+                .json(
+                    new ApiError(
+                        200,
+                        {},
+                        "view added & video added to watchHistory"
+                    )
+                );
+        } else {
+            return res
+                .status(200)
+                .json(
+                    new ApiError(
+                        200,
+                        {},
+                        "error occured while adding to watchHistory"
+                    )
+                );
+        }
+    }
+});
+
+const removeFromWatchHistory = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const { video_obj_id } = req.params;
+
+    if (!user) {
+        throw new ApiError("Login is required to remove watchHistory");
+    }
+    if (!video_obj_id) {
+        throw new ApiError("videos_obj_id, my friend!");
+    }
+
+    const removedFromHistory = await User.findByIdAndUpdate(user._id, {
+        $pull: { watchHistory: video_obj_id }
+    });
+    if (removedFromHistory) {
+        return res
+            .status(200)
+            .json(new ApiResponse(200, {}, "Video removed from watchHistory"));
+    } else {
+        return res
+            .status(200)
+            .josn(
+                new ApiResponse(
+                    200,
+                    {},
+                    "Error occured while removing from watchHistory"
+                )
+            );
+    }
+});
+
+export {
+    getVideo,
+    addLike,
+    addDislike,
+    uploadVideo,
+    addViewAndHistory,
+    removeFromWatchHistory
+};

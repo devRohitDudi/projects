@@ -14,7 +14,13 @@ const playlistSchema = new mongoose.Schema(
         },
         owner: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
+            ref: "User",
+            required: true
+        },
+        visibility: {
+            type: String,
+            enum: ["public", "private", "unlisted"],
+            default: "private"
         }
     },
     { timestamps: true }
