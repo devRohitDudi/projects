@@ -5,8 +5,11 @@ const commentSchema = new mongoose.Schema(
     {
         onVideo: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Video",
-            required: true
+            ref: "Video"
+        },
+        onPost: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Post"
         },
         message: {
             type: String,

@@ -7,7 +7,6 @@ import { Comment } from "../models/comment.model.js";
 import { Like } from "../models/like.model.js";
 import { Dislike } from "../models/dislike.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { v2 as cloudinary } from "cloudinary";
 
 const uploadVideo = asyncHandler(async (req, res) => {
     const { title, description, tags = null, isPublished } = req.body;

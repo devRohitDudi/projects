@@ -17,7 +17,7 @@ router
 //verified
 router.route("/get-channel-playlists").get(verifyJWT, getChannelPlaylists);
 
-//verified
+//
 router
     .route("/get-channel-posts/:channel_obj_id")
     .get(verifyJWT, getChannelPosts);
@@ -25,6 +25,6 @@ router
 // verified
 // applying param on first becomes dynamic route this considering every route as username
 // so moving below works
-router.route("/:username").get(verifyJWT, getChannelProfile);
+router.route("/get/:username").get(verifyJWT, getChannelProfile);
 
 export default router;
