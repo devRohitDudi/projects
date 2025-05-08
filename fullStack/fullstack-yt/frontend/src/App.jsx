@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import { useEffect } from "react";
 import HomePage from "./pages/HomePage";
 import Channel from "./pages/Channel";
 import Search from "./pages/Search";
@@ -9,31 +9,55 @@ import BottomBar from "./components/BottomBar";
 import Sidebar from "./components/Sidebar";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import useAuthStore from "./store/useAuthStore";
+import { Upload } from "lucide-react";
+import VideoUpload from "./components/VideoUpload";
+import MainLayout from "./components/MainLayout";
 function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { setIsLoggedIn } = useAuthStore();
+
+  useEffect(() => {
+    async function getUser() {
+      try {
+        const response = await fetch(
+          "http://localhost:4000/api/v1/user/get-current-user",
+          {
+            credentials: "include", // send HttpOnly cookies
+          }
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json(); // Parse JSON
+        console.log("Current User Data:", data);
+        if (await data?.success) {
+          // Check if data exists and has success
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error("get-current-user Error:", error);
+        setIsLoggedIn(false);
+      }
+    }
+    getUser();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <Navbar toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-      <div className="flex">
-        <Sidebar sidebarOpen={sidebarOpen} />
-        <main
-          className={`flex-1 transition-all duration-300 ${
-            sidebarOpen ? "md:ml-64" : "ml-0"
-          }`}
-        >
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/channel" element={<Channel />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/watch" element={<Watch />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-          </Routes>
-        </main>
-      </div>
-      <BottomBar />
-    </div>
+    <Routes>
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/channel/get/:channelId" element={<Channel />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/watch" element={<Watch />} />
+      </Route>
+
+      {/* Routes without BottomBar */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/upload" element={<VideoUpload />} />
+    </Routes>
   );
 }
 

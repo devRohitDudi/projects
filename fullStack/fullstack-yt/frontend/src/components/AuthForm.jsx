@@ -86,7 +86,7 @@ const AuthForm = ({ type }) => {
         type === "login"
           ? "http://localhost:4000/api/v1/user/login"
           : "http://localhost:4000/api/v1/user/register";
-      const response = await axios.post(endpoint, formDataToSend, {
+      await axios.post(endpoint, formDataToSend, {
         headers: {
           // Let browser set Content-Type for FormData
           Accept: "application/json", // Backend likely expects this
@@ -94,13 +94,10 @@ const AuthForm = ({ type }) => {
         withCredentials: true, // For CORS cookies
       });
 
-      // Store the token in localStorage
-      localStorage.setItem("token", response.data.token);
-
       // Redirect to home page
       window.location.href = "/";
     } catch (err) {
-      setError(err.response?.data?.message || err.message);
+      setError(err.message || err);
     } finally {
       setLoading(false);
     }

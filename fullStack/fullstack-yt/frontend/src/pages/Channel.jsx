@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
 const Channel = () => {
   const [searchParams] = useSearchParams();
-  const channelId = searchParams.get("id");
+  const { channelId } = useParams();
   const [channel, setChannel] = useState(null);
   const [videos, setVideos] = useState([]);
   const [playlists, setPlaylists] = useState([]);
@@ -17,16 +17,14 @@ const Channel = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [channelRes, videosRes, playlistsRes] = await Promise.all([
-          axios.get(`/api/channels/${channelId}`),
-          axios.get(`/api/channels/${channelId}/videos`),
-          axios.get(`/api/channels/${channelId}/playlists`)
-        ]);
-        
-        setChannel(channelRes.data);
-        setVideos(videosRes.data);
-        setPlaylists(playlistsRes.data);
+        const channelData = await axios.get(
+          `http://localhost:4000/api/v1/channel/get/${channelId}`
+        );
+        const currentChannel = await channelData.json.stringify(channelData);
+        console.log("currentChannel: ", currentChannel);
+
         setError(null);
+        setLoading(false);
       } catch (err) {
         setError("Failed to fetch channel data");
         console.error("Error:", err);
@@ -80,7 +78,9 @@ const Channel = () => {
               <h1 className="text-2xl font-bold">{channel.name}</h1>
               <p className="text-gray-400">@{channel.handle}</p>
               <div className="flex items-center justify-center md:justify-start gap-4 mt-2">
-                <span className="text-sm">{channel.subscribers} subscribers</span>
+                <span className="text-sm">
+                  {channel.subscribers} subscribers
+                </span>
                 <span className="text-sm">{channel.totalVideos} videos</span>
               </div>
             </div>
@@ -154,7 +154,8 @@ const Channel = () => {
                     {video.title}
                   </h3>
                   <div className="text-sm text-gray-400 mt-1">
-                    {video.views} views • {new Date(video.createdAt).toLocaleDateString()}
+                    {video.views} views •{" "}
+                    {new Date(video.createdAt).toLocaleDateString()}
                   </div>
                 </div>
               </Link>
@@ -184,7 +185,8 @@ const Channel = () => {
                 <div className="p-4">
                   <h3 className="font-semibold">{playlist.title}</h3>
                   <p className="text-sm text-gray-400 mt-1">
-                    {playlist.videoCount} videos • Updated {new Date(playlist.updatedAt).toLocaleDateString()}
+                    {playlist.videoCount} videos • Updated{" "}
+                    {new Date(playlist.updatedAt).toLocaleDateString()}
                   </p>
                 </div>
               </div>
@@ -197,7 +199,7 @@ const Channel = () => {
             <div className="prose prose-invert">
               <h2 className="text-xl font-semibold mb-4">Description</h2>
               <p className="whitespace-pre-wrap">{channel.description}</p>
-              
+
               <h2 className="text-xl font-semibold mt-8 mb-4">Details</h2>
               <div className="space-y-2">
                 <div className="flex">
@@ -206,7 +208,9 @@ const Channel = () => {
                 </div>
                 <div className="flex">
                   <span className="w-32 text-gray-400">Joined</span>
-                  <span>{new Date(channel.createdAt).toLocaleDateString()}</span>
+                  <span>
+                    {new Date(channel.createdAt).toLocaleDateString()}
+                  </span>
                 </div>
                 <div className="flex">
                   <span className="w-32 text-gray-400">Total views</span>

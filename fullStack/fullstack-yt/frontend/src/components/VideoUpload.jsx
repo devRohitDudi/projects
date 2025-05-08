@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import { X, Upload, FileVideo } from "lucide-react";
-
-const VideoUpload = ({ isOpen, onClose }) => {
+import useAuthStore from "../store/useAuthStore";
+const VideoUpload = () => {
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -12,7 +13,10 @@ const VideoUpload = ({ isOpen, onClose }) => {
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
   const thumbnailInputRef = useRef(null);
-
+  const { isLoggedIn } = useAuthStore();
+  if (!isLoggedIn) {
+    // window.location.href = "/login";
+  }
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -77,7 +81,6 @@ const VideoUpload = ({ isOpen, onClose }) => {
       setDescription("");
       setThumbnail(null);
       setUploadProgress(0);
-      onClose();
     } catch (err) {
       setError(err.response?.data?.message || "Failed to upload video");
     } finally {
@@ -85,19 +88,14 @@ const VideoUpload = ({ isOpen, onClose }) => {
     }
   };
 
-  if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-zinc-900 rounded-lg w-full max-w-2xl p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold">Upload Video</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white"
-          >
+          <Link to="/" className="text-gray-400 hover:text-white">
             <X size={24} />
-          </button>
+          </Link>
         </div>
 
         {error && (
@@ -153,7 +151,9 @@ const VideoUpload = ({ isOpen, onClose }) => {
 
           {/* Description Input */}
           <div>
-            <label className="block text-sm font-medium mb-2">Description</label>
+            <label className="block text-sm font-medium mb-2">
+              Description
+            </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -226,4 +226,4 @@ const VideoUpload = ({ isOpen, onClose }) => {
   );
 };
 
-export default VideoUpload; 
+export default VideoUpload;

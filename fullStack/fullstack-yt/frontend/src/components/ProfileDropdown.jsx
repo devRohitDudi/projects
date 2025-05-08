@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { User, LogOut, Settings, Upload } from "lucide-react";
+import useAuthStore from "../store/useAuthStore.js";
 
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const isAuthenticated = localStorage.getItem("token");
+  const { isLoggedIn } = useAuthStore();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -18,8 +19,19 @@ const ProfileDropdown = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
+  const handleLogout = async () => {
+    try {
+      const loggedOutUser = await fetch(
+        "http://localhost:4000/api/v1/user/logout",
+        {
+          method: "POST",
+          credentials: "include", // Send HttpOnly cookies
+        }
+      );
+      console.log("loggedOutuser; ", loggedOutUser);
+    } catch (error) {
+      console.error("Error occured while logging out:", error);
+    }
     window.location.href = "/";
   };
 
@@ -33,14 +45,14 @@ const ProfileDropdown = () => {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-zinc-800 ring-1 ring-black ring-opacity-5">
           <div className="py-1">
-            {isAuthenticated ? (
+            {isLoggedIn ? (
               <>
                 <Link
-                  to="/profile"
+                  to="/channel"
                   className="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-zinc-700"
                 >
                   <User className="w-4 h-4 mr-2" />
-                  Profile
+                  Channel
                 </Link>
                 <Link
                   to="/upload"
@@ -57,11 +69,12 @@ const ProfileDropdown = () => {
                   Settings
                 </Link>
                 <button
+                  to="/logout"
                   onClick={handleLogout}
                   className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:bg-zinc-700"
                 >
                   <LogOut className="w-4 h-4 mr-2" />
-                  Sign out
+                  Logout
                 </button>
               </>
             ) : (
@@ -89,4 +102,4 @@ const ProfileDropdown = () => {
   );
 };
 
-export default ProfileDropdown; 
+export default ProfileDropdown;

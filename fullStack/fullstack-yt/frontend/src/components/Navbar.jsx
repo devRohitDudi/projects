@@ -1,12 +1,12 @@
 import { Menu, Search, User, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import VideoUpload from "./VideoUpload";
 import ProfileDropdown from "./ProfileDropdown";
-
+import Cookies from "js-cookie";
+import useAuthStore from "../store/useAuthStore";
 const Navbar = ({ toggleSidebar }) => {
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-  const isAuthenticated = localStorage.getItem("token");
+  const { isLoggedIn } = useAuthStore();
+  console.log("isLoggedIn", isLoggedIn);
 
   return (
     <>
@@ -68,14 +68,14 @@ const Navbar = ({ toggleSidebar }) => {
             </svg>
           </div>
 
-          {isAuthenticated && (
-            <button
-              onClick={() => setIsUploadModalOpen(true)}
+          {isLoggedIn && (
+            <Link
+              to="/upload"
               className="flex items-center gap-2 px-4 py-2 bg-zinc-800 rounded-full hover:bg-zinc-700"
             >
               <Upload size={20} />
               <span className="hidden md:inline">Upload</span>
-            </button>
+            </Link>
           )}
 
           <div>
@@ -93,11 +93,6 @@ const Navbar = ({ toggleSidebar }) => {
           <ProfileDropdown />
         </div>
       </div>
-
-      <VideoUpload
-        isOpen={isUploadModalOpen}
-        onClose={() => setIsUploadModalOpen(false)}
-      />
     </>
   );
 };
