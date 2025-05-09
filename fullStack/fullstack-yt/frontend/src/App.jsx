@@ -13,9 +13,9 @@ import useAuthStore from "./store/useAuthStore";
 import { Upload } from "lucide-react";
 import VideoUpload from "./components/VideoUpload";
 import MainLayout from "./components/MainLayout";
+import Settings from "./pages/Settings";
 function App() {
-  const { setIsLoggedIn } = useAuthStore();
-
+  const { setIsLoggedIn, setCurrentUsername } = useAuthStore();
   useEffect(() => {
     async function getUser() {
       try {
@@ -33,6 +33,7 @@ function App() {
         if (await data?.success) {
           // Check if data exists and has success
           setIsLoggedIn(true);
+          setCurrentUsername(data.message.username);
         } else {
           setIsLoggedIn(false);
         }
@@ -48,7 +49,7 @@ function App() {
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/channel/get/:channelId" element={<Channel />} />
+        <Route path="/channel/get/:username" element={<Channel />} />
         <Route path="/search" element={<Search />} />
         <Route path="/watch" element={<Watch />} />
       </Route>
@@ -57,6 +58,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/upload" element={<VideoUpload />} />
+      <Route path="/settings" element={<Settings />} />
     </Routes>
   );
 }

@@ -6,7 +6,7 @@ import useAuthStore from "../store/useAuthStore.js";
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const { isLoggedIn } = useAuthStore();
+  const { isLoggedIn, currentUsername } = useAuthStore();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -43,12 +43,12 @@ const ProfileDropdown = () => {
       />
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-zinc-800 ring-1 ring-black ring-opacity-5">
+        <div className="absolute z-10 right-0 mt-2 w-48 rounded-md shadow-lg bg-zinc-800 ring-1 ring-black ring-opacity-5">
           <div className="py-1">
             {isLoggedIn ? (
               <>
                 <Link
-                  to="/channel"
+                  to={`/channel/get/${currentUsername}`}
                   className="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-zinc-700"
                 >
                   <User className="w-4 h-4 mr-2" />

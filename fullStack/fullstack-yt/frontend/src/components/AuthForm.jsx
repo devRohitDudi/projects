@@ -79,9 +79,7 @@ const AuthForm = ({ type }) => {
           formDataToSend.append("avatar", formData.avatar);
         }
       }
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log(key, value);
-      }
+
       const endpoint =
         type === "login"
           ? "http://localhost:4000/api/v1/user/login"
