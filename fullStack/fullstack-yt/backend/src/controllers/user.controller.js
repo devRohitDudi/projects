@@ -107,11 +107,25 @@ const registerUser = asyncHandler(async (req, res) => {
             "Failed to register user (please check database code)"
         );
     }
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+        createdUser._id
+    );
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    };
     if (createdUser) {
         return res
             .status(201)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", refreshToken, options)
             .json(
-                new ApiResponse(201, createdUser, "User registered success.")
+                new ApiResponse(
+                    201,
+                    { user: createdUser, accessToken, refreshToken },
+                    "User registered success."
+                )
             );
     }
 }); //success
@@ -125,8 +139,10 @@ const loginUser = asyncHandler(async (req, res) => {
     //  access & refresh token
     // return secure cookies
 
-    const { username = null, email = null, password = null } = req.body || {};
-
+    if (!req.body) {
+        throw new ApiError("No form data provided. error from backend");
+    }
+    const { username = null, email = null, password = null } = req.body;
     console.log("req.body: ", req.body);
 
     if (!email && !username) {
@@ -138,7 +154,9 @@ const loginUser = asyncHandler(async (req, res) => {
     });
 
     if (!userInstance) {
-        throw new ApiError(404, "User does not exist");
+        return res
+            .status(404)
+            .json(new ApiResponse(404, {}, "User does not exist"));
     }
     console.log("userInstance: ", userInstance);
 
@@ -146,7 +164,9 @@ const loginUser = asyncHandler(async (req, res) => {
     const isPasswordValid = await userInstance.isPasswordCorrect(password);
 
     if (!isPasswordValid) {
-        throw new ApiError(401, "Invalid password.");
+        return res
+            .status(401)
+            .json(new ApiResponse(401, {}, "Invalid password"));
     }
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
@@ -257,11 +277,15 @@ const refreshTheAccessToken = asyncHandler(async (req, res) => {
 }); //success
 
 const changeUserPassword = asyncHandler(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        return res.status(300).json(new ApiError("Login is required."));
+    }
     const { oldPassword, newPassword } = req.body;
 
-    const user = await User.findById(req.user._id);
+    const userInDB = await User.findById(req.user._id);
 
-    const isCorrect = await user.isPasswordCorrect(oldPassword);
+    const isCorrect = await userInDB.isPasswordCorrect(oldPassword);
 
     if (!isCorrect) {
         throw new ApiError(300, "incorrect old password");
@@ -281,26 +305,39 @@ const changeUserPassword = asyncHandler(async (req, res) => {
 }); //success
 
 const getCurrentUser = asyncHandler(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        return res
+            .status(200)
+            .json(new ApiError(300, "current user not found "));
+    }
     return res
         .status(200)
         .json(new ApiResponse(200, req.user, "current user fetched"));
 }); //success
 
 const updateDetails = asyncHandler(async (req, res) => {
-    const {
-        username = null,
-        fullName = null,
-        bio = null,
-        email = null
-    } = req.body || {};
+    const user = req.user;
+    if (!user) {
+        return res
+            .status(301)
+            .json(new ApiResponse(301, "Login is required to update details"));
+    }
+    const details = req.body || {};
 
     const currentUser = await User.findByIdAndUpdate(req.user._id);
 
     const updatedUser = await currentUser.updateOne({
-        username: username !== null ? username : currentUser.username,
-        fullName: fullName !== null ? fullName : currentUser.fullName,
-        bio: username !== null ? bio : currentUser.bio,
-        email: email !== null ? email : currentUser.email
+        username:
+            details.username.length <= 0
+                ? currentUser.username
+                : details.username,
+        fullName:
+            details.fullName.length <= 0
+                ? currentUser.fullName
+                : details.fullName,
+        bio: details.bio.length <= 0 ? currentUser.bio : details.bio,
+        email: details.email.length <= 0 ? currentUser.email : details.email
     });
 
     currentUser.save({ validateBeforeSave: false });

@@ -1,13 +1,19 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { upload } from "./middlewares/multer.middleware.js";
 const port = process.env.PORT || 4000;
 const app = express();
 
 app.use(
     cors({
-        origin: process.env.CORS_ORIGIN || "http://localhost:4000",
+        origin: [
+            process.env.CORS_ORIGIN || "http://localhost:4000",
+            "http://localhost:5173"
+        ],
         credentials: true
+        // methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        // allowedHeaders: ["Content-Type", "Authorization", "Accept"]
     })
 );
 

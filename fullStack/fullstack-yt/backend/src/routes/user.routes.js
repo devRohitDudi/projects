@@ -25,12 +25,12 @@ router.route("/register").post(
     registerUser
 );
 
-router.route("/login").post(loginUser);
+router.route("/login").post(upload.any(), loginUser);
 
 // secured routes
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refresh-tokens").post(refreshTheAccessToken);
-router.route("/change-Password").post(verifyJWT, changeUserPassword);
+router.route("/change-password").post(verifyJWT, changeUserPassword);
 router.route("/get-current-user").get(verifyJWT, getCurrentUser);
 
 router.route("/update-details").patch(verifyJWT, updateDetails);

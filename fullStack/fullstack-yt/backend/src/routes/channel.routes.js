@@ -10,9 +10,7 @@ import {
 const router = Router();
 
 //verified
-router
-    .route("/get-channel-videos/:channel_obj_id")
-    .get(verifyJWT, getChannelVideos);
+router.route("/get-channel-videos/:username").get(verifyJWT, getChannelVideos);
 
 //verified
 router.route("/get-channel-playlists").get(verifyJWT, getChannelPlaylists);

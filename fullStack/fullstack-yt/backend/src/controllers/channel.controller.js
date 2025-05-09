@@ -15,7 +15,7 @@ import { Post } from "../models/post.model.js";
 const getChannelProfile = asyncHandler(async (req, res) => {
     const { username } = req.params;
     if (!username) {
-        throw new ApiError(400, "username not provided");
+        return res.status(300).json(new ApiError(400, "username not provided"));
     }
 
     // need req.user._id to retrieve isSubscribed
@@ -124,6 +124,7 @@ const getChannelProfile = asyncHandler(async (req, res) => {
         $project: {
             fullName: 1,
             username: 1,
+            bio: 1,
             subscribersCount: 1,
             subscribingCount: 1,
             isSubscribed: 1,
@@ -134,6 +135,7 @@ const getChannelProfile = asyncHandler(async (req, res) => {
     });
 
     const channel = await User.aggregate(pipeline);
+    // const channel = await User.findOne({ username: username });
 
     if (!channel?.length) {
         return res
@@ -141,14 +143,9 @@ const getChannelProfile = asyncHandler(async (req, res) => {
             .json(new ApiError(400, "channel does not found"));
     }
 
-    const user = await User.findOne({ username: username });
+    console.log("Querying videos count for channel:", channel._id);
 
-    if (!user) {
-        throw new ApiError(303, "channel does not exist");
-    }
-    console.log("Querying videos for:", user._id);
-
-    const videosCount = await Video.countDocuments({ owner: user._id });
+    const videosCount = await Video.countDocuments({ owner: channel._id });
     channel.videosCount = videosCount;
 
     return res
@@ -163,13 +160,14 @@ const getChannelProfile = asyncHandler(async (req, res) => {
 });
 
 const getChannelVideos = asyncHandler(async (req, res) => {
-    const { channel_obj_id } = req.params;
+    const { username } = req.params;
     const user = req.user;
 
-    if (!channel_obj_id) {
-        throw new ApiError("channel_obj_id is required");
+    if (!username) {
+        throw new ApiError("username is required");
     }
-    const channelVideos = await Video.find({ owner: channel_obj_id }).limit(20);
+    const channel = await User.findOne({ username: username });
+    const channelVideos = await Video.find({ owner: channel._id }).limit(20);
     if (!channelVideos) {
         throw new ApiError("error while retrieving channel videos");
     }
