@@ -11,8 +11,10 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
             req.header("Authorization")?.replace("Bearer ", "");
 
         if (!token) {
+            console.log("couldn't found token in auth middleware");
             next();
         }
+        console.log("token found in middleware");
 
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 

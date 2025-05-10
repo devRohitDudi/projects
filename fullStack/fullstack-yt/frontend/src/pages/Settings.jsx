@@ -56,7 +56,13 @@ const Settings = () => {
     const formData = new FormData();
     formData.append("avatar", avatar);
     axios
-      .patch("/update-avatar", formData)
+      .patch(`http://localhost:4000/api/v1/user/update-avatar`, formData, {
+        headers: {
+          // Let browser set Content-Type for FormData
+          Accept: "application/json", // Backend likely expects this
+        },
+        withCredentials: true, // For CORS cookies
+      })
       .then(() => alert("Avatar updated"))
       .catch((err) => console.error(err));
   };
@@ -65,16 +71,31 @@ const Settings = () => {
     const formData = new FormData();
     formData.append("coverImage", coverImage);
     axios
-      .patch("/update-coverImage", formData)
+      .patch(`http://localhost:4000/api/v1/user/update-cover-image`, formData, {
+        headers: {
+          // Let browser set Content-Type for FormData
+          Accept: "application/json", // Backend likely expects this
+        },
+        withCredentials: true, // For CORS cookies
+      })
       .then(() => alert("Cover image updated"))
       .catch((err) => console.error(err));
   };
 
-  const handleLogout = () => {
-    axios
-      .post("/logout")
-      .then(() => (window.location.href = "/login"))
-      .catch((err) => console.error(err));
+  const handleLogout = async () => {
+    try {
+      const loggedOutUser = await fetch(
+        "http://localhost:4000/api/v1/user/logout",
+        {
+          method: "POST",
+          credentials: "include", // Send HttpOnly cookies
+        }
+      );
+      console.log("loggedOutuser; ", loggedOutUser);
+    } catch (error) {
+      console.error("Error occured while logging out:", error);
+    }
+    window.location.href = "/";
   };
 
   return (

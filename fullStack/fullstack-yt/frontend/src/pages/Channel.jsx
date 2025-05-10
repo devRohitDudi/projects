@@ -8,6 +8,8 @@ const Channel = () => {
   const { username } = useParams();
   const { currentUsername } = useAuthStore();
   const [channel, setChannel] = useState(null);
+  const [subscribersCount, setSubscribersCount] = useState(null);
+  const [isSubscribed, setIsSubscribed] = useState(false);
   const [videos, setVideos] = useState([]);
   const [videosCount, setVideosCount] = useState(null);
   const [playlists, setPlaylists] = useState([]);
@@ -20,15 +22,41 @@ const Channel = () => {
   } else {
     channelId = currentUsername;
   }
-
-  const handleSubscribe = async () => {};
-
   const setChannelData = async (message, channelVideos) => {
     setChannel(message.channel[0]);
     // setPlaylists(message.channel.playlists);
+    setSubscribersCount(message.channel[0].subscribersCount);
+    setIsSubscribed(message.channel[0].isSubscribed);
     console.log("channelVideos:", channelVideos);
     setVideos(channelVideos);
     setVideosCount(message.videosCount);
+  };
+
+  const handleSubscribe = async () => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:4000/api/v1/channel/subscribe/${channelId}`,
+        {}, // Empty body if no data
+        {
+          headers: {
+            Accept: "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      if (response) {
+        if (isSubscribed) {
+          setIsSubscribed(!isSubscribed);
+          setSubscribersCount((prev) => prev - 1);
+        } else {
+          setIsSubscribed(!isSubscribed);
+          setSubscribersCount((prev) => prev + 1);
+        }
+        console.log("response:", response);
+      }
+    } catch (error) {
+      console.error("Error on subscribe: ", error);
+    }
   };
 
   useEffect(() => {
@@ -52,10 +80,11 @@ const Channel = () => {
               // Let browser set Content-Type for FormData
               Accept: "application/json", // Backend likely expects this
             },
-            withCredentials: true, // For CORS cookies
+            withCredentials: "include", // For CORS cookies
           }
         );
         console.log("currentChannel: ", channelData);
+        console.log("channelVideos: ", channelVideos);
         setChannelData(
           channelData.data.message,
           channelVideos.data.message.channelVideos
@@ -87,6 +116,13 @@ const Channel = () => {
     return (
       <div className="flex justify-center items-center min-h-screen text-red-500">
         {error}
+        <button
+          onClick={() => {
+            window.history.back();
+          }}
+        >
+          Go back
+        </button>
       </div>
     );
   }
@@ -103,7 +139,13 @@ const Channel = () => {
     <div className="min-h-screen bg-black text-white">
       {/* Channel Header */}
       <div className="relative">
-        <div className="h-48 bg-gradient-to-r from-blue-600 to-purple-600" />
+        <div className="aspect-[16/6] w-full overflow-hidden rounded-xl">
+          <img
+            className="w-full h-full object-cover"
+            src={channel.coverImage}
+            alt={channel.fullName}
+          />
+        </div>
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center md:items-end gap-4  pb-4">
             <div className="flex justify-arround w-full items-center">
@@ -117,19 +159,25 @@ const Channel = () => {
                 <p className="text-gray-400">@{channelId}</p>
                 <div className="flex items-center justify-center md:justify-start gap-4 mt-2">
                   <span className="text-sm">
-                    {channel.subscribersCount} subscribers
+                    {subscribersCount} subscribers
                   </span>
                   <span className="text-sm">{videosCount} videos</span>
                   {/* <span className="text-sm">{channel.totalVideos} videos</span> */}
                 </div>
               </div>
             </div>
-            <div className=" font-gray-800">{channel.bio}</div>
+            <div className="align-start text-start w-full font-gray-800">
+              {channel.bio}
+            </div>
             <button
               onClick={handleSubscribe}
-              className="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700"
+              className={`px-6 py-2 rounded-full transition-colors duration-200 ${
+                isSubscribed
+                  ? "bg-zinc-800 text-white hover:bg-zinc-700"
+                  : "bg-gray-100 text-black hover:bg-gray-200"
+              }`}
             >
-              Subscribe
+              {isSubscribed ? "Unsubscribe" : "Subscribe"}
             </button>
           </div>
         </div>

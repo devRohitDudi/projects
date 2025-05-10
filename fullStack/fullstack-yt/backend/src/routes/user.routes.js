@@ -40,11 +40,9 @@ router
     .patch(verifyJWT, upload.single("avatar"), updateAvatar);
 
 router
-    .route("/update-coverImage")
+    .route("/update-cover-image")
     .patch(verifyJWT, upload.single("coverImage"), updateCoverImage);
 
 router.route("/history").get(verifyJWT, getWatchHistory);
-
-router.route("/subscribe/:channelId").patch(verifyJWT, subscribeChannel);
 
 export default router;

@@ -113,7 +113,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: false
     };
     if (createdUser) {
         return res
@@ -175,7 +175,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: false
     };
 
     const loggedInUser = await User.findById(userInstance._id).select(
@@ -389,7 +389,9 @@ const updateCoverImage = asyncHandler(async (req, res) => {
     const coverImageLocalPath = req.file?.path;
 
     if (!coverImageLocalPath) {
-        throw new ApiError(300, "coverImage file is required");
+        return res
+            .status(302)
+            .josn(new ApiResponse(302, "cover image is required to update it"));
     }
 
     const coverImage = await uploadOnCloudinary(coverImageLocalPath);

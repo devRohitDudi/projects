@@ -127,7 +127,7 @@ const getChannelProfile = asyncHandler(async (req, res) => {
             bio: 1,
             subscribersCount: 1,
             subscribingCount: 1,
-            isSubscribed: 1,
+            isSubscribed: { $ifNull: ["$isSubscribed", false] },
             email: 1,
             avatar: 1,
             coverImage: 1

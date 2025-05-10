@@ -11,7 +11,13 @@ const subscribeChannel = asyncHandler(async (req, res) => {
     const user = req.user;
 
     if (!user) {
-        throw new ApiError(200, "login is required to subscribe");
+        return res.status(403).json(
+            403,
+            {
+                message: "Authentication is required to subscribe a channel"
+            },
+            "Authentication is required to subscribe a channel"
+        );
     }
     const { channelId } = req.params;
 
@@ -23,6 +29,12 @@ const subscribeChannel = asyncHandler(async (req, res) => {
     const channelExistence = await User.findOne({
         username: channelId
     });
+
+    if (user._id.toString() == channelExistence._id.toString()) {
+        return res
+            .status(400)
+            .json(new ApiResponse(400, {}, "You can't subscribe yourself"));
+    }
 
     if (!channelExistence) {
         throw new ApiError(400, "requested channel doesn't exist");
