@@ -18,57 +18,12 @@ const getChannelProfile = asyncHandler(async (req, res) => {
         return res.status(300).json(new ApiError(400, "username not provided"));
     }
 
-    // need req.user._id to retrieve isSubscribed
-    // const channel = User.aggregate([
-    //     {
-    //         $match: { username: username?.toLowerCase() }
-    //     },
-    //     {
-    //         $lookup: {
-    //             from: "subscriptions",
-    //             localField: "_id",
-    //             foreignField: "channel", // in How many documents this username is as a channel?
-    //             as: "subscribers" // means subscribers
-    //         }
-    //     },
-    //     {
-    //         $lookup: {
-    //             from: "subscriptions",
-    //             localField: "_id",
-    //             foreignField: "subscriber", // in how many documents this username is as a subscriber ?
-    //             as: "subscribing" // means subscribing
-    //         }
-    //     },
-    //     {
-    //         $addFields: {
-    //             subscribersCount: {
-    //                 $size: "$subscribers"
-    //             },
-    //             subscribingCount: {
-    //                 $size: "$subscribing"
-    //             },
-    //             isSubscribed: {
-    //                 $cond: {
-    //                     if: { $in: [req.user._id, "$subscribers?.subscriber"] },
-    //                     then: true,
-    //                     else: false
-    //                 }
-    //             }
-    //         }
-    //     },
-    //     {
-    //         $project: {
-    //             fullName: 1,
-    //             username: 1,
-    //             subscribersCount: 1,
-    //             subscribingCount: 1,
-    //             isSubscribed: 1,
-    //             email: 1,
-    //             avatar: 1,
-    //             coverImage: 1
-    //         }
-    //     }
-    // ]);
+    const channel = await User.findOne({ username: username });
+    if (!channel) {
+        return res
+            .status(200)
+            .json(new ApiResponse(200, {}, "Requested channel doesn't exist"));
+    }
 
     // a trick for only retrieve isSubscribed if req.user._id is available
     const pipeline = [
@@ -134,10 +89,9 @@ const getChannelProfile = asyncHandler(async (req, res) => {
         }
     });
 
-    const channel = await User.aggregate(pipeline);
-    // const channel = await User.findOne({ username: username });
+    const channelInfo = await User.aggregate(pipeline);
 
-    if (!channel?.length) {
+    if (!channelInfo?.length) {
         return res
             .status(303)
             .json(new ApiError(400, "channel does not found"));
@@ -145,15 +99,18 @@ const getChannelProfile = asyncHandler(async (req, res) => {
 
     console.log("Querying videos count for channel:", channel._id);
 
-    const videosCount = await Video.countDocuments({ owner: channel._id });
-    channel.videosCount = videosCount;
+    const videosCount = await Video.countDocuments({
+        owner: channel._id,
+        isPublished: "public"
+    });
+    // channel.videosCount = videosCount;
 
     return res
         .status(200)
         .json(
             new ApiResponse(
                 200,
-                { channel, videosCount },
+                { channelInfo, videosCount },
                 "channel fetched successfully"
             )
         );
@@ -162,12 +119,21 @@ const getChannelProfile = asyncHandler(async (req, res) => {
 const getChannelVideos = asyncHandler(async (req, res) => {
     const { username } = req.params;
     const user = req.user;
-
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
     if (!username) {
         throw new ApiError("username is required");
     }
     const channel = await User.findOne({ username: username });
-    const channelVideos = await Video.find({ owner: channel._id }).limit(20);
+    const channelVideos = await Video.find({
+        owner: channel._id,
+        isPublished: "public"
+    })
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 });
+
     if (!channelVideos) {
         throw new ApiError("error while retrieving channel videos");
     }

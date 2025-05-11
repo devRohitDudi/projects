@@ -6,14 +6,18 @@ import useAuthStore from "../store/useAuthStore";
 import ChannelVideoCard from "../components/ChannelVideoCard";
 const Channel = () => {
   const { username } = useParams();
-  const { currentUsername } = useAuthStore();
+  const { isLoggedIn, currentUsername } = useAuthStore();
   const [channel, setChannel] = useState(null);
   const [subscribersCount, setSubscribersCount] = useState(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [videos, setVideos] = useState([]);
-  const [videosCount, setVideosCount] = useState(null);
+  const [videosCount, setVideosCount] = useState(0);
+  const [fetchedVideosCount, setFetchedVideosCount] = useState(0);
   const [playlists, setPlaylists] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [sectionLoading, setSectionLoading] = useState(false);
+
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("videos");
   let channelId = "";
@@ -22,17 +26,25 @@ const Channel = () => {
   } else {
     channelId = currentUsername;
   }
-  const setChannelData = async (message, channelVideos) => {
-    setChannel(message.channel[0]);
+  const setupChannelData = async (message) => {
+    setChannel(message.channelInfo[0]);
     // setPlaylists(message.channel.playlists);
-    setSubscribersCount(message.channel[0].subscribersCount);
-    setIsSubscribed(message.channel[0].isSubscribed);
-    console.log("channelVideos:", channelVideos);
-    setVideos(channelVideos);
-    setVideosCount(message.videosCount);
+    setSubscribersCount(message.channelInfo[0].subscribersCount);
+    setIsSubscribed(message.channelInfo[0].isSubscribed);
+    console.log("message.videoCount", message.videosCount);
+    setVideosCount(() => {
+      const newCount = message.videosCount;
+      //and here it is 1
+      console.log("channel videos count:", newCount);
+      return newCount;
+    });
   };
 
   const handleSubscribe = async () => {
+    if (!isLoggedIn) {
+      alert("Login is required to subscribe");
+      return;
+    }
     try {
       const response = await axios.patch(
         `http://localhost:4000/api/v1/channel/subscribe/${channelId}`,
@@ -73,22 +85,9 @@ const Channel = () => {
             withCredentials: true, // For CORS cookies
           }
         );
-        const channelVideos = await axios.get(
-          `http://localhost:4000/api/v1/channel/get-channel-videos/${channelId}`,
-          {
-            headers: {
-              // Let browser set Content-Type for FormData
-              Accept: "application/json", // Backend likely expects this
-            },
-            withCredentials: "include", // For CORS cookies
-          }
-        );
+
         console.log("currentChannel: ", channelData);
-        console.log("channelVideos: ", channelVideos);
-        setChannelData(
-          channelData.data.message,
-          channelVideos.data.message.channelVideos
-        );
+        setupChannelData(channelData.data.message);
         setError(null);
         setLoading(false);
       } catch (err) {
@@ -104,6 +103,57 @@ const Channel = () => {
     }
   }, [channelId]);
 
+  // Second useEffect: fetch videos only after videosCount is available
+  useEffect(() => {
+    if (videosCount === 0) return; // wait for actual value
+
+    const getVideos = async () => {
+      if (fetchedVideosCount >= videosCount) return;
+
+      try {
+        setSectionLoading(true);
+        const channelVideos = await axios.get(
+          `http://localhost:4000/api/v1/channel/get-channel-videos/${channelId}?page=${page}&limit=20`,
+          {
+            headers: { Accept: "application/json" },
+            withCredentials: "include",
+          }
+        );
+        setPage((prev) => prev + 1);
+        setVideos((prev) => [
+          ...prev,
+          ...channelVideos.data.message.channelVideos,
+        ]);
+
+        setFetchedVideosCount((prev) => {
+          const updatedCount =
+            prev + channelVideos.data.message.channelVideos.length;
+          console.log("fetched videos count:", updatedCount);
+          return updatedCount;
+        });
+
+        setSectionLoading(false);
+      } catch (error) {
+        setError("while fetching videos", error);
+        setSectionLoading(false);
+      }
+    };
+
+    getVideos();
+
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 50
+      ) {
+        getVideos();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [videosCount, channelId, fetchedVideosCount]);
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -114,8 +164,10 @@ const Channel = () => {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen text-red-500">
-        {error}
+      <div className="flex justify-center items-center min-h-screen flex-col">
+        <div className="flex justify-center items-center min-h-screen text-red-500">
+          {error}
+        </div>
         <button
           onClick={() => {
             window.history.back();
@@ -225,9 +277,18 @@ const Channel = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {activeTab === "videos" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {videos.map((video) => (
-              <ChannelVideoCard video={video} />
-            ))}
+            {videos.map((video) => {
+              //   console.log(video._id);
+              return <ChannelVideoCard video={video} />;
+            })}
+            {sectionLoading && (
+              <div className="flex justify-center items-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                {fetchedVideosCount >= videosCount ? (
+                  <p className="text-white">All videos are here</p>
+                ) : null}
+              </div>
+            )}
           </div>
         )}
 
@@ -259,6 +320,12 @@ const Channel = () => {
                 </div>
               </div>
             ))}
+            {/* section loading */}
+            {sectionLoading && (
+              <div className="flex justify-center items-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+              </div>
+            )}
           </div>
         )}
 
@@ -305,6 +372,12 @@ const Channel = () => {
                 </>
               )}
             </div>
+            {/* section loading */}
+            {sectionLoading && (
+              <div className="flex justify-center items-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+              </div>
+            )}
           </div>
         )}
       </div>

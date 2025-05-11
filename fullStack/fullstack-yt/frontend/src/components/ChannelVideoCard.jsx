@@ -5,12 +5,12 @@ function ChannelVideoCard({ video }) {
     <Link to={`/watch?v=${video._id}`} className="group">
       <div className="relative aspect-video rounded-lg overflow-hidden">
         <img
-          src={video.thumbnailUrl}
+          src={video.thumbnail1}
           alt={video.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
         />
         <span className="absolute bottom-2 right-2 bg-black bg-opacity-80 px-2 py-1 text-sm rounded">
-          {video.duration}
+          {video.duration.toFixed(2)}
         </span>
       </div>
       <div className="mt-2">

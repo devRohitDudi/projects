@@ -13,9 +13,9 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
         if (!token) {
             console.log("couldn't found token in auth middleware");
             next();
+        } else {
+            console.log("token found in middleware");
         }
-        console.log("token found in middleware");
-
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
         const authUser = await User.findById(decodedToken?._id).select(
@@ -27,7 +27,7 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
         req.user = authUser;
         next();
     } catch (error) {
-        throw new ApiError(400, error?.message || "couldn't verify user");
+        console.log("couldn't verify user");
     }
 });
 export { verifyJWT };

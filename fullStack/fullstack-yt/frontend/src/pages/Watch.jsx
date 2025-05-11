@@ -20,9 +20,9 @@ const Watch = () => {
         const [videoRes, suggestedRes, commentsRes] = await Promise.all([
           axios.get(`/api/videos/${videoId}`),
           axios.get(`/api/videos/suggested`),
-          axios.get(`/api/comments?videoId=${videoId}`)
+          axios.get(`/api/comments?videoId=${videoId}`),
         ]);
-        
+
         setVideo(videoRes.data);
         setSuggestedVideos(suggestedRes.data);
         setComments(commentsRes.data);
@@ -82,7 +82,7 @@ const Watch = () => {
           {/* Video Info */}
           <div className="mt-4">
             <h1 className="text-2xl font-bold">{video.title}</h1>
-            
+
             <div className="flex items-center justify-between mt-2">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
@@ -102,7 +102,7 @@ const Watch = () => {
                   Subscribe
                 </button>
               </div>
-              
+
               <div className="flex items-center gap-4">
                 <button className="flex items-center gap-2 px-4 py-2 bg-zinc-800 rounded-full hover:bg-zinc-700">
                   <svg
