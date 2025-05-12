@@ -104,6 +104,17 @@ const AuthForm = ({ type }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
+        <Link className="fixed top-4 left-4" to="/">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 -960 960 960"
+            width="24px"
+            fill="#e3e3e3"
+          >
+            <path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z" />
+          </svg>
+        </Link>
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
             {type === "login"

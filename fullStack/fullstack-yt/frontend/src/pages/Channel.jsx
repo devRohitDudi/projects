@@ -11,12 +11,20 @@ const Channel = () => {
   const [subscribersCount, setSubscribersCount] = useState(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [videos, setVideos] = useState([]);
-  const [videosCount, setVideosCount] = useState(0);
-  const [fetchedVideosCount, setFetchedVideosCount] = useState(0);
   const [playlists, setPlaylists] = useState([]);
+
+  const [videosCount, setVideosCount] = useState(0);
+  const [playlistsCount, setPlaylistsCount] = useState(0);
+
+  const [fetchedVideosCount, setFetchedVideosCount] = useState(0);
+  const [fetchedPlaylistsCount, setFetchedPlaylistsCount] = useState(0);
+
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [sectionLoading, setSectionLoading] = useState(false);
+  const [videosPage, setVideosPage] = useState(1);
+  const [playlistsPage, setPlaylistsPage] = useState(1);
+  const [videosLoading, setVideosLoading] = useState(false);
+  const [playlistsLoading, setPlaylistsLoading] = useState(false);
+  const [postsLoading, setPostsLoading] = useState(false);
 
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("videos");
@@ -36,6 +44,11 @@ const Channel = () => {
       const newCount = message.videosCount;
       //and here it is 1
       console.log("channel videos count:", newCount);
+      return newCount;
+    });
+    setPlaylistsCount(() => {
+      const newCount = message.playlistsCount;
+      console.log("playlists count:", newCount);
       return newCount;
     });
   };
@@ -103,23 +116,25 @@ const Channel = () => {
     }
   }, [channelId]);
 
-  // Second useEffect: fetch videos only after videosCount is available
+  // Second useEffect fetch videos only after videosCount is available
   useEffect(() => {
-    if (videosCount === 0) return; // wait for actual value
+    if (activeTab !== "videos") return;
+
+    if (videosCount === 0) return;
 
     const getVideos = async () => {
       if (fetchedVideosCount >= videosCount) return;
 
       try {
-        setSectionLoading(true);
+        setVideosLoading(true);
         const channelVideos = await axios.get(
-          `http://localhost:4000/api/v1/channel/get-channel-videos/${channelId}?page=${page}&limit=20`,
+          `http://localhost:4000/api/v1/channel/get-channel-videos/${channelId}?page=${videosPage}&limit=20`,
           {
             headers: { Accept: "application/json" },
             withCredentials: "include",
           }
         );
-        setPage((prev) => prev + 1);
+        setVideosPage((prev) => prev + 1);
         setVideos((prev) => [
           ...prev,
           ...channelVideos.data.message.channelVideos,
@@ -132,10 +147,10 @@ const Channel = () => {
           return updatedCount;
         });
 
-        setSectionLoading(false);
+        setVideosLoading(false);
       } catch (error) {
         setError("while fetching videos", error);
-        setSectionLoading(false);
+        setVideosLoading(false);
       }
     };
 
@@ -152,7 +167,77 @@ const Channel = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [videosCount, channelId, fetchedVideosCount]);
+  }, [videosCount, channelId, fetchedVideosCount, activeTab, videosPage]);
+
+  //third useEffect for playlist fetching
+  useEffect(() => {
+    if (activeTab !== "playlists") return;
+    if (playlistsCount === 0) return; // wait for actual value
+    console.log("playlistsCount:", playlistsCount);
+
+    const getPlaylists = async () => {
+      if (fetchedPlaylistsCount >= playlistsCount) return;
+
+      try {
+        setPlaylistsLoading(true);
+        const channelPlaylists = await axios.get(
+          `http://localhost:4000/api/v1/channel/get-channel-playlists/${channelId}?page=${playlistsPage}&limit=20`,
+          {
+            headers: { Accept: "application/json" },
+            withCredentials: "include",
+          }
+        );
+        console.log("channelPlaylists: ", channelPlaylists);
+
+        setPlaylistsPage((prev) => prev + 1);
+        setPlaylists((prev) => [
+          ...prev,
+          ...channelPlaylists.data.message.channelPlaylists,
+        ]);
+
+        setFetchedPlaylistsCount((prev) => {
+          const updatedCount =
+            prev + channelPlaylists.data.message.channelPlaylists.length;
+          console.log("fetched playlists count:", updatedCount);
+          return updatedCount;
+        });
+        if (channelPlaylists.data.message.channelPlaylists.length == 0) {
+          console.log(
+            "channel info is saying that there are ",
+            playlistsCount,
+            "public playlists but fetching 0. the issue is likely in backend"
+          );
+
+          setPlaylistsCount(0);
+        }
+
+        setPlaylistsLoading(false);
+      } catch (error) {
+        setError("while fetching playlists", error);
+        setPlaylistsLoading(false);
+      }
+    };
+
+    getPlaylists();
+
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 50
+      ) {
+        getPlaylists();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [
+    playlistsCount,
+    channelId,
+    fetchedPlaylistsCount,
+    activeTab,
+    playlistsPage,
+  ]);
 
   if (loading) {
     return (
@@ -260,6 +345,16 @@ const Channel = () => {
               PLAYLISTS
             </button>
             <button
+              onClick={() => setActiveTab("posts")}
+              className={`py-4 border-b-2 ${
+                activeTab === "posts"
+                  ? "border-white"
+                  : "border-transparent text-gray-400 hover:text-white"
+              }`}
+            >
+              POSTS
+            </button>
+            <button
               onClick={() => setActiveTab("about")}
               className={`py-4 border-b-2 ${
                 activeTab === "about"
@@ -281,7 +376,7 @@ const Channel = () => {
               //   console.log(video._id);
               return <ChannelVideoCard video={video} />;
             })}
-            {sectionLoading && (
+            {videosLoading && (
               <div className="flex justify-center items-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 {fetchedVideosCount >= videosCount ? (
@@ -321,7 +416,7 @@ const Channel = () => {
               </div>
             ))}
             {/* section loading */}
-            {sectionLoading && (
+            {playlistsLoading && (
               <div className="flex justify-center items-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
               </div>

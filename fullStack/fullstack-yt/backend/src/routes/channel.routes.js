@@ -13,12 +13,12 @@ const router = Router();
 router.route("/get-channel-videos/:username").get(verifyJWT, getChannelVideos);
 
 //verified
-router.route("/get-channel-playlists").get(verifyJWT, getChannelPlaylists);
+router
+    .route("/get-channel-playlists/:username")
+    .get(verifyJWT, getChannelPlaylists);
 
 //
-router
-    .route("/get-channel-posts/:channel_obj_id")
-    .get(verifyJWT, getChannelPosts);
+router.route("/get-channel-posts/:username").get(verifyJWT, getChannelPosts);
 
 // verified
 // applying param on first becomes dynamic route this considering every route as username

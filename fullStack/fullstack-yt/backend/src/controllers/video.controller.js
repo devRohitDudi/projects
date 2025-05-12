@@ -7,7 +7,7 @@ import { Comment } from "../models/comment.model.js";
 import { Like } from "../models/like.model.js";
 import { Dislike } from "../models/dislike.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-
+import path from "path";
 const uploadVideo = asyncHandler(async (req, res) => {
     const { title, description, tags = null, isPublished } = req.body;
 
@@ -45,8 +45,8 @@ const uploadVideo = asyncHandler(async (req, res) => {
     }
 
     const thumbnail1LocalPath = req.files?.thumbnail1[0]?.path;
-    const thumbnail2LocalPath = req.files?.thumbnail2[0]?.path;
-    const thumbnail3LocalPath = req.files?.thumbnail3[0]?.path;
+    const thumbnail2LocalPath = req.files?.thumbnail2?.[0]?.path;
+    const thumbnail3LocalPath = req.files?.thumbnail3?.[0]?.path;
 
     if (!thumbnail1LocalPath) {
         throw new ApiError(
@@ -75,8 +75,8 @@ const uploadVideo = asyncHandler(async (req, res) => {
         description: description,
         tags: tags,
         thumbnail1: thumbnail1.url,
-        thumbnail2: thumbnail2.url ? thumbnail2.url : "",
-        thumbnail3: thumbnail3.url ? thumbnail3.url : "",
+        thumbnail2: thumbnail2?.url ? thumbnail2.url : null,
+        thumbnail3: thumbnail3?.url ? thumbnail3.url : null,
         duration: video.duration,
         isPublished: isPublished,
         owner: user._id

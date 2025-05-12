@@ -103,6 +103,10 @@ const getChannelProfile = asyncHandler(async (req, res) => {
         owner: channel._id,
         isPublished: "public"
     });
+    const playlistsCount = await Playlist.countDocuments({
+        owner: channel._id,
+        visibility: "public"
+    });
     // channel.videosCount = videosCount;
 
     return res
@@ -110,7 +114,7 @@ const getChannelProfile = asyncHandler(async (req, res) => {
         .json(
             new ApiResponse(
                 200,
-                { channelInfo, videosCount },
+                { channelInfo, videosCount, playlistsCount },
                 "channel fetched successfully"
             )
         );
@@ -149,15 +153,30 @@ const getChannelVideos = asyncHandler(async (req, res) => {
 });
 
 const getChannelPlaylists = asyncHandler(async (req, res) => {
-    const { channel_obj_id } = req.body;
-    if (!channel_obj_id) {
-        throw new ApiError("channel_obj_id is required to get playlists");
+    const { username } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    if (!username) {
+        throw new ApiError("username is required to get Playlists");
     }
     const user = req.user;
+
+    const channel = await User.findOne({ username: username });
+    if (!channel) {
+        throw new ApiError("requested channel does not exist");
+    }
+
     const channelPlaylists = await Playlist.find({
-        owner: channel_obj_id,
+        owner: channel._id,
         visibility: "public"
-    });
+    })
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 });
+
+    console.log("channelPlaylists: ", channelPlaylists);
+
     return res
         .status(200)
         .json(
@@ -170,9 +189,12 @@ const getChannelPlaylists = asyncHandler(async (req, res) => {
 });
 
 const getChannelPosts = asyncHandler(async (req, res) => {
-    const { channel_obj_id } = req.params;
-    if (!channel_obj_id) {
-        throw new ApiError("channel_obj_id is required to get posts");
+    const { username } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    if (!username) {
+        throw new ApiError("username is required to get posts");
     }
     const channelPosts = await Post.find({ owner: channel_obj_id }).limit(20);
 
