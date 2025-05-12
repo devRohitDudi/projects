@@ -4,30 +4,39 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
 import ChannelVideoCard from "../components/ChannelVideoCard";
+import ChannelPostCard from "../components/ChannelPostCard";
+import PlaylistCard from "../components/PlaylistCard";
 const Channel = () => {
   const { username } = useParams();
   const { isLoggedIn, currentUsername } = useAuthStore();
   const [channel, setChannel] = useState(null);
   const [subscribersCount, setSubscribersCount] = useState(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
+
   const [videos, setVideos] = useState([]);
   const [playlists, setPlaylists] = useState([]);
+  const [posts, setPosts] = useState([]);
 
   const [videosCount, setVideosCount] = useState(0);
   const [playlistsCount, setPlaylistsCount] = useState(0);
+  const [postsCount, setPostsCount] = useState(0);
 
   const [fetchedVideosCount, setFetchedVideosCount] = useState(0);
   const [fetchedPlaylistsCount, setFetchedPlaylistsCount] = useState(0);
+  const [fetchedPostsCount, setFetchedPostsCount] = useState(0);
 
   const [loading, setLoading] = useState(true);
   const [videosPage, setVideosPage] = useState(1);
   const [playlistsPage, setPlaylistsPage] = useState(1);
+  const [postsPage, setPostsPage] = useState(1);
+
   const [videosLoading, setVideosLoading] = useState(false);
   const [playlistsLoading, setPlaylistsLoading] = useState(false);
   const [postsLoading, setPostsLoading] = useState(false);
 
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("videos");
+  //   const memoizedPlaylists = useMemo(() => playlists, [playlists]);
   let channelId = "";
   if (username) {
     channelId = username;
@@ -49,6 +58,11 @@ const Channel = () => {
     setPlaylistsCount(() => {
       const newCount = message.playlistsCount;
       console.log("playlists count:", newCount);
+      return newCount;
+    });
+    setPostsCount(() => {
+      const newCount = message.postsCount;
+      console.log("postsCount:", newCount);
       return newCount;
     });
   };
@@ -119,12 +133,10 @@ const Channel = () => {
   // Second useEffect fetch videos only after videosCount is available
   useEffect(() => {
     if (activeTab !== "videos") return;
-
     if (videosCount === 0) return;
+    if (fetchedVideosCount >= videosCount) return;
 
     const getVideos = async () => {
-      if (fetchedVideosCount >= videosCount) return;
-
       try {
         setVideosLoading(true);
         const channelVideos = await axios.get(
@@ -169,15 +181,40 @@ const Channel = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [videosCount, channelId, fetchedVideosCount, activeTab, videosPage]);
 
-  //third useEffect for playlist fetching
+  // Add a function to handle tab switching
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    // Reset loading states
+    setVideosLoading(false);
+    setPlaylistsLoading(false);
+    setPostsLoading(false);
+    // Reset page counts
+    if (tab === "videos") {
+      setVideosPage(1);
+      setFetchedVideosCount(0);
+      setVideos([]);
+    } else if (tab === "playlists") {
+      setPlaylistsPage(1);
+      setFetchedPlaylistsCount(0);
+      setPlaylists([]);
+    } else if (tab === "posts") {
+      setPostsPage(1);
+      setFetchedPostsCount(0);
+      setPosts([]);
+    }
+  };
+
+  //TODO:   Slove rendering twice
+  //third useEffect for playlist
   useEffect(() => {
+    if (playlistsLoading) return;
     if (activeTab !== "playlists") return;
-    if (playlistsCount === 0) return; // wait for actual value
-    console.log("playlistsCount:", playlistsCount);
+    if (playlistsCount === 0) return;
+    if (fetchedPlaylistsCount >= playlistsCount) return;
 
+    let isMounted = true;
     const getPlaylists = async () => {
-      if (fetchedPlaylistsCount >= playlistsCount) return;
-
+      if (!isMounted) return;
       try {
         setPlaylistsLoading(true);
         const channelPlaylists = await axios.get(
@@ -187,8 +224,8 @@ const Channel = () => {
             withCredentials: "include",
           }
         );
-        console.log("channelPlaylists: ", channelPlaylists);
 
+        if (!isMounted) return;
         setPlaylistsPage((prev) => prev + 1);
         setPlaylists((prev) => [
           ...prev,
@@ -198,21 +235,12 @@ const Channel = () => {
         setFetchedPlaylistsCount((prev) => {
           const updatedCount =
             prev + channelPlaylists.data.message.channelPlaylists.length;
-          console.log("fetched playlists count:", updatedCount);
           return updatedCount;
         });
-        if (channelPlaylists.data.message.channelPlaylists.length == 0) {
-          console.log(
-            "channel info is saying that there are ",
-            playlistsCount,
-            "public playlists but fetching 0. the issue is likely in backend"
-          );
-
-          setPlaylistsCount(0);
-        }
 
         setPlaylistsLoading(false);
       } catch (error) {
+        if (!isMounted) return;
         setError("while fetching playlists", error);
         setPlaylistsLoading(false);
       }
@@ -220,24 +248,91 @@ const Channel = () => {
 
     getPlaylists();
 
-    const handleScroll = () => {
+    const debounce = (func, wait) => {
+      let timeout;
+      return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+      };
+    };
+
+    const handleScroll = debounce(() => {
       if (
         window.innerHeight + window.scrollY >=
         document.body.offsetHeight - 50
       ) {
         getPlaylists();
       }
+    }, 200);
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      isMounted = false;
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [playlistsCount, channelId, fetchedPlaylistsCount, activeTab, playlistsPage]);
+
+  //third useEffect for posts fetching
+  useEffect(() => {
+    if (activeTab !== "posts") return;
+    if (postsCount === 0) return;
+    if (fetchedPostsCount >= postsCount) return;
+
+    let isMounted = true;
+    const getPosts = async () => {
+      if (!isMounted) return;
+      try {
+        setPostsLoading(true);
+        const channelPosts = await axios.get(
+          `http://localhost:4000/api/v1/channel/get-channel-posts/${channelId}?page=${postsPage}&limit=20`,
+          {
+            headers: { Accept: "application/json" },
+            withCredentials: "include",
+          }
+        );
+
+        if (!isMounted) return;
+        setPostsPage((prev) => prev + 1);
+        setPosts((prev) => [
+          ...prev,
+          ...channelPosts.data.message.channelPosts,
+        ]);
+
+        setFetchedPostsCount((prev) => {
+          const updatedCount =
+            prev + channelPosts.data.message.channelPosts.length;
+          return updatedCount;
+        });
+
+        if (channelPosts.data.message.channelPosts.length === 0) {
+          setPostsCount(0);
+        }
+
+        setPostsLoading(false);
+      } catch (error) {
+        if (!isMounted) return;
+        setError("while fetching posts", error);
+        setPostsLoading(false);
+      }
+    };
+
+    getPosts();
+
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 50
+      ) {
+        getPosts();
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [
-    playlistsCount,
-    channelId,
-    fetchedPlaylistsCount,
-    activeTab,
-    playlistsPage,
-  ]);
+    return () => {
+      isMounted = false;
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [postsCount, channelId, fetchedPostsCount, activeTab, postsPage]);
 
   if (loading) {
     return (
@@ -325,7 +420,7 @@ const Channel = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex gap-8">
             <button
-              onClick={() => setActiveTab("videos")}
+              onClick={() => handleTabChange("videos")}
               className={`py-4 border-b-2 ${
                 activeTab === "videos"
                   ? "border-white"
@@ -335,7 +430,7 @@ const Channel = () => {
               VIDEOS
             </button>
             <button
-              onClick={() => setActiveTab("playlists")}
+              onClick={() => handleTabChange("playlists")}
               className={`py-4 border-b-2 ${
                 activeTab === "playlists"
                   ? "border-white"
@@ -345,7 +440,7 @@ const Channel = () => {
               PLAYLISTS
             </button>
             <button
-              onClick={() => setActiveTab("posts")}
+              onClick={() => handleTabChange("posts")}
               className={`py-4 border-b-2 ${
                 activeTab === "posts"
                   ? "border-white"
@@ -355,7 +450,7 @@ const Channel = () => {
               POSTS
             </button>
             <button
-              onClick={() => setActiveTab("about")}
+              onClick={() => handleTabChange("about")}
               className={`py-4 border-b-2 ${
                 activeTab === "about"
                   ? "border-white"
@@ -374,53 +469,50 @@ const Channel = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {videos.map((video) => {
               //   console.log(video._id);
-              return <ChannelVideoCard video={video} />;
+              return <ChannelVideoCard key={video._id} video={video} />;
             })}
             {videosLoading && (
               <div className="flex justify-center items-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-                {fetchedVideosCount >= videosCount ? (
-                  <p className="text-white">All videos are here</p>
-                ) : null}
               </div>
             )}
+            {fetchedVideosCount >= videosCount && activeTab === "videos" ? (
+              <p className="text-white">All videos are here</p>
+            ) : null}
           </div>
         )}
 
         {activeTab === "playlists" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {playlists.map((playlist) => (
-              <div
-                key={playlist._id}
-                className="bg-zinc-900 rounded-lg overflow-hidden hover:bg-zinc-800 transition-colors"
-              >
-                <div className="relative aspect-video">
-                  <img
-                    src={playlist.thumbnailUrl}
-                    alt={playlist.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                    <span className="text-lg font-semibold">
-                      {playlist.videoCount} videos
-                    </span>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold">{playlist.title}</h3>
-                  <p className="text-sm text-gray-400 mt-1">
-                    {playlist.videoCount} videos • Updated{" "}
-                    {new Date(playlist.updatedAt).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
+              <PlaylistCard key={playlist._id} playlist={playlist} />
             ))}
             {/* section loading */}
             {playlistsLoading && (
               <div className="flex justify-center items-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
               </div>
+            )}{" "}
+            {fetchedPlaylistsCount >= playlistsCount &&
+            activeTab === "playlists" ? (
+              <p className="text-white">All playlists are here</p>
+            ) : null}
+          </div>
+        )}
+        {activeTab === "posts" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {posts.map((post) => {
+              //   console.log(video._id);
+              return <ChannelPostCard key={post._id} post={post} />;
+            })}
+            {postsLoading && (
+              <div className="flex justify-center items-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+              </div>
             )}
+            {fetchedPostsCount >= postsCount && activeTab === "posts" ? (
+              <p className="text-white">All posts are here</p>
+            ) : null}
           </div>
         )}
 
@@ -444,7 +536,7 @@ const Channel = () => {
                 </div>
                 <div className="flex">
                   <span className="w-32 text-gray-400">Total views</span>
-                  <span>{channel.totalViews.toLocaleString()}</span>
+                  <span>{channel.totalViews || "Not specified"}</span>
                 </div>
               </div>
 
@@ -467,12 +559,6 @@ const Channel = () => {
                 </>
               )}
             </div>
-            {/* section loading */}
-            {sectionLoading && (
-              <div className="flex justify-center items-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-              </div>
-            )}
           </div>
         )}
       </div>

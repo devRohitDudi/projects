@@ -11,7 +11,7 @@ import { Post } from "../models/post.model.js";
 import mongoose from "mongoose";
 
 const createPost = asyncHandler(async (req, res) => {
-    const user = req.params;
+    const user = req.user;
     const { content } = req.body;
 
     if (!user) {
@@ -29,12 +29,16 @@ const createPost = asyncHandler(async (req, res) => {
             uploadedPhotos.push(photo);
         }
     }
+    console.log("user._id:", user._id);
 
     const createdPost = await Post.create({
         content: content,
-        images: uploadedPhotos,
-        owner: user._id
+        owner: user._id,
+        images: uploadedPhotos
     });
+
+    console.log("createdPost:", await createdPost);
+
     if (!createdPost) {
         throw new ApiError("Error occured while creating post");
     }

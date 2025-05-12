@@ -103,6 +103,9 @@ const getChannelProfile = asyncHandler(async (req, res) => {
         owner: channel._id,
         isPublished: "public"
     });
+    const postsCount = await Post.countDocuments({
+        owner: channel._id
+    });
     const playlistsCount = await Playlist.countDocuments({
         owner: channel._id,
         visibility: "public"
@@ -114,7 +117,7 @@ const getChannelProfile = asyncHandler(async (req, res) => {
         .json(
             new ApiResponse(
                 200,
-                { channelInfo, videosCount, playlistsCount },
+                { channelInfo, videosCount, playlistsCount, postsCount },
                 "channel fetched successfully"
             )
         );
@@ -175,8 +178,6 @@ const getChannelPlaylists = asyncHandler(async (req, res) => {
         .limit(limit)
         .sort({ createdAt: -1 });
 
-    console.log("channelPlaylists: ", channelPlaylists);
-
     return res
         .status(200)
         .json(
@@ -196,10 +197,16 @@ const getChannelPosts = asyncHandler(async (req, res) => {
     if (!username) {
         throw new ApiError("username is required to get posts");
     }
-    const channelPosts = await Post.find({ owner: channel_obj_id }).limit(20);
+
+    const channel = await User.findOne({ username: username });
+
+    if (!channel) {
+        throw new ApiError("requested channel does not exist");
+    }
+    const channelPosts = await Post.find({ owner: channel._id }).limit(20);
 
     if (!channelPosts) {
-        throw new ApiError("can't fetch posts! maybe Invalid channel_obj_id.");
+        throw new ApiError("can't fetch posts! maybe invalid _id.");
     }
     return res
         .status(200)
