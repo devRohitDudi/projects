@@ -8,37 +8,101 @@ const Watch = () => {
   const [searchParams] = useSearchParams();
   const videoId = searchParams.get("v");
   const [video, setVideo] = useState(null);
-  const [suggestedVideos, setSuggestedVideos] = useState([]);
-  const [comments, setComments] = useState([]);
+  const [isVideoFetched, setIsVideoFetched] = useState(false);
+  const [channelPreview, setChannelPreview] = useState(null);
+  //   const [suggestedVideos, setSuggestedVideos] = useState([]);
+  const [commentsCount, setCommentsCount] = useState(0);
+  const [likesCount, setLikesCount] = useState(0);
+  const [subscribersCount, setSubscribersCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [fetchedCommentsCount, setFetchedCommentsCount] = useState(0);
+  const [commentsPage, setCommentsPage] = useState(0);
+  const [viewAdded, setViewAdded] = useState(false);
 
+  //TODO isLiked? && isDisliked?
+  // for fetching video
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchVideo = async () => {
       try {
         setLoading(true);
-        const [videoRes, suggestedRes, commentsRes] = await Promise.all([
-          axios.get(`/api/videos/${videoId}`),
-          axios.get(`/api/videos/suggested`),
-          axios.get(`/api/comments?videoId=${videoId}`),
-        ]);
+        console.log("videoId is:", videoId);
 
-        setVideo(videoRes.data);
-        setSuggestedVideos(suggestedRes.data);
-        setComments(commentsRes.data);
+        const videoRes = await axios.get(
+          `http://localhost:4000/api/v1/video/watch/${videoId}`
+        );
+
+        console.log("videoRes: ", videoRes);
+        setIsVideoFetched(() => {
+          const fetched = true;
+          return fetched;
+        });
+        setVideo(videoRes.data.message.video);
+        setChannelPreview(videoRes.data.message.channel);
+        setCommentsCount(videoRes.data.message.commentsCount);
+        setLikesCount(videoRes.data.message.likesCount);
+        setSubscribersCount(videoRes.data.message.subscribersCount);
+        // setComments(commentsRes.data);
         setError(null);
-      } catch (err) {
-        setError("Failed to fetch video data");
-        console.error("Error:", err);
+      } catch (error) {
+        setError(error.response?.data?.message || "failed to fetch video");
+        console.error("Error:", error);
       } finally {
         setLoading(false);
       }
     };
 
     if (videoId) {
-      fetchData();
+      if (!isVideoFetched) {
+        fetchVideo();
+      }
     }
-  }, [videoId]);
+  }, [videoId, isVideoFetched]);
+
+  //for add view history
+  useEffect(() => {
+    const addViewhistory = async () => {
+      const addTohistoryRes = await axios.patch(
+        `http://localhost:4000/api/v1/video/add-view-history/${videoId}`
+      );
+      if (addTohistoryRes.status === 200) {
+        setViewAdded(() => {
+          const added = true;
+          return added;
+        });
+        console.log("view added! and history if login");
+      }
+    };
+
+    if (video) {
+      if (!viewAdded) {
+        addViewhistory();
+      }
+    }
+  }, [video, videoId, viewAdded]);
+
+  const fetchSomeComments = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/api/v1/video/comments/${videoId}?page=${commentsPage}&limit=20`
+      );
+
+      console.log("Comments: ", response);
+
+      setComments((prev) => {
+        return [...prev, ...response.data.message.comments];
+      });
+
+      setCommentsPage((prev) => prev + 1);
+    } catch (error) {
+      console.log("Error while fetching comments: ", error);
+    }
+  };
+  useEffect(() => {
+    if (fetchedCommentsCount >= commentsCount) return;
+    fetchSomeComments();
+  }, []); // empty array = run once on mount
 
   if (loading) {
     return (
@@ -72,10 +136,10 @@ const Watch = () => {
           {/* Video Player */}
           <div className="aspect-video bg-black rounded-lg overflow-hidden">
             <video
-              src={video.videoUrl}
+              src={video.videoURL}
               controls
               className="w-full h-full"
-              poster={video.thumbnailUrl}
+              poster={video.thumbnail1}
             />
           </div>
 
@@ -87,14 +151,14 @@ const Watch = () => {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <img
-                    src={video.channel.avatarUrl}
-                    alt={video.channel.name}
+                    src={channelPreview.avatar}
+                    alt={channelPreview.username}
                     className="w-10 h-10 rounded-full"
                   />
                   <div>
-                    <h3 className="font-semibold">{video.channel.name}</h3>
+                    <h3 className="font-semibold">{channelPreview.fullName}</h3>
                     <p className="text-sm text-gray-400">
-                      {video.channel.subscribers} subscribers
+                      {subscribersCount} subscribers
                     </p>
                   </div>
                 </div>
@@ -117,7 +181,8 @@ const Watch = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  {video.likes}
+
+                  {likesCount}
                 </button>
                 <button className="flex items-center gap-2 px-4 py-2 bg-zinc-800 rounded-full hover:bg-zinc-700">
                   <svg
@@ -134,6 +199,19 @@ const Watch = () => {
                   </svg>
                   Dislike
                 </button>
+                <button className="flex items-center gap-2 px-4 py-2 bg-zinc-800 rounded-full hover:bg-zinc-700">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 -960 960 960"
+                    width="24px"
+                    fill="#e3e3e3"
+                  >
+                    <path d="M200-120v-640q0-33 23.5-56.5T280-840h400q33 0 56.5 23.5T760-760v640L480-240 200-120Zm80-122 200-86 200 86v-518H280v518Zm0-518h400-400Z" />
+                  </svg>
+                  Add to
+                </button>
+
                 <button className="flex items-center gap-2 px-4 py-2 bg-zinc-800 rounded-full hover:bg-zinc-700">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -164,12 +242,17 @@ const Watch = () => {
           </div>
 
           {/* Comments Section */}
-          <Comments comments={comments} />
+          <Comments
+            comments={comments}
+            commentsCount={commentsCount}
+            videoId={videoId}
+          />
         </div>
 
         {/* Suggested Videos Sidebar */}
         <div className="lg:w-80">
-          <VideoSuggestions videos={suggestedVideos} />
+          suggested videos
+          {/* <VideoSuggestions videos={suggestedVideos} /> */}
         </div>
       </div>
     </div>

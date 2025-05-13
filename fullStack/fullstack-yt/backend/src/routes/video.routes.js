@@ -37,7 +37,7 @@ router.route("/watch/:video_obj_id").get(getVideo);
 
 //verified
 router
-    .route("/add-view&history/:video_obj_id")
+    .route("/add-view-history/:video_obj_id")
     .patch(verifyJWT, addViewAndHistory);
 
 //verified

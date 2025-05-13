@@ -6,8 +6,10 @@ import { Video } from "../models/video.model.js";
 import { Comment } from "../models/comment.model.js";
 import { Like } from "../models/like.model.js";
 import { Dislike } from "../models/dislike.model.js";
+import { Subscription } from "../models/subscription.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import path from "path";
+import { subscribe } from "diagnostics_channel";
 
 const uploadVideo = asyncHandler(async (req, res) => {
     const { title, description, tags = null, visibility } = req.body;
@@ -105,11 +107,23 @@ const getVideo = asyncHandler(async (req, res) => {
     const video = await Video.findById(video_obj_id).select(
         "-dislikes -likes -tags -comments"
     );
-
     if (!video) {
         throw new ApiError(300, "video couldn't found");
     }
+    const channel = await User.findById({ _id: video.owner }).select(
+        "username fullName avatar"
+    );
 
+    //created different method and call for this after getting video
+    // if (req.user) {
+    //     video.views = video.views + 1;
+    //     await video.save({ validateBeforeSave: false });
+    //     // channel.watchHistory =
+    // }
+
+    const subscribersCount = await Subscription.countDocuments({
+        channel: channel._id
+    });
     // how many Documents are in the Like schema in which this video url is available as onVideo
     const likesCount = await Like.countDocuments({ onVideo: video_obj_id });
     const dislikesCount = await Dislike.countDocuments({
@@ -126,14 +140,19 @@ const getVideo = asyncHandler(async (req, res) => {
                 200,
                 // Host your own redirect endpoint
                 // load the video
-                { video, commentsCount, likesCount, dislikesCount },
+                {
+                    video,
+                    commentsCount,
+                    likesCount,
+                    dislikesCount,
+                    subscribersCount,
+                    channel
+                },
                 "requested video fetched successfully, load video on player using provided videoURL"
             )
         );
     } else if (video.isPublished == "private") {
-        return res
-            .status(300)
-            .json(new ApiResponse(200, {}, "requested video is private"));
+        throw new ApiError("Requested video is private ");
     }
 });
 
@@ -199,7 +218,7 @@ const addViewAndHistory = asyncHandler(async (req, res) => {
     }
     const video = await Video.findById(video_obj_id);
     if (!video) {
-        throw new ApiError(300, "Requested video not found");
+        throw new ApiError("Requested video not found");
     }
     video.views += 1;
 

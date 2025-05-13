@@ -154,9 +154,7 @@ const loginUser = asyncHandler(async (req, res) => {
     });
 
     if (!userInstance) {
-        return res
-            .status(404)
-            .json(new ApiResponse(404, {}, "User does not exist"));
+        throw new ApiError("User does not exist");
     }
     console.log("userInstance: ", userInstance);
 
@@ -164,9 +162,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const isPasswordValid = await userInstance.isPasswordCorrect(password);
 
     if (!isPasswordValid) {
-        return res
-            .status(401)
-            .json(new ApiResponse(401, {}, "Invalid password"));
+        throw new ApiError("Invalid password");
     }
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
@@ -279,7 +275,7 @@ const refreshTheAccessToken = asyncHandler(async (req, res) => {
 const changeUserPassword = asyncHandler(async (req, res) => {
     const user = req.user;
     if (!user) {
-        return res.status(300).json(new ApiError("Login is required."));
+        throw new ApiError("Login is required.");
     }
     const { oldPassword, newPassword } = req.body;
 
@@ -288,7 +284,7 @@ const changeUserPassword = asyncHandler(async (req, res) => {
     const isCorrect = await userInDB.isPasswordCorrect(oldPassword);
 
     if (!isCorrect) {
-        throw new ApiError(300, "incorrect old password");
+        throw new ApiError("incorrect old password");
     }
 
     // for encryption of password there's a method in Schema .pre on save()
@@ -319,9 +315,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 const updateDetails = asyncHandler(async (req, res) => {
     const user = req.user;
     if (!user) {
-        return res
-            .status(301)
-            .json(new ApiResponse(301, "Login is required to update details"));
+        throw new ApiError("Login is required to update details");
     }
     const details = req.body || {};
 
@@ -357,12 +351,12 @@ const updateAvatar = asyncHandler(async (req, res) => {
     const avatarLocalPath = req.file?.path;
 
     if (!avatarLocalPath) {
-        throw new ApiError(300, "avatar file is required");
+        throw new ApiError("avatar file is required");
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath);
     if (!avatar.url) {
-        throw new ApiError(400, "error while uploading avatar");
+        throw new ApiError("error while uploading avatar");
     }
 
     const user = await User.findById(req.user._id);
@@ -389,14 +383,12 @@ const updateCoverImage = asyncHandler(async (req, res) => {
     const coverImageLocalPath = req.file?.path;
 
     if (!coverImageLocalPath) {
-        return res
-            .status(302)
-            .josn(new ApiResponse(302, "cover image is required to update it"));
+        throw new ApiError("cover image is required to update it");
     }
 
     const coverImage = await uploadOnCloudinary(coverImageLocalPath);
     if (!coverImage.url) {
-        throw new ApiError(400, "error while uploading coverImage");
+        throw new ApiError("error while uploading coverImage");
     }
 
     const user = await User.findById(req.user._id);
@@ -421,7 +413,7 @@ const updateCoverImage = asyncHandler(async (req, res) => {
 
 const getWatchHistory = asyncHandler(async (req, res) => {
     if (!req.user._id) {
-        throw new ApiError(300, "login is required to get watchHistory");
+        throw new ApiError("login is required to get watchHistory");
     }
     // const user = await User.aggregate([
     //     {

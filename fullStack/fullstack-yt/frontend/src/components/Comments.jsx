@@ -1,5 +1,6 @@
 import { useState } from "react";
-
+import axios from "axios";
+//baby comp for rendering every comment
 const Comment = ({ comment }) => {
   return (
     <div className="flex gap-3 py-4 border-b border-zinc-800">
@@ -54,33 +55,45 @@ const Comment = ({ comment }) => {
   );
 };
 
-const Comments = ({ comments: initialComments }) => {
+const Comments = ({
+  comments: initialComments,
+  commentsCount: commentsCount,
+  videoId: videoId,
+}) => {
   const [comments, setComments] = useState(initialComments);
   const [newComment, setNewComment] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newComment.trim()) return;
 
-    const comment = {
-      id: Date.now(),
-      content: newComment,
-      user: {
-        name: "Current User",
-        avatarUrl: "https://via.placeholder.com/40",
-      },
-      createdAt: new Date().toISOString(),
-      likes: 0,
-    };
+    try {
+      const message = newComment;
+      const response = await axios.post(
+        `
+                http://localhost:4000/api/v1/video/add-comment/${videoId}`,
+        { message },
+        {
+          headers: { Accept: "application/json" },
+          withCredentials: "include",
+        }
+      );
 
-    setComments([comment, ...comments]);
+      if (response.status === 200) {
+        alert("Comment created successfully");
+      }
+      setComments([response.data.message.comment, ...comments]);
+    } catch (error) {
+      console.log("error while creating comment", error);
+    }
+
     setNewComment("");
   };
 
   return (
     <div className="mt-8">
       <h2 className="text-xl font-semibold mb-4">Comments</h2>
-      
+      <p>{commentsCount} comments</p>
       <form onSubmit={handleSubmit} className="mb-6">
         <div className="flex gap-3">
           <img
@@ -117,11 +130,11 @@ const Comments = ({ comments: initialComments }) => {
 
       <div className="space-y-2">
         {comments.map((comment) => (
-          <Comment key={comment.id} comment={comment} />
+          <Comment key={comment._id} comment={comment} />
         ))}
       </div>
     </div>
   );
 };
 
-export default Comments; 
+export default Comments;
