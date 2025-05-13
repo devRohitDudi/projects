@@ -31,9 +31,7 @@ const subscribeChannel = asyncHandler(async (req, res) => {
     });
 
     if (user._id.toString() == channelExistence._id.toString()) {
-        return res
-            .status(400)
-            .json(new ApiResponse(400, {}, "You can't subscribe yourself"));
+        throw new ApiError("You can't subscribe yourself");
     }
 
     if (!channelExistence) {

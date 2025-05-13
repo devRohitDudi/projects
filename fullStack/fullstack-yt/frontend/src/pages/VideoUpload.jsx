@@ -7,15 +7,16 @@ const VideoUpload = () => {
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [thumbnail, setThumbnail] = useState(null);
+  const [thumbnail1, setThumbnail1] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const [visibility, setVisibility] = useState("public");
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
   const thumbnailInputRef = useRef(null);
   const { isLoggedIn } = useAuthStore();
   if (!isLoggedIn) {
-    // window.location.href = "/login";
+    window.location.href = "/";
   }
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -41,7 +42,7 @@ const VideoUpload = () => {
   const handleThumbnailSelect = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile && selectedFile.type.startsWith("image/")) {
-      setThumbnail(selectedFile);
+      setThumbnail1(selectedFile);
     }
   };
 
@@ -59,37 +60,49 @@ const VideoUpload = () => {
       formData.append("video", file);
       formData.append("title", title);
       formData.append("description", description);
-      if (thumbnail) {
-        formData.append("thumbnail", thumbnail);
+      formData.append("visibility", visibility);
+      if (thumbnail1) {
+        formData.append("thumbnail1", thumbnail1);
       }
+      console.log("formData", formData);
 
-      await axios.post("/api/videos/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        onUploadProgress: (progressEvent) => {
-          const progress = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          setUploadProgress(progress);
-        },
-      });
+      const response = await axios.post(
+        `http://localhost:4000/api/v1/video/upload`,
+        formData,
+        {
+          METHOD: "POST",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: "include", // send HttpOnly cookies
+          //   onUploadProgress: (progressEvent) => {
+          //     const percent = Math.round(
+          //       (progressEvent.loaded * 100) / progressEvent.total
+          //     );
+          //     setUploadProgress(percent);
+          //   },
+        }
+      );
+      console.log("response: ", response.data);
+      if (response.status === 200) {
+        alert("Videos uploaded successfully");
+      }
 
       // Reset form
       setFile(null);
       setTitle("");
       setDescription("");
-      setThumbnail(null);
+      setThumbnail1(null);
       setUploadProgress(0);
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to upload video");
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to upload video");
     } finally {
       setIsUploading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className=" bg-black bg-opacity-50 flex items-center h-full justify-center z-50">
       <div className="bg-zinc-900 rounded-lg w-full max-w-2xl p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold">Upload Video</h2>
@@ -99,7 +112,7 @@ const VideoUpload = () => {
         </div>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded mb-4">
+          <div className="sticky top-0 bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded mb-4">
             {error}
           </div>
         )}
@@ -177,24 +190,34 @@ const VideoUpload = () => {
                 accept="image/*"
                 className="hidden"
               />
-              {thumbnail ? (
+              {thumbnail1 ? (
                 <div className="flex items-center justify-center gap-2">
                   <img
-                    src={URL.createObjectURL(thumbnail)}
+                    src={URL.createObjectURL(thumbnail1)}
                     alt="Thumbnail preview"
                     className="h-20 object-cover rounded"
                   />
-                  <span>{thumbnail.name}</span>
+                  <span>{thumbnail1.name}</span>
                 </div>
               ) : (
                 <p className="text-gray-400">Click to upload thumbnail</p>
               )}
             </div>
           </div>
-
+          <div className="w-full flex justify-around">
+            <p>Visibility:</p>
+            <select
+              value={visibility}
+              onChange={(e) => setVisibility(e.target.value === "true")}
+            >
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+              <option value="unlisted">Unlisted</option>
+            </select>
+          </div>
           {/* Upload Progress */}
           {isUploading && (
-            <div className="space-y-2">
+            <div className="space-y-2 sticky bottom-0">
               <div className="flex justify-between text-sm">
                 <span>Uploading...</span>
                 <span>{uploadProgress}%</span>

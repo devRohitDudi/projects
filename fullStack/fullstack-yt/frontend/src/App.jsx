@@ -11,7 +11,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import useAuthStore from "./store/useAuthStore";
 import { Upload } from "lucide-react";
-import VideoUpload from "./components/VideoUpload";
+import VideoUpload from "./pages/VideoUpload";
 import MainLayout from "./components/MainLayout";
 import Settings from "./pages/Settings";
 function App() {

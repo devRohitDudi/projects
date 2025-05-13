@@ -53,10 +53,10 @@ const videoSchema = new Schema(
                 ref: "dislikes"
             }
         ],
-        isPublished: {
+        visibility: {
             type: String,
             enum: ["public", "private", "unlisted"],
-            default: "private"
+            default: "public"
         },
         tags: {
             type: [String],

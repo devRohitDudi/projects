@@ -1,6 +1,6 @@
 import { Menu, Search, User, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
-import VideoUpload from "./VideoUpload";
+import VideoUpload from "../pages/VideoUpload";
 import ProfileDropdown from "./ProfileDropdown";
 import Cookies from "js-cookie";
 import useAuthStore from "../store/useAuthStore";

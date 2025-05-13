@@ -94,7 +94,7 @@ const Channel = () => {
         console.log("response:", response);
       }
     } catch (error) {
-      console.error("Error on subscribe: ", error);
+      console.error(error.response?.data?.message);
     }
   };
 
@@ -117,9 +117,11 @@ const Channel = () => {
         setupChannelData(channelData.data.message);
         setError(null);
         setLoading(false);
-      } catch (err) {
-        setError("Failed to fetch channel data");
-        console.error("Error:", err);
+      } catch (error) {
+        setError(
+          error.response?.data?.message || "Failed to fetch channel data"
+        );
+        console.error("Error:", error);
       } finally {
         setLoading(false);
       }
@@ -161,7 +163,7 @@ const Channel = () => {
 
         setVideosLoading(false);
       } catch (error) {
-        setError("while fetching videos", error);
+        setError(error.response?.data?.message || "while fetching videos");
         setVideosLoading(false);
       }
     };
@@ -207,7 +209,6 @@ const Channel = () => {
   //TODO:   Slove rendering twice
   //third useEffect for playlist
   useEffect(() => {
-    if (playlistsLoading) return;
     if (activeTab !== "playlists") return;
     if (playlistsCount === 0) return;
     if (fetchedPlaylistsCount >= playlistsCount) return;
@@ -241,7 +242,7 @@ const Channel = () => {
         setPlaylistsLoading(false);
       } catch (error) {
         if (!isMounted) return;
-        setError("while fetching playlists", error);
+        setError(error.response?.data?.message || "while fetching playlists");
         setPlaylistsLoading(false);
       }
     };
@@ -270,7 +271,13 @@ const Channel = () => {
       isMounted = false;
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [playlistsCount, channelId, fetchedPlaylistsCount, activeTab, playlistsPage]);
+  }, [
+    playlistsCount,
+    channelId,
+    fetchedPlaylistsCount,
+    activeTab,
+    playlistsPage,
+  ]);
 
   //third useEffect for posts fetching
   useEffect(() => {
@@ -311,7 +318,7 @@ const Channel = () => {
         setPostsLoading(false);
       } catch (error) {
         if (!isMounted) return;
-        setError("while fetching posts", error);
+        setError(error.response?.data?.message || "while fetching posts");
         setPostsLoading(false);
       }
     };

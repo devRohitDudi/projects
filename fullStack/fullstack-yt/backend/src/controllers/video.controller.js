@@ -8,14 +8,15 @@ import { Like } from "../models/like.model.js";
 import { Dislike } from "../models/dislike.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import path from "path";
+
 const uploadVideo = asyncHandler(async (req, res) => {
-    const { title, description, tags = null, isPublished } = req.body;
+    const { title, description, tags = null, visibility } = req.body;
 
     if (!title) {
         throw new ApiError("Title is required");
     }
 
-    const user = req.user;
+    const user = await req.user;
     if (!user) {
         throw new ApiError("Login is required to upload videos");
     }
@@ -67,8 +68,9 @@ const uploadVideo = asyncHandler(async (req, res) => {
         : null;
 
     console.log("thumbnail1 cloudinary: ", thumbnail1);
+    console.log("video cloudinary: ", video);
 
-    const videosInSchema = await Video.create({
+    const videoInSchema = await Video.create({
         videoURL: video.url,
         videoAssetId: video.asset_id,
         title: title,
@@ -78,16 +80,21 @@ const uploadVideo = asyncHandler(async (req, res) => {
         thumbnail2: thumbnail2?.url ? thumbnail2.url : null,
         thumbnail3: thumbnail3?.url ? thumbnail3.url : null,
         duration: video.duration,
-        isPublished: isPublished,
-        owner: user._id
+        visibility: visibility,
+        owner: await user._id
     });
+    if (!videoInSchema) {
+        throw new ApiError("error while video document creation ");
+    }
+    // yeah it is created successfully
+    console.log("videoInSchema:", videoInSchema);
 
     return res
-        .status(200, "video has been uploaded ")
+        .status(200)
         .json(
             new ApiResponse(
                 200,
-                { videosInSchema },
+                { videoInSchema },
                 "video file has been uploaded succesfully"
             )
         );
@@ -112,7 +119,7 @@ const getVideo = asyncHandler(async (req, res) => {
         onVideo: video_obj_id
     });
 
-    if (video.isPublished == "public") {
+    if (video.visibility == "public") {
         // for unlisted videos show on frontend
         return res.status(200).json(
             new ApiResponse(

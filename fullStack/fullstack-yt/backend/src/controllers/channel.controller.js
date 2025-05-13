@@ -15,14 +15,12 @@ import { Post } from "../models/post.model.js";
 const getChannelProfile = asyncHandler(async (req, res) => {
     const { username } = req.params;
     if (!username) {
-        return res.status(300).json(new ApiError(400, "username not provided"));
+        throw new ApiError("username is required");
     }
 
     const channel = await User.findOne({ username: username });
     if (!channel) {
-        return res
-            .status(200)
-            .json(new ApiResponse(200, {}, "Requested channel doesn't exist"));
+        throw new ApiError("channel does not found");
     }
 
     // a trick for only retrieve isSubscribed if req.user._id is available
@@ -92,16 +90,14 @@ const getChannelProfile = asyncHandler(async (req, res) => {
     const channelInfo = await User.aggregate(pipeline);
 
     if (!channelInfo?.length) {
-        return res
-            .status(303)
-            .json(new ApiError(400, "channel does not found"));
+        throw new ApiError("channel does not found");
     }
 
     console.log("Querying videos count for channel:", channel._id);
 
     const videosCount = await Video.countDocuments({
         owner: channel._id,
-        isPublished: "public"
+        visibility: "public"
     });
     const postsCount = await Post.countDocuments({
         owner: channel._id
@@ -135,7 +131,7 @@ const getChannelVideos = asyncHandler(async (req, res) => {
     const channel = await User.findOne({ username: username });
     const channelVideos = await Video.find({
         owner: channel._id,
-        isPublished: "public"
+        visibility: "public"
     })
         .skip(skip)
         .limit(limit)

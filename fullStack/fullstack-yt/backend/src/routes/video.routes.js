@@ -22,13 +22,13 @@ const router = Router();
 
 //verified
 router.route("/upload").post(
-    verifyJWT,
     upload.fields([
         { name: "video", maxCount: 1 },
         { name: "thumbnail1", maxCount: 1 },
         { name: "thumbnail2", maxCount: 1 },
         { name: "thumbnail3", maxCount: 1 }
     ]),
+    verifyJWT,
     uploadVideo
 );
 
