@@ -8,6 +8,7 @@ import { Like } from "../models/like.model.js";
 import { Dislike } from "../models/dislike.model.js";
 import { Subscription } from "../models/subscription.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { History } from "../models/history.model.js";
 import path from "path";
 import { subscribe } from "diagnostics_channel";
 
@@ -227,33 +228,73 @@ const addViewAndHistory = asyncHandler(async (req, res) => {
     if (!user) {
         return res
             .status(200)
-            .json(new ApiResponse(200, {}, "Video view added"));
+            .json(
+                new ApiResponse(
+                    200,
+                    { message: "video view added" },
+                    "Video view added"
+                )
+            );
     } else {
-        const addedToHistory = await User.findByIdAndUpdate(user._id, {
-            $addToSet: { watchHistory: video_obj_id }
+        const alreadInhistory = await History.find({
+            user: user._id,
+            video: video._id
         });
-        if (addedToHistory) {
+        if (alreadInhistory) {
+            return res.status(200).json(
+                new ApiResponse(
+                    200,
+                    {
+                        message: "view added and video already is in history"
+                    },
+                    "view added and video already is in history"
+                )
+            );
+        }
+        const createdHistory = await History.create({
+            user: user._id,
+            video: video._id
+        });
+        if (createdHistory) {
             return res
                 .status(200)
                 .json(
                     new ApiError(
                         200,
-                        {},
+                        { message: "view added & video added to watchHistory" },
                         "view added & video added to watchHistory"
                     )
                 );
         } else {
-            return res
-                .status(200)
-                .json(
-                    new ApiError(
-                        200,
-                        {},
-                        "error occured while adding to watchHistory"
-                    )
-                );
+            throw new ApiError("Error occured while adding to watch history");
         }
     }
+});
+
+const getWatchHistory = asyncHandler(async (req, res) => {
+    const user = req.user;
+    if (!user) {
+        throw new ApiError("Login is required to get watchHistory");
+    }
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    console.log("page is:", page);
+
+    const totalDocs = await History.countDocuments({ user: user._id });
+
+    const history = await History.find({ user: user._id })
+        .populate("video")
+        // .select("thumbnail1 title createdAt") // Optional: populate video details
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1, _id: -1 });
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, { history }, "some channel history fetched")
+        );
 });
 
 const removeFromWatchHistory = asyncHandler(async (req, res) => {
@@ -293,5 +334,6 @@ export {
     addDislike,
     uploadVideo,
     addViewAndHistory,
-    removeFromWatchHistory
+    removeFromWatchHistory,
+    getWatchHistory
 };

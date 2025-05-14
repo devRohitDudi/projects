@@ -7,7 +7,8 @@ import {
     addDislike,
     addViewAndHistory,
     uploadVideo,
-    removeFromWatchHistory
+    removeFromWatchHistory,
+    getWatchHistory
 } from "../controllers/video.controller.js";
 
 import {
@@ -40,6 +41,7 @@ router
     .route("/add-view-history/:video_obj_id")
     .patch(verifyJWT, addViewAndHistory);
 
+router.route("/get-watch-history").get(verifyJWT, getWatchHistory);
 //verified
 router
     .route("/remove-watch-history/:video_obj_id")

@@ -55,12 +55,10 @@ const userSchema = new Schema(
             index: true,
             default: "Hello, I am using this app"
         },
-        watchHistory: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "Video"
-            }
-        ],
+        watchHistory: {
+            type: Schema.Types.ObjectId,
+            ref: "History"
+        },
         playlists: [
             {
                 type: Schema.Types.ObjectId,
