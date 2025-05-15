@@ -34,7 +34,7 @@ router.route("/upload").post(
 );
 
 //verified
-router.route("/watch/:video_obj_id").get(getVideo);
+router.route("/watch/:video_obj_id").get(verifyJWT, getVideo);
 
 //verified
 router

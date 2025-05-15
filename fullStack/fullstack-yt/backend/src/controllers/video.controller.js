@@ -115,13 +115,6 @@ const getVideo = asyncHandler(async (req, res) => {
         "username fullName avatar"
     );
 
-    //created different method and call for this after getting video
-    // if (req.user) {
-    //     video.views = video.views + 1;
-    //     await video.save({ validateBeforeSave: false });
-    //     // channel.watchHistory =
-    // }
-
     const subscribersCount = await Subscription.countDocuments({
         channel: channel._id
     });
@@ -133,6 +126,44 @@ const getVideo = asyncHandler(async (req, res) => {
     const commentsCount = await Comment.countDocuments({
         onVideo: video_obj_id
     });
+    if (req.user) {
+        const isLiked = await Like.exists({
+            onVideo: video_obj_id,
+            user: req.user._id
+        });
+        const isDisliked = await Dislike.exists({
+            onVideo: video_obj_id,
+            user: req.user._id
+        });
+        const isSubscribed = await Subscription.exists({
+            subscriber: req.user._id,
+            channel: channel._id
+        });
+        if (video.visibility == "public") {
+            // for unlisted videos show on frontend
+            return res.status(200).json(
+                new ApiResponse(
+                    200,
+                    // Host your own redirect endpoint
+                    // load the video
+                    {
+                        video,
+                        commentsCount,
+                        likesCount,
+                        dislikesCount,
+                        subscribersCount,
+                        channel,
+                        isLiked: !!isLiked,
+                        isDisliked: !!isDisliked,
+                        isSubscribed: !!isSubscribed
+                    },
+                    "requested video fetched successfully, load video on player using provided videoURL"
+                )
+            );
+        } else if (video.isPublished == "private") {
+            throw new ApiError("Requested video is private ");
+        }
+    }
 
     if (video.visibility == "public") {
         // for unlisted videos show on frontend

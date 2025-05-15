@@ -12,10 +12,16 @@ import { v2 as cloudinary } from "cloudinary";
 
 const getVideoComments = asyncHandler(async (req, res) => {
     const { video_obj_id } = req.params;
-
-    const comments = await Comment.find({ onVideo: video_obj_id }).limit(20);
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const comments = await Comment.find({ onVideo: video_obj_id })
+        .populate("publisher")
+        .populate("likeCount") // number of likes using virtual
+        .skip(skip)
+        .limit(limit);
     if (!comments) {
-        throw new ApiError(300, "something is wrong with comments");
+        throw new ApiError("error while querying comments");
     }
     return res
         .status(200)

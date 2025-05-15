@@ -25,5 +25,13 @@ const commentSchema = new mongoose.Schema(
 );
 
 commentSchema.plugin(mongooseAggregatePaginate);
+commentSchema.virtual("likeCount", {
+    ref: "Like",
+    localField: "_id",
+    foreignField: "onComment",
+    count: true // 👈 this is the key part: just count, don't fetch docs
+});
+commentSchema.set("toObject", { virtuals: true });
+commentSchema.set("toJSON", { virtuals: true });
 
 export const Comment = mongoose.model("comment", commentSchema);

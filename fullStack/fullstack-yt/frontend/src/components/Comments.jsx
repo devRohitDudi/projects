@@ -5,18 +5,18 @@ const Comment = ({ comment }) => {
   return (
     <div className="flex gap-3 py-4 border-b border-zinc-800">
       <img
-        src={comment.user.avatarUrl}
-        alt={comment.user.name}
+        src={comment.publisher.avatar}
+        alt={comment.publisher.username}
         className="w-10 h-10 rounded-full"
       />
       <div className="flex-1">
         <div className="flex items-center gap-2">
-          <span className="font-medium">{comment.user.name}</span>
+          <span className="font-medium">{comment.publisher.fullName}</span>
           <span className="text-sm text-gray-400">
             {new Date(comment.createdAt).toLocaleDateString()}
           </span>
         </div>
-        <p className="mt-1 text-sm">{comment.content}</p>
+        <p className="mt-1 text-sm">{comment.message}</p>
         <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
           <button className="flex items-center gap-1 hover:text-white">
             <svg
@@ -31,7 +31,7 @@ const Comment = ({ comment }) => {
                 clipRule="evenodd"
               />
             </svg>
-            {comment.likes}
+            {comment.likeCount}
           </button>
           <button className="flex items-center gap-1 hover:text-white">
             <svg
@@ -55,14 +55,8 @@ const Comment = ({ comment }) => {
   );
 };
 
-const Comments = ({
-  comments: initialComments,
-  commentsCount: commentsCount,
-  videoId: videoId,
-}) => {
-  const [comments, setComments] = useState(initialComments);
+const Comments = ({ comments, commentsCount, videoId }) => {
   const [newComment, setNewComment] = useState("");
-  const [fetchedCommentsCount, setFetchedCommentsCount] = useState(0);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -71,8 +65,7 @@ const Comments = ({
     try {
       const message = newComment;
       const response = await axios.post(
-        `
-                http://localhost:4000/api/v1/video/add-comment/${videoId}`,
+        `http://localhost:4000/api/v1/video/add-comment/${videoId}`,
         { message },
         {
           headers: { Accept: "application/json" },
@@ -82,8 +75,10 @@ const Comments = ({
 
       if (response.status === 200) {
         alert("Comment created successfully");
+        if (onCommentAdded) {
+          onCommentAdded(response.data.message.comment);
+        }
       }
-      setComments([response.data.message.comment, ...comments]);
     } catch (error) {
       console.log("error while creating comment", error);
     }
@@ -130,8 +125,8 @@ const Comments = ({
       </form>
 
       <div className="space-y-2">
-        {comments.map((comment) => (
-          <Comment key={comment._id} comment={comment} />
+        {comments.map((comment, index) => (
+          <Comment key={index} comment={comment} />
         ))}
       </div>
     </div>

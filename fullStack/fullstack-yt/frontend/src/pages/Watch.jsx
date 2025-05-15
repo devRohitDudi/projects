@@ -3,12 +3,16 @@ import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import VideoSuggestions from "../components/VideoSuggestions";
 import Comments from "../components/Comments";
-
+import useAuthStore from "../store/useAuthStore";
 const Watch = () => {
+  const isLoggedIn = useAuthStore();
   const [searchParams] = useSearchParams();
   const videoId = searchParams.get("v");
   const [video, setVideo] = useState(null);
   const [isVideoFetched, setIsVideoFetched] = useState(false);
+  const [isCommentsFetched, setIsCommentsFetched] = useState(false);
+  const [isCommentsFetching, setIsCommentsFetching] = useState(false);
+
   const [channelPreview, setChannelPreview] = useState(null);
   //   const [suggestedVideos, setSuggestedVideos] = useState([]);
   const [commentsCount, setCommentsCount] = useState(0);
@@ -17,19 +21,25 @@ const Watch = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [comments, setComments] = useState([]);
-  const [commentsPage, setCommentsPage] = useState(0);
+  const [commentsPage, setCommentsPage] = useState(1);
   const [viewAdded, setViewAdded] = useState(false);
-
+  const [isLiked, setIsLiked] = useState(false);
+  const [isDisliked, setIsDisliked] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [channelId, setChannelId] = useState(null);
   //TODO isLiked? && isDisliked?
   // for fetching video
   useEffect(() => {
     const fetchVideo = async () => {
       try {
         setLoading(true);
-        console.log("videoId is:", videoId);
 
         const videoRes = await axios.get(
-          `http://localhost:4000/api/v1/video/watch/${videoId}`
+          `http://localhost:4000/api/v1/video/watch/${videoId}`,
+          {
+            withCredentials: "include",
+            headers: {},
+          }
         );
 
         console.log("videoRes: ", videoRes);
@@ -39,10 +49,14 @@ const Watch = () => {
         });
         setVideo(videoRes.data.message.video);
         setChannelPreview(videoRes.data.message.channel);
+        setChannelId(videoRes.data.message.channel.username);
         setCommentsCount(videoRes.data.message.commentsCount);
         setLikesCount(videoRes.data.message.likesCount);
         setSubscribersCount(videoRes.data.message.subscribersCount);
-        // setComments(commentsRes.data);
+        setIsLiked(videoRes.data.message.isLiked);
+        setIsDisliked(videoRes.data.message.isDisliked);
+        setIsSubscribed(videoRes.data.message.isSubscribed);
+
         setError(null);
       } catch (error) {
         setError(error.response?.data?.message || "failed to fetch video");
@@ -84,23 +98,130 @@ const Watch = () => {
   }, [video, videoId, viewAdded]);
 
   const fetchSomeComments = async () => {
+    if (isCommentsFetching || isCommentsFetched) return;
     try {
+      setIsCommentsFetching(true);
       const response = await axios.get(
         `http://localhost:4000/api/v1/video/comments/${videoId}?page=${commentsPage}&limit=20`
       );
 
       console.log("Comments: ", response);
+      const newComments = await response.data.message.comments;
+      if (newComments.length == 0) {
+        setIsCommentsFetched(true);
+      }
 
       setComments((prev) => {
-        return [...prev, ...response.data.message.comments];
+        return [...prev, ...newComments];
       });
 
       setCommentsPage((prev) => prev + 1);
+      setIsCommentsFetching(false);
     } catch (error) {
-      console.log("Error while fetching comments: ", error);
+      setIsCommentsFetching(false);
     }
   };
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isCommentsFetching || isCommentsFetched) return;
 
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 50
+      ) {
+        fetchSomeComments();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Trigger fetch only once on first render
+    fetchSomeComments();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [video, isCommentsFetched, comments, commentsPage]);
+
+  async function handleLike() {
+    if (isDisliked) {
+      handleDislike();
+    }
+    try {
+      const response = await axios.patch(
+        `http://localhost:4000/api/v1/video/add-like/${videoId}`,
+        {},
+        {
+          withCredentials: "include",
+          headers: {},
+        }
+      );
+      if (response.status == 200) {
+        setIsLiked((prev) => !prev);
+        setLikesCount((prev) => {
+          if (isLiked) {
+            return prev - 1;
+          } else {
+            return prev + 1;
+          }
+        });
+      }
+    } catch (error) {
+      console.log("Error occured while liking the video");
+    }
+  }
+  async function handleDislike() {
+    if (isLiked) {
+      handleLike();
+    }
+    try {
+      const response = await axios.patch(
+        `http://localhost:4000/api/v1/video/add-like/${videoId}`,
+        {},
+        {
+          withCredentials: "include",
+          headers: {},
+        }
+      );
+      if (response.status == 200) {
+        setIsDisliked((prev) => !prev);
+      }
+    } catch (error) {
+      console.log("Error occured while liking the video");
+    }
+  }
+  const handleSubscribe = async () => {
+    if (!isLoggedIn) {
+      console.log("islogin?", isLoggedIn);
+
+      alert("Login is required to subscribe");
+      return;
+    }
+    try {
+      const response = await axios.patch(
+        `http://localhost:4000/api/v1/channel/subscribe/${channelId}`,
+        {}, // Empty body if no data
+        {
+          headers: {
+            Accept: "application/json",
+          },
+          withCredentials: "include",
+        }
+      );
+      if (response.status == 200) {
+        setIsSubscribed(!isSubscribed);
+        setSubscribersCount((prev) => {
+          if (isSubscribed) {
+            return prev - 1;
+          } else {
+            return prev + 1;
+          }
+        });
+      }
+    } catch (error) {
+      console.error(error || "Error occured while subscribing");
+    }
+  };
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -159,18 +280,30 @@ const Watch = () => {
                     </p>
                   </div>
                 </div>
-                <button className="px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700">
-                  Subscribe
+                <button
+                  onClick={() => {
+                    handleSubscribe();
+                  }}
+                  className={`${
+                    isSubscribed ? "bg-gray-600" : "bg-red-600"
+                  }px-4 py-2 text-white rounded-full hover:bg-gray-500`}
+                >
+                  {isSubscribed ? "Unsubscribe" : "Subscribe"}
                 </button>
               </div>
 
               <div className="flex items-center gap-4">
-                <button className="flex items-center gap-2 px-4 py-2 bg-zinc-800 rounded-full hover:bg-zinc-700">
+                <button
+                  onClick={() => {
+                    handleLike();
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-zinc-800 rounded-full hover:bg-zinc-700"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-5 w-5"
                     viewBox="0 0 20 20"
-                    fill="currentColor"
+                    fill={isLiked ? "blue" : "currentColor"}
                   >
                     <path
                       fillRule="evenodd"
@@ -181,12 +314,17 @@ const Watch = () => {
 
                   {likesCount}
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2 bg-zinc-800 rounded-full hover:bg-zinc-700">
+                <button
+                  onClick={() => {
+                    handleDislike();
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-zinc-800 rounded-full hover:bg-zinc-700"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-5 w-5"
                     viewBox="0 0 20 20"
-                    fill="currentColor"
+                    fill={isDisliked ? "blue" : "currentColor"}
                   >
                     <path
                       fillRule="evenodd"
