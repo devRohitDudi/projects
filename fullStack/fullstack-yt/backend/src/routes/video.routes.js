@@ -42,9 +42,10 @@ router
     .patch(verifyJWT, addViewAndHistory);
 
 router.route("/get-watch-history").get(verifyJWT, getWatchHistory);
+
 //verified
 router
-    .route("/remove-watch-history/:video_obj_id")
+    .route("/remove-watch-history/:history_obj_id")
     .patch(verifyJWT, removeFromWatchHistory);
 
 //verified

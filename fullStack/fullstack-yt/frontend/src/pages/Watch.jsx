@@ -17,7 +17,6 @@ const Watch = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [comments, setComments] = useState([]);
-  const [fetchedCommentsCount, setFetchedCommentsCount] = useState(0);
   const [commentsPage, setCommentsPage] = useState(0);
   const [viewAdded, setViewAdded] = useState(false);
 
@@ -63,15 +62,17 @@ const Watch = () => {
   //for add view history
   useEffect(() => {
     const addViewhistory = async () => {
-      const addTohistoryRes = await axios.patch(
-        `http://localhost:4000/api/v1/video/add-view-history/${videoId}`
+      const addToHistoryRes = await axios.patch(
+        `http://localhost:4000/api/v1/video/add-view-history/${videoId}`,
+        {},
+        { withCredentials: "include" }
       );
-      if (addTohistoryRes.status === 200) {
+      if (addToHistoryRes.status === 200) {
         setViewAdded(() => {
           const added = true;
           return added;
         });
-        console.log("view added! and history if login");
+        console.log(addToHistoryRes.data.message);
       }
     };
 
@@ -99,10 +100,6 @@ const Watch = () => {
       console.log("Error while fetching comments: ", error);
     }
   };
-  useEffect(() => {
-    if (fetchedCommentsCount >= commentsCount) return;
-    fetchSomeComments();
-  }, []); // empty array = run once on mount
 
   if (loading) {
     return (

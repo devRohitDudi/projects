@@ -236,10 +236,11 @@ const addViewAndHistory = asyncHandler(async (req, res) => {
                 )
             );
     } else {
-        const alreadInhistory = await History.find({
+        const alreadInhistory = await History.findOne({
             user: user._id,
             video: video._id
         });
+
         if (alreadInhistory) {
             return res.status(200).json(
                 new ApiResponse(
@@ -299,19 +300,11 @@ const getWatchHistory = asyncHandler(async (req, res) => {
 
 const removeFromWatchHistory = asyncHandler(async (req, res) => {
     const user = req.user;
-    const { video_obj_id } = req.params;
+    const { history_obj_id } = req.params;
 
-    if (!user) {
-        throw new ApiError("Login is required to remove watchHistory");
-    }
-    if (!video_obj_id) {
-        throw new ApiError("videos_obj_id, my friend!");
-    }
+    const deletedHistory = await History.deleteOne({ _id: history_obj_id });
 
-    const removedFromHistory = await User.findByIdAndUpdate(user._id, {
-        $pull: { watchHistory: video_obj_id }
-    });
-    if (removedFromHistory) {
+    if (deletedHistory) {
         return res
             .status(200)
             .json(new ApiResponse(200, {}, "Video removed from watchHistory"));

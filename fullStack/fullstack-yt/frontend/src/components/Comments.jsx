@@ -62,6 +62,7 @@ const Comments = ({
 }) => {
   const [comments, setComments] = useState(initialComments);
   const [newComment, setNewComment] = useState("");
+  const [fetchedCommentsCount, setFetchedCommentsCount] = useState(0);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

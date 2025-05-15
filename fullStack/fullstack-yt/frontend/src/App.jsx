@@ -10,10 +10,11 @@ import Sidebar from "./components/Sidebar";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import useAuthStore from "./store/useAuthStore";
-import { Upload } from "lucide-react";
 import VideoUpload from "./pages/VideoUpload";
 import MainLayout from "./components/MainLayout";
 import Settings from "./pages/Settings";
+import LibraryPage from "./pages/Library.jsx";
+import WatchHistoryPage from "./pages/History.jsx";
 function App() {
   const { setIsLoggedIn, setCurrentUsername } = useAuthStore();
   useEffect(() => {
@@ -52,6 +53,8 @@ function App() {
         <Route path="/channel/get/:username" element={<Channel />} />
         <Route path="/search" element={<Search />} />
         <Route path="/watch" element={<Watch />} />
+        <Route path="/library" element={<LibraryPage />} />
+        <Route path="/library/history" element={<WatchHistoryPage />} />
       </Route>
 
       {/* Routes without BottomBar */}
