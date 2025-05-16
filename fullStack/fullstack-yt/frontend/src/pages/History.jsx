@@ -23,6 +23,7 @@ const HistoryVideoCard = ({ video, history_obj_id }) => {
   const [loading, setloading] = useState(false);
   const [error, setError] = useState(null);
   const [isDeleted, setIsDeleted] = useState(false);
+
   const removeFromHistory = async () => {
     try {
       console.log("history_obj_id is:", history_obj_id);

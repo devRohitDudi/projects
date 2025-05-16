@@ -15,6 +15,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
+
     const comments = await Comment.find({ onVideo: video_obj_id })
         .populate("publisher")
         .populate("likeCount") // number of likes using virtual
@@ -23,6 +24,44 @@ const getVideoComments = asyncHandler(async (req, res) => {
     if (!comments) {
         throw new ApiError("error while querying comments");
     }
+
+    const userId = req.user?._id || null;
+
+    if (userId) {
+        const commentsWithLikeInfo = await Promise.all(
+            comments.map(async (comment) => {
+                const isLiked = await Like.exists({
+                    onComment: comment._id,
+                    user: userId
+                });
+                //on Dislike schema
+                const isDisliked = await Dislike.exists({
+                    onComment: comment._id,
+                    user: userId
+                });
+                // this is on Comment schema
+                const replyCount = await Comment.countDocuments({
+                    onComment: comment._id
+                });
+                return {
+                    ...comment.toObject(),
+                    isLiked: !!isLiked,
+                    isDisliked: !!isDisliked,
+                    replyCount
+                };
+            })
+        );
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    { comments: commentsWithLikeInfo },
+                    "some comments fetched with like info"
+                )
+            );
+    }
+
     return res
         .status(200)
         .json(new ApiResponse(200, { comments }, "some comments fetched"));
@@ -124,9 +163,9 @@ const likeComment = asyncHandler(async (req, res) => {
                     )
                 );
         } else {
-            return res
-                .status(300)
-                .json(new ApiResponse(300, {}, "Error while liking comment"));
+            throw new ApiError(
+                "Error while creating document for comment like"
+            );
         }
     } else {
         const removeLike = await alreadyLiked.deleteOne();
@@ -141,15 +180,7 @@ const likeComment = asyncHandler(async (req, res) => {
                     )
                 );
         } else {
-            return res
-                .status(300)
-                .json(
-                    new ApiResponse(
-                        300,
-                        {},
-                        "error while removing comment like"
-                    )
-                );
+            throw new ApiError("Error while removing already liked document");
         }
     }
 });
@@ -185,11 +216,9 @@ const dislikeComment = asyncHandler(async (req, res) => {
                     )
                 );
         } else {
-            return res
-                .status(300)
-                .json(
-                    new ApiResponse(300, {}, "Error while disliking comment")
-                );
+            throw new ApiError(
+                "Error while creating document for comment dislike"
+            );
         }
     } else {
         const removedDislike = await alreadyDisliked.deleteOne();
@@ -204,23 +233,64 @@ const dislikeComment = asyncHandler(async (req, res) => {
                     )
                 );
         } else {
-            return res
-                .status(300)
-                .json(
-                    new ApiResponse(
-                        300,
-                        {},
-                        "error while removing comment dislike"
-                    )
-                );
+            throw new ApiError(
+                "Error while removing already disliked document"
+            );
         }
     }
 });
 
+const replyOn = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const { comment_obj_id } = req.params;
+    const { message } = req.body;
+    if (!user) {
+        throw new ApiError("Login is required to reply on");
+    }
+
+    const createdReply = await Comment.create({
+        onComment: comment_obj_id,
+        publisher: user._id,
+        message: message
+    });
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, { createdReply }, "Reply added successfully")
+        );
+});
+const getReplies = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const { comment_obj_id } = req.params;
+
+    if (!comment_obj_id) {
+        throw new ApiError("Comment_obj_id is required to get replies");
+    }
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const replies = await Comment.find({
+        onComment: comment_obj_id
+    })
+        .populate("publisher")
+        .populate("likeCount") // number of likes using virtual
+        .skip(skip)
+        .limit(limit);
+
+    console.log("replies fetched on backend");
+
+    return res
+        .status(200)
+        .json(new ApiError(200, { replies }, "some replies fetched"));
+});
 export {
     getVideoComments,
     likeComment,
     addComment,
     deleteComment,
-    dislikeComment
+    dislikeComment,
+    replyOn,
+    getReplies
 };

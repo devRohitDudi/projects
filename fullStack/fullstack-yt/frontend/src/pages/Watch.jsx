@@ -102,7 +102,8 @@ const Watch = () => {
     try {
       setIsCommentsFetching(true);
       const response = await axios.get(
-        `http://localhost:4000/api/v1/video/comments/${videoId}?page=${commentsPage}&limit=20`
+        `http://localhost:4000/api/v1/video/comments/${videoId}?page=${commentsPage}&limit=20`,
+        { withCredentials: "include", headers: {} }
       );
 
       console.log("Comments: ", response);
@@ -157,7 +158,6 @@ const Watch = () => {
         }
       );
       if (response.status == 200) {
-        setIsLiked((prev) => !prev);
         setLikesCount((prev) => {
           if (isLiked) {
             return prev - 1;
@@ -165,6 +165,7 @@ const Watch = () => {
             return prev + 1;
           }
         });
+        setIsLiked((prev) => !prev);
       }
     } catch (error) {
       console.log("Error occured while liking the video");
@@ -284,9 +285,14 @@ const Watch = () => {
                   onClick={() => {
                     handleSubscribe();
                   }}
-                  className={`${
-                    isSubscribed ? "bg-gray-600" : "bg-red-600"
-                  }px-4 py-2 text-white rounded-full hover:bg-gray-500`}
+                  className={`
+                    ${
+                      isSubscribed
+                        ? "bg-gray-800 hover:bg-gray-500"
+                        : "bg-red-600 hover:bg-red-500"
+                    }
+                    px-4 py-2 text-white rounded-full transition-colors duration-200
+                  `}
                 >
                   {isSubscribed ? "Unsubscribe" : "Subscribe"}
                 </button>

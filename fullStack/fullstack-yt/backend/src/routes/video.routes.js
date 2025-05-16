@@ -16,7 +16,9 @@ import {
     addComment,
     getVideoComments,
     deleteComment,
-    dislikeComment
+    dislikeComment,
+    replyOn,
+    getReplies
 } from "../controllers/comment.controller.js";
 
 const router = Router();
@@ -49,7 +51,8 @@ router
     .patch(verifyJWT, removeFromWatchHistory);
 
 //verified
-router.route("/comments/:video_obj_id").get(getVideoComments);
+//TODO: get comment with isLiked or isDisliked peoperties
+router.route("/comments/:video_obj_id").get(verifyJWT, getVideoComments);
 
 //verified
 router.route("/add-like/:video_obj_id").patch(verifyJWT, addLike);
@@ -65,10 +68,13 @@ router.route("/delete-comment/:comment_obj_id").patch(verifyJWT, deleteComment);
 
 // verified
 router.route("/like-comment/:comment_obj_id").patch(verifyJWT, likeComment);
+router.route("/reply-on/:comment_obj_id").patch(verifyJWT, replyOn);
 
 //verified
 router
     .route("/dislike-comment/:comment_obj_id")
     .patch(verifyJWT, dislikeComment);
+
+router.route("/get-replies/:comment_obj_id").get(verifyJWT, getReplies);
 
 export default router;

@@ -11,6 +11,10 @@ const commentSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Post"
         },
+        onComment: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Comment"
+        },
         message: {
             type: String,
             required: true
