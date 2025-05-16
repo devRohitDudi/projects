@@ -261,29 +261,60 @@ const replyOn = asyncHandler(async (req, res) => {
         );
 });
 const getReplies = asyncHandler(async (req, res) => {
-    const user = req.user;
     const { comment_obj_id } = req.params;
-
-    if (!comment_obj_id) {
-        throw new ApiError("Comment_obj_id is required to get replies");
-    }
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    const replies = await Comment.find({
-        onComment: comment_obj_id
-    })
+    const replies = await Comment.find({ onComment: comment_obj_id })
         .populate("publisher")
         .populate("likeCount") // number of likes using virtual
         .skip(skip)
         .limit(limit);
+    if (!replies) {
+        throw new ApiError("error while querying comments");
+    }
 
-    console.log("replies fetched on backend");
+    const userId = req.user?._id || null;
 
-    return res
-        .status(200)
-        .json(new ApiError(200, { replies }, "some replies fetched"));
+    if (userId) {
+        const repliesWithLikeInfo = await Promise.all(
+            replies.map(async (reply) => {
+                const isLiked = await Like.exists({
+                    onComment: reply._id,
+                    user: userId
+                });
+                //on Dislike schema
+                const isDisliked = await Dislike.exists({
+                    onComment: reply._id,
+                    user: userId
+                });
+                // this is on Comment schema
+                const replyCount = await Comment.countDocuments({
+                    onComment: reply._id
+                });
+                return {
+                    ...reply.toObject(),
+                    isLiked: !!isLiked,
+                    isDisliked: !!isDisliked,
+                    replyCount
+                };
+            })
+        );
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    { replies: repliesWithLikeInfo },
+                    "some comments fetched with like info"
+                )
+            );
+    } else {
+        return res
+            .status(200)
+            .json(200, { replies }, "Some replies are fetched");
+    }
 });
 export {
     getVideoComments,
