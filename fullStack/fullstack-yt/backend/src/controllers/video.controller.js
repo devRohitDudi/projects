@@ -160,7 +160,7 @@ const getVideo = asyncHandler(async (req, res) => {
                     "requested video fetched successfully, load video on player using provided videoURL"
                 )
             );
-        } else if (video.isPublished == "private") {
+        } else if (video.visibility == "private") {
             throw new ApiError("Requested video is private ");
         }
     }
@@ -183,7 +183,7 @@ const getVideo = asyncHandler(async (req, res) => {
                 "requested video fetched successfully, load video on player using provided videoURL"
             )
         );
-    } else if (video.isPublished == "private") {
+    } else if (video.visibility == "private") {
         throw new ApiError("Requested video is private ");
     }
 });

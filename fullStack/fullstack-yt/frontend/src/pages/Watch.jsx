@@ -5,7 +5,7 @@ import VideoSuggestions from "../components/VideoSuggestions";
 import Comments from "../components/Comments";
 import useAuthStore from "../store/useAuthStore";
 const Watch = () => {
-  const isLoggedIn = useAuthStore();
+  const { isLoggedIn } = useAuthStore();
   const [searchParams] = useSearchParams();
   const videoId = searchParams.get("v");
   const [video, setVideo] = useState(null);
@@ -145,6 +145,12 @@ const Watch = () => {
   }, [video, isCommentsFetched, comments, commentsPage]);
 
   async function handleLike() {
+    if (!isLoggedIn) {
+      console.log("isloggenin:", isLoggedIn);
+
+      alert("Login is required to like video.");
+      return;
+    }
     if (isDisliked) {
       handleDislike();
     }
@@ -172,6 +178,11 @@ const Watch = () => {
     }
   }
   async function handleDislike() {
+    if (!isLoggedIn) {
+      alert("Login is required to dislike video.");
+      return;
+    }
+
     if (isLiked) {
       handleLike();
     }

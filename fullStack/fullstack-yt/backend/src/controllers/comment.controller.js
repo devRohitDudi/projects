@@ -52,6 +52,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
             })
         );
         return res
+
             .status(200)
             .json(
                 new ApiResponse(
@@ -60,11 +61,28 @@ const getVideoComments = asyncHandler(async (req, res) => {
                     "some comments fetched with like info"
                 )
             );
+    } else {
+        const commentsWithReplyCount = await Promise.all(
+            comments.map(async (reply) => {
+                const replyCount = await Comment.countDocuments({
+                    onComment: reply._id
+                });
+                return {
+                    ...reply.toObject(),
+                    replyCount
+                };
+            })
+        );
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    { comments: commentsWithReplyCount },
+                    "some comments fetched"
+                )
+            );
     }
-
-    return res
-        .status(200)
-        .json(new ApiResponse(200, { comments }, "some comments fetched"));
 });
 
 const addComment = asyncHandler(async (req, res) => {
@@ -274,7 +292,6 @@ const getReplies = asyncHandler(async (req, res) => {
     if (!replies) {
         throw new ApiError("error while querying comments");
     }
-
     const userId = req.user?._id || null;
 
     if (userId) {
@@ -311,9 +328,27 @@ const getReplies = asyncHandler(async (req, res) => {
                 )
             );
     } else {
+        const repliesWithReplyCount = await Promise.all(
+            replies.map(async (reply) => {
+                const replyCount = await Comment.countDocuments({
+                    onComment: reply._id
+                });
+                return {
+                    ...reply.toObject(),
+                    replyCount
+                };
+            })
+        );
+
         return res
             .status(200)
-            .json(200, { replies }, "Some replies are fetched");
+            .json(
+                new ApiResponse(
+                    200,
+                    { replies: repliesWithReplyCount },
+                    "Some replies are fetched"
+                )
+            );
     }
 });
 export {
