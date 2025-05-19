@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Playlist } from "../models/playlist.model.js";
 import { deleteComment } from "./comment.controller.js";
 import { Video } from "../models/video.model.js";
+import { User } from "../models/user.model.js";
 
 const getPlaylist = asyncHandler(async (req, res) => {
     const { playlist_id } = req.params;
@@ -26,6 +27,74 @@ const getPlaylist = asyncHandler(async (req, res) => {
         .json(
             new ApiResponse(200, { playlist }, "playlist fetched successfully")
         );
+});
+
+const getAllPlaylists = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const { currentVideo } = req.body || {};
+    console.log("currentVideo", currentVideo);
+
+    if (!user) {
+        throw new ApiError("Login is required to get all playlists");
+    }
+
+    const userInDb = await User.findOne({ username: user.username });
+
+    if (!userInDb) {
+        throw new ApiError(
+            "You, as a requester user are not avalable in database. fuck off"
+        );
+    }
+
+    const playlists = await Playlist.find({ owner: userInDb._id });
+
+    if (currentVideo) {
+        const result = playlists.map((playlist) => ({
+            _id: playlist._id,
+            name: playlist.name,
+            visibility: playlist.visibility,
+            containsVideo: playlist.videos.some(
+                (video) => video._id.toString() === currentVideo.toString()
+            )
+        }));
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    { playlists: result },
+                    "all pllaylists fetched"
+                )
+            );
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, { playlists }, "all pllaylists fetched"));
+});
+const updateVideoStatus = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const { video_id, containsVideo, playlist_id } = req.body;
+    if (!user) {
+        throw new ApiError("login is required to update playlists");
+    }
+    if (!video_id) {
+        throw new ApiError("video_id is required to update playlist");
+    }
+    const playlist = await Playlist.findById(playlist_id);
+    if (containsVideo) {
+        playlist.videos.push(video_id);
+    } else {
+        playlist.videos = playlist.videos.filter(
+            (id) => id.toString() !== video_id.toString()
+        );
+    }
+
+    await playlist.save();
+
+    return res
+        .status(200)
+        .json(new ApiError(200, { playlist }, "Playlist updated successfully"));
 });
 
 const createPlaylist = asyncHandler(async (req, res) => {
@@ -194,5 +263,7 @@ export {
     createPlaylist,
     deletePlaylist,
     addToPlaylist,
-    removeFromPlaylist
+    removeFromPlaylist,
+    getAllPlaylists,
+    updateVideoStatus
 };
