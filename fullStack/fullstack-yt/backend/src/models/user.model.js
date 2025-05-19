@@ -55,10 +55,9 @@ const userSchema = new Schema(
             index: true,
             default: "Hello, I am using this app"
         },
-        watchHistory: {
-            type: Schema.Types.ObjectId,
-            ref: "History"
-        },
+        watchHistory: [
+            { type: mongoose.Schema.Types.ObjectId, ref: "Video", default: [] }
+        ],
         playlists: [
             {
                 type: Schema.Types.ObjectId,

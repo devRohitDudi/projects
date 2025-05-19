@@ -12,6 +12,7 @@ import {
     updateVideoStatus
 } from "../controllers/playlist.controller.js";
 
+//TODO: playlist page
 router.route("/get-playlist/:playlist_id").get(verifyJWT, getPlaylist);
 router.route("/get-all-playlists").post(verifyJWT, getAllPlaylists);
 router.route("/update-video-status").patch(verifyJWT, updateVideoStatus);

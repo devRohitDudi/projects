@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import axios from "axios";
+import axios, { isCancel } from "axios";
+import { Link } from "react-router-dom";
 import VideoSuggestions from "../components/VideoSuggestions";
 import Comments from "../components/Comments";
 import useAuthStore from "../store/useAuthStore";
+import { Playlist } from "../../../backend/src/models/playlist.model";
 const Watch = () => {
-  const { isLoggedIn } = useAuthStore();
+  const { isLoggedIn, currentUsername } = useAuthStore();
   const [searchParams] = useSearchParams();
   const videoId = searchParams.get("v");
   const [video, setVideo] = useState(null);
@@ -27,6 +29,12 @@ const Watch = () => {
   const [isDisliked, setIsDisliked] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [channelId, setChannelId] = useState(null);
+  const [isPlylistsOpen, setIsPlylistsOpen] = useState(false);
+  const [playlists, setPlaylists] = useState([]);
+  const [playlistsLoading, setPlaylistsLoading] = useState(false);
+  const [creatingPlaylist, setCreatingPlaylist] = useState(false);
+  const [playlistText, setPlaylistText] = useState("");
+  const [newPlaylistVisibility, setNewPlaylistVisibility] = useState("private");
   //TODO isLiked? && isDisliked?
   // for fetching video
   useEffect(() => {
@@ -231,9 +239,78 @@ const Watch = () => {
         });
       }
     } catch (error) {
+      alert(error.response?.data?.message || "error occured while subscribing");
       console.error(error || "Error occured while subscribing");
     }
   };
+
+  const fetchPlaylistsInfo = async () => {
+    if (playlists.length >= 1) {
+      return;
+    }
+    try {
+      setPlaylistsLoading(true);
+      const response = await axios.post(
+        `http://localhost:4000/api/v1/playlist/get-all-playlists`,
+        { currentVideo: video._id },
+        {
+          withCredentials: "include",
+          headers: {},
+        }
+      );
+      console.log("response:", response);
+
+      if (response.status === 200) {
+        setPlaylists(response.data.message.playlists);
+      }
+      setPlaylistsLoading(false);
+    } catch (error) {
+      alert(
+        error.response?.data?.message || "error occured while fetching playists"
+      );
+      setPlaylistsLoading(false);
+    }
+  };
+  const savePlaylists = async () => {
+    try {
+      for (const playlist of playlists) {
+        const response = await axios.patch(
+          `http://localhost:4000/api/v1/playlist/update-video-status`,
+          {
+            video_id: video._id,
+            containsVideo: playlist.containsVideo,
+            playlist_id: playlist._id,
+          },
+          {
+            withCredentials: "include",
+            headers: {},
+          }
+        );
+        if (response.status === 200) {
+          console.log("playlist updated");
+        }
+      }
+      setIsPlylistsOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const createPlaylist = async () => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:4000/api/v1/playlist/create-playlist`,
+        { name: playlistText, visibility: newPlaylistVisibility },
+        { withCredentials: "include", headers: {} }
+      );
+      if (response.status === 200) {
+        fetchPlaylistsInfo();
+        alert(`playlist ${playlistText} is created `);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -279,7 +356,10 @@ const Watch = () => {
 
             <div className="flex items-center justify-between mt-2">
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
+                <Link
+                  to={`/channel/get/${channelPreview.username}`}
+                  className="flex items-center gap-2"
+                >
                   <img
                     src={channelPreview.avatar}
                     alt={channelPreview.username}
@@ -291,7 +371,7 @@ const Watch = () => {
                       {subscribersCount} subscribers
                     </p>
                   </div>
-                </div>
+                </Link>
                 <button
                   onClick={() => {
                     handleSubscribe();
@@ -351,7 +431,13 @@ const Watch = () => {
                   </svg>
                   Dislike
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2 bg-zinc-800 rounded-full hover:bg-zinc-700">
+                <button
+                  onClick={() => {
+                    setIsPlylistsOpen((prev) => !prev);
+                    fetchPlaylistsInfo();
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-zinc-800 rounded-full hover:bg-zinc-700"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     height="24px"
@@ -407,6 +493,92 @@ const Watch = () => {
           {/* <VideoSuggestions videos={suggestedVideos} /> */}
         </div>
       </div>
+      {isPlylistsOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+          <div className="bg-zinc-900 text-white p-6 rounded-2xl shadow-2xl w-full max-w-md space-y-4">
+            <h2 className="text-xl font-semibold text-center">{`Hello, ${channelId}`}</h2>
+
+            <div className="flex flex-col gap-3 max-h-64 overflow-y-auto scrollbar-thin">
+              {playlistsLoading ? (
+                <p className="text-center text-zinc-400">
+                  Loading playlists...
+                </p>
+              ) : (
+                playlists.map((playlist, index) => (
+                  <label
+                    key={playlist._id}
+                    className="flex items-center gap-3 bg-zinc-800 p-3 rounded-xl cursor-pointer hover:bg-zinc-700 transition"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={playlist.containsVideo}
+                      className="accent-pink-500 h-5 w-5"
+                      onChange={() => {
+                        const updated = [...playlists];
+                        updated[index].containsVideo =
+                          !updated[index].containsVideo;
+                        setPlaylists(updated);
+                      }}
+                    />
+                    <span className="text-base">{playlist.name}</span>
+                  </label>
+                ))
+              )}
+            </div>
+            <div>
+              {creatingPlaylist ? (
+                <div className="flex justify-between  p-2">
+                  <input
+                    className="border-1 border-gray-500 px-2 py-1 rounded-lg"
+                    onChange={(e) => setPlaylistText(e.target.value)}
+                    value={playlistText}
+                    placeholder="Enter playlist name"
+                  />
+                  <select
+                    name="visibility"
+                    id="visibility"
+                    value={newPlaylistVisibility}
+                    onChange={(e) => setNewPlaylistVisibility(e.target.value)}
+                  >
+                    <option value="public">Public</option>
+                    <option value="private">Private</option>
+                    <option value="unlisted">Unlisted</option>
+                  </select>
+                  <button
+                    disabled={!playlistText.trim()}
+                    onClick={createPlaylist}
+                  >
+                    Create
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    setCreatingPlaylist((prev) => !prev);
+                  }}
+                  className="bg-zinc-800 p-3 rounded-xl cursor-pointer hover:bg-zinc-700 transition"
+                >
+                  Create a new playlist
+                </button>
+              )}
+            </div>
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={() => setIsPlylistsOpen((prev) => !prev)}
+                className="px-4 py-2 bg-zinc-700 rounded-lg hover:bg-zinc-600 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={savePlaylists}
+                className="px-4 py-2 bg-pink-600 rounded-lg hover:bg-pink-500 transition"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

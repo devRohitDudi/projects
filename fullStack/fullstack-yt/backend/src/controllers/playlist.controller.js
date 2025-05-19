@@ -117,18 +117,10 @@ const createPlaylist = asyncHandler(async (req, res) => {
     });
 
     if (!createdPlaylist) {
-        return res
-            .status(303)
-            .json(
-                new ApiError(
-                    303,
-                    {},
-                    "Something went wrong while creating playlist"
-                )
-            );
+        throw new ApiError("playlist couldn't created");
     }
 
-    user.playlists.push(createdPlaylist);
+    await user.playlists.push(createdPlaylist);
     await user.save();
 
     return res

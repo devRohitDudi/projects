@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import useAuthStore from "../store/useAuthStore";
 function ReplyCard({ reply }) {
+  const { currentUsername } = useAuthStore();
+  const isAuthor = reply.publisher.username === currentUsername;
   const { isLoggedIn } = useAuthStore();
   const [isReplying, setIsReplying] = useState(false);
   const [isTotalFetched, setIsTotalFetched] = useState(false);
@@ -14,6 +16,8 @@ function ReplyCard({ reply }) {
   const [isLiked, setIsLiked] = useState(reply.isLiked);
   const [isDisliked, setIsDisliked] = useState(reply.isDisliked);
   const [replyPage, setReplyPage] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
   //   const fetchSomeReplies = async () => {
   //     if (isTotalFetched) return;
   //     try {
@@ -120,7 +124,28 @@ function ReplyCard({ reply }) {
       alert("Error occured while replying comment");
     }
   }
+  const deleteReply = async () => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:4000/api/v1/video/delete-comment/${reply._id}`,
+        {},
+        {
+          withCredentials: "include",
+          headers: {},
+        }
+      );
+      if (response.status == 200) {
+        setIsDeleted(true);
+        alert("Comment deleted successfully");
+      }
+    } catch (error) {
+      console.log(error || "error while deleting comment");
+    }
+  };
 
+  if (isDeleted) {
+    return null;
+  }
   return (
     <div
       key={reply._id}
@@ -177,7 +202,23 @@ function ReplyCard({ reply }) {
         >
           {isReplying ? "Cancel" : "Reply"}
         </button>
-        <button className="ml-auto text-lg hover:text-gray-700">⋮</button>
+        {isPopupOpen && (
+          <div className="flex flex-col z-10 items-start backdrop-blur-sm bg-white/10 text-white rounded-lg absolute bottom-0 left-0 p-3 gap-2 shadow-lg">
+            {isAuthor && (
+              <button onClick={deleteReply} className="hover:underline">
+                Remove
+              </button>
+            )}
+            <button className="hover:underline">Share</button>
+            <button className="hover:underline">Report</button>
+          </div>
+        )}
+        <button
+          onClick={() => setIsPopupOpen((prev) => !prev)}
+          className="ml-auto text-lg hover:text-gray-700"
+        >
+          ⋮
+        </button>
       </div>
 
       {isReplying && (
