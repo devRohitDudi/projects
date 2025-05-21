@@ -15,6 +15,7 @@ import MainLayout from "./components/MainLayout";
 import Settings from "./pages/Settings";
 import LibraryPage from "./pages/Library.jsx";
 import WatchHistoryPage from "./pages/History.jsx";
+import Playlists from "./pages/Playlists.jsx";
 function App() {
   const { setIsLoggedIn, setCurrentUsername } = useAuthStore();
   useEffect(() => {
@@ -55,6 +56,7 @@ function App() {
         <Route path="/watch" element={<Watch />} />
         <Route path="/library" element={<LibraryPage />} />
         <Route path="/library/history" element={<WatchHistoryPage />} />
+        <Route path="/library/playlists" element={<Playlists />} />
       </Route>
 
       {/* Routes without BottomBar */}

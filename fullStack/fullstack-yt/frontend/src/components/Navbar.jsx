@@ -28,7 +28,7 @@ const Navbar = ({ toggleSidebar }) => {
             </svg>
           </button>
           <Link to="/" className="text-white text-xl font-bold">
-            Rumble
+            YouTube
           </Link>
         </div>
 
