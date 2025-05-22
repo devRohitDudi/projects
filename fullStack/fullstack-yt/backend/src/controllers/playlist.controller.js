@@ -5,22 +5,50 @@ import { Playlist } from "../models/playlist.model.js";
 import { deleteComment } from "./comment.controller.js";
 import { Video } from "../models/video.model.js";
 import { User } from "../models/user.model.js";
+import { ObjectId } from "mongodb";
 
+import mongoose from "mongoose";
+
+//fix this
 const getPlaylist = asyncHandler(async (req, res) => {
+    const user = req.user;
     const { playlist_id } = req.params;
     if (!playlist_id) {
         throw new ApiError("playlist_id is required");
     }
+    if (!playlist_id || typeof playlist_id !== "string") {
+        throw new ApiError("playlist_id must be a valid string");
+    }
 
-    const playlist = await Playlist.findById(playlist_id);
+    if (!mongoose.Types.ObjectId.isValid(playlist_id)) {
+        throw new ApiError("Invalid playlist_id format");
+    }
+
+    const playlist = await Playlist.findById(playlist_id).populate({
+        path: "videos",
+        match: { visibility: { $ne: "private" } } // exclude videos with visibility "private"
+    });
+
+    const isOwner = (await playlist.owner.toString()) === user._id.toString();
 
     if (!playlist) {
-        return res
-            .status(303)
-            .json(new ApiResponse(300, {}, "Playlist couldn't retrieve"));
+        throw new ApiError("Playlist couldn't retrieve");
     }
     if (playlist.visibility == "private") {
-        throw new ApiError("requested playlist is private");
+        if (user._id.toString() === playlist.owner.toString()) {
+            return res.status(200).json(
+                new ApiResponse(
+                    200,
+                    {
+                        playlist,
+                        isOwner
+                    },
+                    "playlist fetched successfully"
+                )
+            );
+        } else {
+            throw new ApiError("requested playlist is private");
+        }
     }
     return res
         .status(200)
@@ -216,6 +244,7 @@ const addToPlaylist = asyncHandler(async (req, res) => {
             )
         );
 });
+
 const removeFromPlaylist = asyncHandler(async (req, res) => {
     const user = req.user;
     const { video_id, playlist_id } = req.body;

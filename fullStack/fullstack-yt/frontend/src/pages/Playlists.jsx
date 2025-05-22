@@ -3,15 +3,46 @@ import { PlayIcon } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import useAuthStore from "../store/useAuthStore.js";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function PlaylistCard({ playlist }) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const { isLoggenIn } = useAuthStore();
+  const [isDeleted, setIsDeleted] = useState(false);
+  const navigate = useNavigate();
 
+  const handleNavigate = () => {
+    navigate(`/playlist/${playlist._id}`);
+  };
+
+  const deletePlaylist = async () => {
+    try {
+      const response = await axios.patch(
+        `
+                    http://localhost:4000/api/v1/playlist/delete-playlist/${playlist._id}`,
+        {},
+        {
+          withCredentials: "include",
+          headers: {},
+        }
+      );
+
+      if (response.status === 200) {
+        alert("that fucking playlist was deleted");
+        setIsDeleted(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  if (isDeleted) {
+    return null;
+  }
   return (
     <div className="relative hover:shadow-xl transition-shadow">
       <div className="relative">
         <img
+          onClick={handleNavigate}
           src={playlist.thumbnail}
           alt={playlist.name}
           className="rounded-t-lg w-full h-40 object-cover"
@@ -21,7 +52,9 @@ function PlaylistCard({ playlist }) {
         </div>
       </div>
       <div className="p-4 flex items-center justify-between">
-        <span className="font-semibold truncate w-4/5">{playlist.name}</span>
+        <span onClick={handleNavigate} className="font-semibold truncate w-4/5">
+          {playlist.name}
+        </span>
         <svg
           onClick={() => setIsPopupOpen((prev) => !prev)}
           xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +70,10 @@ function PlaylistCard({ playlist }) {
 
       {isPopupOpen && (
         <div className="absolute left-4 bottom-4 backdrop-blur-sm bg-white/30 rounded shadow-md p-2 space-y-2 z-10">
-          <button className="block w-full text-left hover:text-blue-500 px-2 py-1">
+          <button
+            onClick={deletePlaylist}
+            className="block w-full text-left hover:text-blue-500 px-2 py-1"
+          >
             Remove
           </button>
           <button className="block w-full text-left hover:text-blue-500 px-2 py-1">
@@ -77,7 +113,7 @@ export default function Playlists() {
       console.log("Full response:", response); // this is not printing
       if (response.status === 200) {
         setPlaylists(response.data.message.playlists);
-        console.log("setPlaylist success");
+        console.log("setPlaylists success");
       } else {
         console.error("Unexpected status:", response.status); // this is not printing
       }

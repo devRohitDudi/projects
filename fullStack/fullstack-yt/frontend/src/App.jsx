@@ -16,6 +16,7 @@ import Settings from "./pages/Settings";
 import LibraryPage from "./pages/Library.jsx";
 import WatchHistoryPage from "./pages/History.jsx";
 import Playlists from "./pages/Playlists.jsx";
+import Playlist from "./pages/Playlist.jsx";
 function App() {
   const { setIsLoggedIn, setCurrentUsername } = useAuthStore();
   useEffect(() => {
@@ -52,6 +53,7 @@ function App() {
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/channel/get/:username" element={<Channel />} />
+        <Route path="/playlist/:playlist_id" element={<Playlist />} />
         <Route path="/search" element={<Search />} />
         <Route path="/watch" element={<Watch />} />
         <Route path="/library" element={<LibraryPage />} />
