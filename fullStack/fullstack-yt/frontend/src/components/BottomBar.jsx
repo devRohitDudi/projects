@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import useAuthStore from "../store/useAuthStore.js";
 const BottomBar = () => {
   const [show, setShow] = useState(true);
   const { pathname } = useLocation();
   const [activeTab, setActiveTab] = useState("home");
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const { isLoggedIn } = useAuthStore();
 
   useEffect(() => {
     const pathSegment = pathname.split("/")[2]; // adjust index based on URL
@@ -60,7 +63,13 @@ const BottomBar = () => {
         </Link>
       </div>
       <div className="flex flex-col items-center text-xs">
-        <Link to="/upload">
+        <button
+          onClick={() =>
+            isLoggedIn
+              ? setIsPopupOpen((prev) => !prev)
+              : alert("Login is required to upload content")
+          }
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             height="24px"
@@ -70,7 +79,7 @@ const BottomBar = () => {
           >
             <path d="M440-280h80v-160h160v-80H520v-160h-80v160H280v80h160v160Zm40 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
           </svg>
-        </Link>
+        </button>
       </div>
       <div className="flex flex-col items-center text-xs">
         <Link to="/subscription">
@@ -98,6 +107,14 @@ const BottomBar = () => {
           </svg>
         </Link>
       </div>
+
+      {isPopupOpen && (
+        <div className="flex flex-col fixed bottom-12 gap-2 backdrop-blur bg-white/5 items-center px-4 py-2 rounded-xl left-[50%] ">
+          <Link to="create/post">Post</Link>
+          <Link to="create/video">Video</Link>
+          <Link to="create/live">Live</Link>
+        </div>
+      )}
     </div>
   );
 };

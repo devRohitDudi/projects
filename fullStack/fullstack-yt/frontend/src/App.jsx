@@ -17,6 +17,7 @@ import LibraryPage from "./pages/Library.jsx";
 import WatchHistoryPage from "./pages/History.jsx";
 import Playlists from "./pages/Playlists.jsx";
 import Playlist from "./pages/Playlist.jsx";
+import CreatePost from "./pages/CreatePost.jsx";
 function App() {
   const { setIsLoggedIn, setCurrentUsername } = useAuthStore();
   useEffect(() => {
@@ -64,7 +65,9 @@ function App() {
       {/* Routes without BottomBar */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/upload" element={<VideoUpload />} />
+      <Route path="/create/video" element={<VideoUpload />} />
+      <Route path="/create/post" element={<CreatePost />} />
+      <Route path="/create/live" element={<VideoUpload />} />
       <Route path="/settings" element={<Settings />} />
     </Routes>
   );

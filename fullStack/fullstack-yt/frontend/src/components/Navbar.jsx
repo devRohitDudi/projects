@@ -1,11 +1,15 @@
 import { Menu, Search, User, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import VideoUpload from "../pages/VideoUpload";
 import ProfileDropdown from "./ProfileDropdown";
 import Cookies from "js-cookie";
 import useAuthStore from "../store/useAuthStore";
+import { useEffect } from "react";
+import axios from "axios";
+
 const Navbar = ({ toggleSidebar }) => {
-  const { isLoggedIn } = useAuthStore();
+  const { isLoggedIn, currentUsername } = useAuthStore();
   console.log("isLoggedIn", isLoggedIn);
 
   return (
@@ -70,7 +74,7 @@ const Navbar = ({ toggleSidebar }) => {
 
           {isLoggedIn && (
             <Link
-              to="/upload"
+              to="/create/video"
               className="flex items-center gap-2 px-4 py-2 bg-zinc-800 rounded-full hover:bg-zinc-700"
             >
               <Upload size={20} />

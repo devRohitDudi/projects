@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar.jsx";
 import VideoGrid from "../components/VideoGrid.jsx";
-
+import axios from "axios";
+import useAuthStore from "../store/useAuthStore.js";
 const HomePage = ({ sidebarOpen }) => {
   const [videos, setVideos] = useState([]);
 

@@ -102,8 +102,8 @@ const VideoUpload = () => {
   };
 
   return (
-    <div className=" bg-black bg-opacity-50 flex items-center h-full justify-center z-50">
-      <div className="bg-zinc-900 rounded-lg w-full max-w-2xl p-6">
+    <div className="  bg-opacity-50 flex items-center h-full justify-center z-50">
+      <div className=" rounded-lg w-full max-w-2xl p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold">Upload Video</h2>
           <Link to="/" className="text-gray-400 hover:text-white">
@@ -158,7 +158,7 @@ const VideoUpload = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter video title"
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 focus:border-blue-500 outline-none"
+              className="w-full  border border-zinc-700 rounded-lg px-4 py-2 focus:border-blue-500 outline-none"
             />
           </div>
 
@@ -172,7 +172,7 @@ const VideoUpload = () => {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter video description"
               rows={4}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 focus:border-blue-500 outline-none"
+              className="w-full border border-zinc-700 rounded-lg px-4 py-2 focus:border-blue-500 outline-none"
             />
           </div>
 

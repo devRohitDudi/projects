@@ -2,11 +2,36 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { User, LogOut, Settings, Upload } from "lucide-react";
 import useAuthStore from "../store/useAuthStore.js";
-
+import axios from "axios";
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
   const { isLoggedIn, currentUsername } = useAuthStore();
+  const [avatar, setAvatar] = useState("");
+  const [error, setError] = useState(false);
+  const [isloading, setIsLoading] = useState(false);
+  const fetchAvatar = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get(
+        `http://localhost:4000/api/v1/channel/get-avatar/${currentUsername}`
+      );
+
+      if (response.status === 200) {
+        console.log("get avatar response", response);
+        setAvatar(response.data.message.userAvatar[0].avatar);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      setError(error);
+      setIsLoading(false);
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAvatar();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -37,10 +62,17 @@ const ProfileDropdown = () => {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-8 h-8 bg-white rounded-full hover:ring-2 hover:ring-blue-500 transition-all"
-      />
+      {isloading ? (
+        <div className="flex justify-center items-center">
+          <div className="h-6 w-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        <img
+          src={avatar}
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-8 h-8 bg-white rounded-full hover:ring-2 hover:ring-blue-500 transition-all"
+        />
+      )}
 
       {isOpen && (
         <div className="absolute z-10 right-0 mt-2 w-48 rounded-md shadow-lg bg-zinc-800 ring-1 ring-black ring-opacity-5">

@@ -6,15 +6,15 @@ const postSchema = new mongoose.Schema(
             type: String,
             required: true
         },
-        images: [
-            {
-                Type: String
-            }
-        ],
+
         owner: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true
+        },
+        images: {
+            type: [String],
+            default: []
         }
     },
     { timestamps: true }

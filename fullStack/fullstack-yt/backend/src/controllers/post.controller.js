@@ -21,30 +21,44 @@ const createPost = asyncHandler(async (req, res) => {
         throw new ApiError("Content is required to do post");
     }
 
-    const photosCount = req.files.photos ? req.files.photos.length : 0;
+    const photosCount = req.files ? req.files.length : 0;
+
+    //printing 2
+    console.log("photos count is:", photosCount);
     let uploadedPhotos = [];
     if (photosCount > 0) {
         for (let i = 0; i < photosCount; i++) {
-            const photo = await uploadOnCloudinary(req.files.photos[i].path);
-            uploadedPhotos.push(photo);
+            const photo = await uploadOnCloudinary(req.files[i].path);
+            console.log("photo.url is:", photo?.url);
+            uploadedPhotos.push(photo.url);
         }
+        const createdPost = await Post.create({
+            content: content,
+            owner: user._id,
+            images: uploadedPhotos
+        });
+        if (!createdPost) {
+            throw new ApiError("Error occured while creating post");
+        }
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(200, { createdPost }, "Post created success!")
+            );
+    } else {
+        const createdPost = await Post.create({
+            content: content,
+            owner: user._id
+        });
+        if (!createdPost) {
+            throw new ApiError("Error occured while creating post");
+        }
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(200, { createdPost }, "Post created success!")
+            );
     }
-    console.log("user._id:", user._id);
-
-    const createdPost = await Post.create({
-        content: content,
-        owner: user._id,
-        images: uploadedPhotos
-    });
-
-    console.log("createdPost:", await createdPost);
-
-    if (!createdPost) {
-        throw new ApiError("Error occured while creating post");
-    }
-    return res
-        .status(200)
-        .json(new ApiResponse(200, { createdPost }, "Post created success!"));
 });
 
 const getPost = asyncHandler(async (req, res) => {
@@ -54,7 +68,7 @@ const getPost = asyncHandler(async (req, res) => {
         throw new ApiError("post_id is required to get it");
     }
 
-    const post = await Post.findById(post_id);
+    const post = await Post.findById(post_id).populate({ images });
     if (!post) {
         throw new ApiError("post couldn't found. maybe wrong id");
     }

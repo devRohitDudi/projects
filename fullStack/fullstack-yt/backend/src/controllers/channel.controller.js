@@ -19,6 +19,7 @@ const getChannelProfile = asyncHandler(async (req, res) => {
     }
 
     const channel = await User.findOne({ username: username });
+
     if (!channel) {
         throw new ApiError("channel does not found");
     }
@@ -214,10 +215,23 @@ const getChannelPosts = asyncHandler(async (req, res) => {
             )
         );
 });
+const getChannelAvatar = asyncHandler(async (req, res) => {
+    const { username } = req.params;
+    if (!username) {
+        throw new ApiError("username is required to get avatar of");
+    }
+    const userAvatar = await User.find({ username: username }).select("avatar");
 
+    console.log("user avatar is:", userAvatar);
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, { userAvatar }, "User avatar fetched"));
+});
 export {
     getChannelVideos,
     getChannelPlaylists,
     getChannelProfile,
-    getChannelPosts
+    getChannelPosts,
+    getChannelAvatar
 };

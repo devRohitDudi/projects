@@ -134,9 +134,14 @@ const Channel = () => {
 
   // Second useEffect fetch videos only after videosCount is available
   useEffect(() => {
-    if (activeTab !== "videos") return;
-    if (videosCount === 0) return;
-    if (fetchedVideosCount >= videosCount) return;
+    if (
+      activeTab !== "videos" ||
+      videosCount === 0 ||
+      fetchedVideosCount >= videosCount ||
+      videosLoading
+    ) {
+      return;
+    }
 
     const getVideos = async () => {
       try {
@@ -172,6 +177,14 @@ const Channel = () => {
 
     const handleScroll = () => {
       if (
+        activeTab !== "videos" ||
+        videosCount === 0 ||
+        fetchedVideosCount >= videosCount ||
+        videosLoading
+      ) {
+        return;
+      }
+      if (
         window.innerHeight + window.scrollY >=
         document.body.offsetHeight - 50
       ) {
@@ -181,7 +194,7 @@ const Channel = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [videosCount, channelId, fetchedVideosCount, activeTab, videosPage]);
+  }, [videosCount, channelId, fetchedVideosCount, activeTab]);
 
   // Add a function to handle tab switching
   const handleTabChange = (tab) => {
@@ -209,10 +222,14 @@ const Channel = () => {
   //TODO:   Slove rendering twice
   //third useEffect for playlist
   useEffect(() => {
-    if (activeTab !== "playlists") return;
-    if (playlistsCount === 0) return;
-    if (fetchedPlaylistsCount >= playlistsCount) return;
-
+    if (
+      activeTab !== "playlists" ||
+      playlistsCount === 0 ||
+      fetchedPlaylistsCount >= playlistsCount ||
+      playlistsLoading
+    ) {
+      return;
+    }
     let isMounted = true;
     const getPlaylists = async () => {
       if (!isMounted) return;
@@ -258,6 +275,14 @@ const Channel = () => {
     };
 
     const handleScroll = debounce(() => {
+      if (
+        activeTab !== "playlists" ||
+        playlistsCount === 0 ||
+        fetchedPlaylistsCount >= playlistsCount ||
+        playlistsLoading
+      ) {
+        return;
+      }
       if (
         window.innerHeight + window.scrollY >=
         document.body.offsetHeight - 50
