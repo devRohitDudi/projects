@@ -3,7 +3,6 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
     getChannelVideos,
     getChannelProfile,
-    getChannelPosts,
     getChannelPlaylists,
     getChannelAvatar
 } from "../controllers/channel.controller.js";
@@ -19,7 +18,6 @@ router
     .get(verifyJWT, getChannelPlaylists);
 
 //
-router.route("/get-channel-posts/:username").get(verifyJWT, getChannelPosts);
 
 // verified
 // applying param on first becomes dynamic route this considering every route as username

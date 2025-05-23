@@ -120,9 +120,6 @@ const getVideo = asyncHandler(async (req, res) => {
     });
     // how many Documents are in the Like schema in which this video url is available as onVideo
     const likesCount = await Like.countDocuments({ onVideo: video_obj_id });
-    const dislikesCount = await Dislike.countDocuments({
-        onVideo: video_obj_id
-    });
     const commentsCount = await Comment.countDocuments({
         onVideo: video_obj_id
     });
@@ -150,7 +147,7 @@ const getVideo = asyncHandler(async (req, res) => {
                         video,
                         commentsCount,
                         likesCount,
-                        dislikesCount,
+
                         subscribersCount,
                         channel,
                         isLiked: !!isLiked,
@@ -176,7 +173,7 @@ const getVideo = asyncHandler(async (req, res) => {
                     video,
                     commentsCount,
                     likesCount,
-                    dislikesCount,
+
                     subscribersCount,
                     channel
                 },

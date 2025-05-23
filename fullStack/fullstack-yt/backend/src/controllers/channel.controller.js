@@ -186,35 +186,6 @@ const getChannelPlaylists = asyncHandler(async (req, res) => {
         );
 });
 
-const getChannelPosts = asyncHandler(async (req, res) => {
-    const { username } = req.params;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-    if (!username) {
-        throw new ApiError("username is required to get posts");
-    }
-
-    const channel = await User.findOne({ username: username });
-
-    if (!channel) {
-        throw new ApiError("requested channel does not exist");
-    }
-    const channelPosts = await Post.find({ owner: channel._id }).limit(20);
-
-    if (!channelPosts) {
-        throw new ApiError("can't fetch posts! maybe invalid _id.");
-    }
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(
-                200,
-                { channelPosts },
-                "some channel posts are fetched"
-            )
-        );
-});
 const getChannelAvatar = asyncHandler(async (req, res) => {
     const { username } = req.params;
     if (!username) {
@@ -232,6 +203,5 @@ export {
     getChannelVideos,
     getChannelPlaylists,
     getChannelProfile,
-    getChannelPosts,
     getChannelAvatar
 };

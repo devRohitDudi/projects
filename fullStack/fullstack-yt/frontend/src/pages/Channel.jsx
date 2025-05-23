@@ -316,7 +316,7 @@ const Channel = () => {
       try {
         setPostsLoading(true);
         const channelPosts = await axios.get(
-          `http://localhost:4000/api/v1/channel/get-channel-posts/${channelId}?page=${postsPage}&limit=20`,
+          `http://localhost:4000/api/v1/post/get-channel-posts/${channelId}?page=${postsPage}&limit=20`,
           {
             headers: { Accept: "application/json" },
             withCredentials: "include",
@@ -327,16 +327,16 @@ const Channel = () => {
         setPostsPage((prev) => prev + 1);
         setPosts((prev) => [
           ...prev,
-          ...channelPosts.data.message.channelPosts,
+          ...channelPosts.data.message.postsWithInfo,
         ]);
 
         setFetchedPostsCount((prev) => {
           const updatedCount =
-            prev + channelPosts.data.message.channelPosts.length;
+            prev + channelPosts.data.message.postsWithInfo.length;
           return updatedCount;
         });
 
-        if (channelPosts.data.message.channelPosts.length === 0) {
+        if (channelPosts.data.message.postsWithInfo.length === 0) {
           setPostsCount(0);
         }
 

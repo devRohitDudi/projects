@@ -8,7 +8,8 @@ import {
     likePost,
     addPostComment,
     deletePostComment,
-    getPostComments
+    getPostComments,
+    getChannelPosts
 } from "../controllers/post.controller.js";
 import multer from "multer";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -19,8 +20,11 @@ router
     .route("/create-post")
     .post(verifyJWT, upload.array("photos", 10), createPost);
 
-//verified
+//
 router.route("/get-post-comments/:post_id").get(verifyJWT, getPostComments);
+
+//verified
+router.route("/get-channel-posts/:username").get(verifyJWT, getChannelPosts);
 
 //verified
 router.route("/add-comment").post(verifyJWT, addPostComment);
@@ -29,7 +33,7 @@ router.route("/add-comment").post(verifyJWT, addPostComment);
 router.route("/delete-comment").delete(verifyJWT, deletePostComment);
 
 //verified
-router.route("/like-post").get(verifyJWT, likePost);
+router.route("/like-post").patch(verifyJWT, likePost);
 
 //verified
 router.route("/dislike-post").get(verifyJWT, dislikePost);

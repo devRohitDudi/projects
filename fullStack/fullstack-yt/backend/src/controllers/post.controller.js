@@ -61,6 +61,59 @@ const createPost = asyncHandler(async (req, res) => {
     }
 });
 
+const getChannelPosts = asyncHandler(async (req, res) => {
+    const { username } = req.params;
+    const user = req.user;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    if (!username) {
+        throw new ApiError("username is required to get posts");
+    }
+
+    const channel = await User.findOne({ username: username });
+
+    if (!channel) {
+        throw new ApiError("requested channel does not exist");
+    }
+    const posts = await Post.find({ owner: channel._id }).limit(20).lean();
+
+    if (!posts) {
+        throw new ApiError("can't fetch posts! maybe invalid _id.");
+    }
+
+    const postsWithInfo = await Promise.all(
+        posts.map(async (post) => {
+            const commentsCount = await Comment.countDocuments({
+                onPost: post._id
+            });
+            const likesCount = await Like.countDocuments({ onPost: post._id });
+            if (user) {
+                const isLiked = await Like.exists({
+                    user: user._id,
+                    onPost: post._id
+                });
+                return {
+                    ...post,
+                    commentsCount,
+                    likesCount,
+                    isLiked: !!isLiked
+                };
+            } else {
+                return {
+                    ...post,
+                    commentsCount,
+                    likesCount
+                };
+            }
+        })
+    );
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, { postsWithInfo }, "Some posts fetched"));
+});
+
 const getPost = asyncHandler(async (req, res) => {
     const user = req.user;
     const { post_id } = req.params;
@@ -73,8 +126,7 @@ const getPost = asyncHandler(async (req, res) => {
         throw new ApiError("post couldn't found. maybe wrong id");
     }
 
-    const likesOnPost = await Like.countDocuments({ onPost: post_id });
-    const dislikesOnPost = await Dislike.countDocuments({ onPost: post_id });
+    const likesCount = await Like.countDocuments({ onPost: post_id });
     if (user) {
         const isLiked = await Like.exists({ onPost: post_id, user: user._id });
         const isDisliked = await Dislike.exists({
@@ -88,8 +140,7 @@ const getPost = asyncHandler(async (req, res) => {
                 200,
                 {
                     post,
-                    likesOnPost,
-                    dislikesOnPost,
+                    likesCount,
                     isLikedBool,
                     isDislikedBool
                 },
@@ -453,5 +504,6 @@ export {
     dislikePost,
     addPostComment,
     getPostComments,
-    deletePostComment
+    deletePostComment,
+    getChannelPosts
 };
