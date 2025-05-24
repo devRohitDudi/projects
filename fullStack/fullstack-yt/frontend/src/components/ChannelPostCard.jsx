@@ -5,11 +5,12 @@ import axios from "axios";
 import { useEffect } from "react";
 function ChannelPostCard({ post }) {
   console.log("post is:", post);
-  const [commentsPopup, setCommentsPopup] = useState();
+  const [commentPopup, setCommentPopup] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [likesCount, setLikesCount] = useState(post.likesCount);
   const [commentsCount, setCommentsCount] = useState(post.commentsCount);
+  const [commentText, setCommentText] = useState("");
 
   const navigate = useNavigate();
   const images = post.images || [];
@@ -49,8 +50,28 @@ function ChannelPostCard({ post }) {
     }
   };
 
+  const handleComment = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:4000/api/v1/post/add-comment`,
+        { post_id: post._id, message: commentText },
+        {
+          withCredentials: "include",
+          headers: {},
+        }
+      );
+      if (response.status === 200) {
+        alert("Comment added");
+        setCommentText("");
+        setCommentsCount((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <div className="group block border border-gray-800 rounded-lg p-4 ">
+    <div className=" group block border border-gray-800 rounded-lg p-4 ">
       <div
         onClick={() => navigate(`/post/${post._id}`)}
         className="hover:cursor-pointer group-hover:border-blue-500 transition-colors"
@@ -128,7 +149,7 @@ function ChannelPostCard({ post }) {
           </div>
           <div className="flex gap-1">
             <svg
-              onClick={() => setCommentsPopup(true)}
+              onClick={() => setCommentPopup((prev) => !prev)}
               xmlns="http://www.w3.org/2000/svg"
               height="24px"
               viewBox="0 -960 960 960"
@@ -152,6 +173,30 @@ function ChannelPostCard({ post }) {
           </svg>
         </div>
       </div>
+      {commentPopup && (
+        <div className="max-w-[70%] min-w-[50%] fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 backdrop-blur bg-white/5 p-4 rounded-xl">
+          <div className="flex flex-col items-start truncate overflow-hidden whitespace-nowrap">
+            <p className="text-sm text-gray-300 truncate overflow-hidden whitespace-nowrap">
+              {post.content}
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 mt-2">
+            {" "}
+            <input
+              className="rounded-xl px-4 py-2 border border-gray-100"
+              onChange={(e) => setCommentText(e.target.value)}
+              type="text"
+              placeholder="Write a comment..."
+            />
+            <div className="flex justify-between ">
+              <button onClick={() => setCommentPopup(false)}>Cancel</button>
+              <button className="text-blue-500" onClick={handleComment}>
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

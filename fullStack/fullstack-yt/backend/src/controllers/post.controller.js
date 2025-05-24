@@ -121,28 +121,28 @@ const getPost = asyncHandler(async (req, res) => {
         throw new ApiError("post_id is required to get it");
     }
 
-    const post = await Post.findById(post_id).populate({ images });
+    const post = await Post.findById(post_id).populate("owner");
     if (!post) {
         throw new ApiError("post couldn't found. maybe wrong id");
     }
 
     const likesCount = await Like.countDocuments({ onPost: post_id });
+    const commentsCount = await Comment.countDocuments({ onPost: post_id });
     if (user) {
         const isLiked = await Like.exists({ onPost: post_id, user: user._id });
         const isDisliked = await Dislike.exists({
             onPost: post_id,
             user: user._id
         });
-        const isLikedBool = !!isLiked;
-        const isDislikedBool = !!isDisliked;
         return res.status(200).json(
             new ApiResponse(
                 200,
                 {
                     post,
                     likesCount,
-                    isLikedBool,
-                    isDislikedBool
+                    commentsCount,
+                    isLiked: !!isLiked,
+                    isDisliked: !!isDisliked
                 },
                 "post fetched"
             )
@@ -154,7 +154,7 @@ const getPost = asyncHandler(async (req, res) => {
         .json(
             new ApiResponse(
                 200,
-                { post, likesOnPost, dislikesOnPost },
+                { post, likesCount, commentsCount },
                 "post fetched"
             )
         );
@@ -402,13 +402,18 @@ const getPostComments = asyncHandler(async (req, res) => {
     const { post_id } = req.params;
     const user = req.user;
 
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
     if (!post_id) {
         throw new ApiError("Where is fucking post_id eh?");
     }
 
     const comments = await Comment.aggregate([
         { $match: { onPost: new mongoose.Types.ObjectId(post_id) } },
-        { $limit: 20 },
+        { $skip: skip },
+        { $limit: limit },
 
         // Lookup Like by current user on each comment
         {

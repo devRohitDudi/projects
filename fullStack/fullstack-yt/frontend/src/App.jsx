@@ -18,6 +18,7 @@ import WatchHistoryPage from "./pages/History.jsx";
 import Playlists from "./pages/Playlists.jsx";
 import Playlist from "./pages/Playlist.jsx";
 import CreatePost from "./pages/CreatePost.jsx";
+import PostPage from "./pages/PostPage.jsx";
 function App() {
   const { setIsLoggedIn, setCurrentUsername } = useAuthStore();
   useEffect(() => {
@@ -57,6 +58,7 @@ function App() {
         <Route path="/playlist/:playlist_id" element={<Playlist />} />
         <Route path="/search" element={<Search />} />
         <Route path="/watch" element={<Watch />} />
+        <Route path="/post/:post_id" element={<PostPage />} />
         <Route path="/library" element={<LibraryPage />} />
         <Route path="/library/history" element={<WatchHistoryPage />} />
         <Route path="/library/playlists" element={<Playlists />} />

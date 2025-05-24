@@ -234,7 +234,7 @@ const Comment = ({ comment }) => {
   );
 };
 
-const Comments = ({ comments, commentsCount, videoId }) => {
+const VideoComments = ({ comments, commentsCount, videoId }) => {
   const [newComment, setNewComment] = useState("");
 
   const handleSubmit = async (e) => {
@@ -312,4 +312,4 @@ const Comments = ({ comments, commentsCount, videoId }) => {
   );
 };
 
-export default Comments;
+export default VideoComments;

@@ -10,15 +10,14 @@ const ProfileDropdown = () => {
   const [avatar, setAvatar] = useState("");
   const [error, setError] = useState(false);
   const [isloading, setIsLoading] = useState(false);
+
   const fetchAvatar = async () => {
     try {
-      setIsLoading(true);
       const response = await axios.get(
-        `http://localhost:4000/api/v1/channel/get-avatar/${currentUsername}`
+        `http://localhost:4000/api/v1/channel/get-avatar/${await currentUsername}`
       );
 
       if (response.status === 200) {
-        console.log("get avatar response", response);
         setAvatar(response.data.message.userAvatar[0].avatar);
         setIsLoading(false);
       }
@@ -30,7 +29,10 @@ const ProfileDropdown = () => {
   };
 
   useEffect(() => {
-    fetchAvatar();
+    setIsLoading(true);
+    setTimeout(() => {
+      fetchAvatar();
+    }, 500);
   }, []);
 
   useEffect(() => {
@@ -68,7 +70,8 @@ const ProfileDropdown = () => {
         </div>
       ) : (
         <img
-          src={avatar}
+          src={avatar || null}
+          alt="login"
           onClick={() => setIsOpen(!isOpen)}
           className="w-8 h-8 bg-white rounded-full hover:ring-2 hover:ring-blue-500 transition-all"
         />

@@ -20,20 +20,20 @@ router
     .route("/create-post")
     .post(verifyJWT, upload.array("photos", 10), createPost);
 
-//
+//verified
+router.route("/like-post").patch(verifyJWT, likePost);
+
+//verified
+router.route("/add-comment").post(verifyJWT, addPostComment);
+
+// TODO POST page and comments pagination
 router.route("/get-post-comments/:post_id").get(verifyJWT, getPostComments);
 
 //verified
 router.route("/get-channel-posts/:username").get(verifyJWT, getChannelPosts);
 
 //verified
-router.route("/add-comment").post(verifyJWT, addPostComment);
-
-//verified
 router.route("/delete-comment").delete(verifyJWT, deletePostComment);
-
-//verified
-router.route("/like-post").patch(verifyJWT, likePost);
 
 //verified
 router.route("/dislike-post").get(verifyJWT, dislikePost);

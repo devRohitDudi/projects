@@ -3,9 +3,9 @@ import { useSearchParams } from "react-router-dom";
 import axios, { isCancel } from "axios";
 import { Link } from "react-router-dom";
 import VideoSuggestions from "../components/VideoSuggestions";
-import Comments from "../components/Comments";
 import useAuthStore from "../store/useAuthStore";
 import { Playlist } from "../../../backend/src/models/playlist.model";
+import VideoComments from "../components/VideoComments.jsx";
 const Watch = () => {
   const { isLoggedIn, currentUsername } = useAuthStore();
   const [searchParams] = useSearchParams();
@@ -480,7 +480,7 @@ const Watch = () => {
           </div>
 
           {/* Comments Section */}
-          <Comments
+          <VideoComments
             comments={comments}
             commentsCount={commentsCount}
             videoId={videoId}
