@@ -10,30 +10,7 @@ const ProfileDropdown = () => {
   const [avatar, setAvatar] = useState("");
   const [error, setError] = useState(false);
   const [isloading, setIsLoading] = useState(false);
-
-  const fetchAvatar = async () => {
-    try {
-      const response = await axios.get(
-        `http://localhost:4000/api/v1/channel/get-avatar/${await currentUsername}`
-      );
-
-      if (response.status === 200) {
-        setAvatar(response.data.message.userAvatar[0].avatar);
-        setIsLoading(false);
-      }
-    } catch (error) {
-      setError(error);
-      setIsLoading(false);
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      fetchAvatar();
-    }, 500);
-  }, []);
+  const { userAvatar } = useAuthStore();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -70,7 +47,7 @@ const ProfileDropdown = () => {
         </div>
       ) : (
         <img
-          src={avatar || null}
+          src={userAvatar || null}
           alt="login"
           onClick={() => setIsOpen(!isOpen)}
           className="w-8 h-8 bg-white rounded-full hover:ring-2 hover:ring-blue-500 transition-all"

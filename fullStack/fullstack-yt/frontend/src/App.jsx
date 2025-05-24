@@ -19,26 +19,27 @@ import Playlists from "./pages/Playlists.jsx";
 import Playlist from "./pages/Playlist.jsx";
 import CreatePost from "./pages/CreatePost.jsx";
 import PostPage from "./pages/PostPage.jsx";
+import axios from "axios";
+
 function App() {
-  const { setIsLoggedIn, setCurrentUsername } = useAuthStore();
+  const { setIsLoggedIn, setCurrentUsername, userAvatar, setUserAvatar } =
+    useAuthStore();
+
   useEffect(() => {
     async function getUser() {
       try {
-        const response = await fetch(
+        const response = await axios.get(
           "http://localhost:4000/api/v1/user/get-current-user",
           {
-            credentials: "include", // send HttpOnly cookies
+            withCredentials: "include",
           }
         );
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json(); // Parse JSON
-        console.log("Current User Data:", data);
-        if (await data?.success) {
-          // Check if data exists and has success
+        console.log(response);
+
+        if (response.status === 200) {
+          setUserAvatar(response.data.message.avatar);
           setIsLoggedIn(true);
-          setCurrentUsername(data.message.username);
+          setCurrentUsername(response.data.message.username);
         } else {
           setIsLoggedIn(false);
         }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import PostComments from "../components/PostComments.jsx";
 export default function PostPage() {
   const [post, setPost] = useState(null);
   const [postFetching, setPostFteching] = useState(false);
@@ -12,7 +13,7 @@ export default function PostPage() {
   const [currentImage, setCurrentImage] = useState(0);
   const { post_id } = useParams();
   const [postLoading, setPostLaoding] = useState(true);
-  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [isCommentsFetched, setIsCommentsFetched] = useState(false);
 
   const fetchPost = async () => {
     try {
@@ -26,6 +27,7 @@ export default function PostPage() {
         setPost(() => {
           return response.data.message.post;
         });
+        setCommentsCount(response.data.message.post.commentsCount);
       }
 
       setPostLaoding(false);
@@ -36,8 +38,16 @@ export default function PostPage() {
   };
 
   const fetchPostComents = async () => {
+    if (
+      commentsCount <= 0 ||
+      fetchedCommentsCount >= commentsCount ||
+      commentsFetching ||
+      isCommentsFetched
+    ) {
+      return;
+    }
     try {
-      setCommentsLoading(true);
+      setCommentsFetching(true);
       const response = await axios.get(
         `http://localhost:4000/api/v1/post/get-post-comments/${post_id}?page=${commentsPage}&limit=10`,
         { withCredentials: "include", headers: {} }
@@ -45,7 +55,10 @@ export default function PostPage() {
       console.log("comments response:", response);
       const fetchedComments = response.data.message.comments;
       if (fetchPostComents.length <= 0) {
+        setIsCommentsFetched(true);
       }
+
+      console.log("comments response:", response);
 
       if (response.status === 200) {
         setCommentsPage((prev) => prev + 1);
@@ -53,17 +66,38 @@ export default function PostPage() {
         setComments((prev) => [...prev, ...fetchedComments]);
         setFetchedCommentsCount((prev) => prev + fetchedComments.length);
       }
-      setCommentsLoading(false);
+      setCommentsFetching(false);
     } catch (error) {
-      setCommentsLoading(false);
-
-      console.error("white fetching post comments", error);
+      setCommentsFetching(false);
+      console.error("while fetching post comments", error);
     }
   };
 
   useEffect(() => {
     setPostLaoding(true);
     fetchPost();
+    setTimeout(() => {
+      fetchPostComents();
+    }, 200);
+    const handleScroll = () => {
+      if (
+        commentsCount <= 0 ||
+        fetchedCommentsCount >= commentsCount ||
+        commentsFetching ||
+        isCommentsFetched
+      ) {
+        return;
+      }
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+        fetchPostComents();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const nextImage = () => {
@@ -109,7 +143,7 @@ export default function PostPage() {
         ) : null}
       </div>
 
-      <div className="mt-8 bg-zinc-900 shadow-md rounded-2xl p-6"></div>
+      <PostComments comments={comments} />
     </div>
   );
 }

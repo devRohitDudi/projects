@@ -6,6 +6,8 @@ const useAuthStore = create((set) => ({
   setIsLoggedIn: (value) => set({ isLoggedIn: value }),
   currentUsername: "",
   setCurrentUsername: (value) => set({ currentUsername: value }),
+  userAvatar: null,
+  setUserAvatar: (value) => set({ userAvatar: value }),
 }));
 
 export default useAuthStore;

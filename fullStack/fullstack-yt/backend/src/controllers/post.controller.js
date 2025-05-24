@@ -481,6 +481,27 @@ const getPostComments = asyncHandler(async (req, res) => {
             }
         },
 
+        // Lookup publisher (user) data
+        {
+            $lookup: {
+                from: "users",
+                localField: "publisher",
+                foreignField: "_id",
+                as: "publisherData"
+            }
+        },
+        {
+            $unwind: {
+                path: "$publisherData",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $addFields: {
+                publisherUsername: "$publisherData.username"
+            }
+        },
+
         // Add fields to indicate like/dislike status
         {
             $addFields: {
@@ -493,7 +514,9 @@ const getPostComments = asyncHandler(async (req, res) => {
         {
             $project: {
                 userLike: 0,
-                userDislike: 0
+                userDislike: 0,
+                publisherUsername: 1
+                // include other fields you want to keep
             }
         }
     ]);
