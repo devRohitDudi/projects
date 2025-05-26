@@ -176,7 +176,7 @@ const likeComment = asyncHandler(async (req, res) => {
                 .json(
                     new ApiResponse(
                         200,
-                        { likeComment },
+                        { likedComment },
                         "Comment liked successfully"
                     )
                 );

@@ -28,12 +28,14 @@ import videoRouter from "./routes/video.routes.js";
 import channelRouter from "./routes/channel.routes.js";
 import playlistRouter from "./routes/playlist.routes.js";
 import postRouter from "./routes/post.route.js";
+import commentRouter from "./routes/comment.routes.js";
 // router declaration
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/video", videoRouter);
 app.use("/api/v1/channel", channelRouter);
 app.use("/api/v1/playlist", playlistRouter);
 app.use("/api/v1/post", postRouter);
+app.use("/api/v1/comment", commentRouter);
 // app.use("/api/v1", (req, res) => {
 //     return res.status(300).send("<h1>Server is listening</h1>");
 // });

@@ -34,8 +34,6 @@ function App() {
             withCredentials: "include",
           }
         );
-        console.log(response);
-
         if (response.status === 200) {
           setUserAvatar(response.data.message.avatar);
           setIsLoggedIn(true);

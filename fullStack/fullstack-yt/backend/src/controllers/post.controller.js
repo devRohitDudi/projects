@@ -374,6 +374,7 @@ const addPostComment = asyncHandler(async (req, res) => {
             new ApiResponse(200, { comment }, "comment created successfully")
         );
 });
+
 const deletePostComment = asyncHandler(async (req, res) => {
     const user = req.user;
     const { comment_id } = req.body;
@@ -410,6 +411,120 @@ const getPostComments = asyncHandler(async (req, res) => {
         throw new ApiError("Where is fucking post_id eh?");
     }
 
+    // const comments = await Comment.aggregate([
+    //     { $match: { onPost: new mongoose.Types.ObjectId(post_id) } },
+    //     { $skip: skip },
+    //     { $limit: limit },
+
+    //     // Lookup Like by current user on each comment
+    //     {
+    //         $lookup: {
+    //             from: "likes",
+    //             let: { commentId: "$_id" },
+    //             pipeline: [
+    //                 {
+    //                     $match: {
+    //                         $expr: {
+    //                             $and: [
+    //                                 {
+    //                                     $eq: [
+    //                                         "$onPost",
+    //                                         new mongoose.Types.ObjectId(post_id)
+    //                                     ]
+    //                                 },
+    //                                 {
+    //                                     $eq: [
+    //                                         "$user",
+    //                                         new mongoose.Types.ObjectId(
+    //                                             user._id
+    //                                         )
+    //                                     ]
+    //                                 }
+    //                             ]
+    //                         }
+    //                     }
+    //                 }
+    //             ],
+    //             as: "userLike"
+    //         }
+    //     },
+
+    //     // Lookup Dislike by current user on each comment
+    //     {
+    //         $lookup: {
+    //             from: "dislikes",
+    //             let: { commentId: "$_id" },
+    //             pipeline: [
+    //                 {
+    //                     $match: {
+    //                         $expr: {
+    //                             $and: [
+    //                                 {
+    //                                     $eq: [
+    //                                         "$onPost",
+    //                                         new mongoose.Types.ObjectId(post_id)
+    //                                     ]
+    //                                 },
+    //                                 {
+    //                                     $eq: [
+    //                                         "$user",
+    //                                         new mongoose.Types.ObjectId(
+    //                                             user._id
+    //                                         )
+    //                                     ]
+    //                                 }
+    //                             ]
+    //                         }
+    //                     }
+    //                 }
+    //             ],
+    //             as: "userDislike"
+    //         }
+    //     },
+
+    //     // Lookup publisher (user) data
+    //     {
+    //         $lookup: {
+    //             from: "users",
+    //             localField: "publisher",
+    //             foreignField: "_id",
+    //             as: "publisherData"
+    //         }
+    //     },
+    //     {
+    //         $unwind: {
+    //             path: "$publisherData",
+    //             preserveNullAndEmptyArrays: true
+    //         }
+    //     },
+    //     {
+    //         $addFields: {
+    //             publisher: "$publisherData.username"
+    //         }
+    //     },
+
+    //     // Add fields to indicate like/dislike status
+    //     {
+    //         $addFields: {
+    //             isLiked: { $gt: [{ $size: "$userLike" }, 0] },
+    //             isDisliked: { $gt: [{ $size: "$userDislike" }, 0] }
+    //         }
+    //     },
+
+    //     // Clean up
+    //     {
+    //         $project: {
+    //             _id: 1,
+    //             content: 1,
+    //             createdAt: 1,
+    //             updatedAt: 1,
+    //             publisher: 1,
+    //             isLiked: 1,
+    //             isDisliked: 1,
+    //             message: 1
+    //         }
+    //     }
+    // ]);
     const comments = await Comment.aggregate([
         { $match: { onPost: new mongoose.Types.ObjectId(post_id) } },
         { $skip: skip },
@@ -425,12 +540,7 @@ const getPostComments = asyncHandler(async (req, res) => {
                         $match: {
                             $expr: {
                                 $and: [
-                                    {
-                                        $eq: [
-                                            "$onPost",
-                                            new mongoose.Types.ObjectId(post_id)
-                                        ]
-                                    },
+                                    { $eq: ["$onComment", "$$commentId"] },
                                     {
                                         $eq: [
                                             "$user",
@@ -458,12 +568,7 @@ const getPostComments = asyncHandler(async (req, res) => {
                         $match: {
                             $expr: {
                                 $and: [
-                                    {
-                                        $eq: [
-                                            "$onPost",
-                                            new mongoose.Types.ObjectId(post_id)
-                                        ]
-                                    },
+                                    { $eq: ["$onComment", "$$commentId"] },
                                     {
                                         $eq: [
                                             "$user",
@@ -498,7 +603,37 @@ const getPostComments = asyncHandler(async (req, res) => {
         },
         {
             $addFields: {
-                publisherUsername: "$publisherData.username"
+                publisher: "$publisherData.username"
+            }
+        },
+
+        // Lookup replies count
+        {
+            $lookup: {
+                from: "comments",
+                localField: "_id",
+                foreignField: "onComment",
+                as: "replies"
+            }
+        },
+        {
+            $addFields: {
+                repliesCount: { $size: "$replies" }
+            }
+        },
+
+        // Lookup likes count
+        {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "onComment",
+                as: "likes"
+            }
+        },
+        {
+            $addFields: {
+                likesCount: { $size: "$likes" }
             }
         },
 
@@ -513,10 +648,16 @@ const getPostComments = asyncHandler(async (req, res) => {
         // Clean up
         {
             $project: {
-                userLike: 0,
-                userDislike: 0,
-                publisherUsername: 1
-                // include other fields you want to keep
+                _id: 1,
+                content: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                publisher: 1,
+                isLiked: 1,
+                isDisliked: 1,
+                message: 1,
+                repliesCount: 1,
+                likesCount: 1
             }
         }
     ]);

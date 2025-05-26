@@ -60,21 +60,4 @@ router.route("/add-like/:video_obj_id").patch(verifyJWT, addLike);
 //verified
 router.route("/add-dislike/:video_obj_id").patch(verifyJWT, addDislike);
 
-// verified // can add middleware to filter bad comments
-router.route("/add-comment/:video_obj_id").post(verifyJWT, addComment);
-
-// verified
-router.route("/delete-comment/:comment_obj_id").patch(verifyJWT, deleteComment);
-
-// verified
-router.route("/like-comment/:comment_obj_id").patch(verifyJWT, likeComment);
-router.route("/reply-on/:comment_obj_id").patch(verifyJWT, replyOn);
-
-//verified
-router
-    .route("/dislike-comment/:comment_obj_id")
-    .patch(verifyJWT, dislikeComment);
-
-router.route("/get-replies/:comment_obj_id").get(verifyJWT, getReplies);
-
 export default router;
