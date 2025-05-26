@@ -21,7 +21,7 @@ const Comment = ({ comment }) => {
   const deleteComment = async () => {
     try {
       const response = await axios.patch(
-        `http://localhost:4000/api/v1/video/delete-comment/${comment._id}`,
+        `http://localhost:4000/api/v1/comment/delete-comment/${comment._id}`,
         {},
         {
           withCredentials: "include",
@@ -43,7 +43,7 @@ const Comment = ({ comment }) => {
     }
     try {
       const response = await axios.patch(
-        `http://localhost:4000/api/v1/video/like-comment/${comment._id}`,
+        `http://localhost:4000/api/v1/comment/like-comment/${comment._id}`,
         {},
         {
           withCredentials: "include",
@@ -68,7 +68,7 @@ const Comment = ({ comment }) => {
     }
     try {
       const response = await axios.patch(
-        `http://localhost:4000/api/v1/video/dislike-comment/${comment._id}`,
+        `http://localhost:4000/api/v1/comment/dislike-comment/${comment._id}`,
         {},
         {
           withCredentials: "include",
@@ -85,7 +85,7 @@ const Comment = ({ comment }) => {
   async function handleReply() {
     try {
       const response = await axios.patch(
-        `http://localhost:4000/api/v1/video/reply-on/${comment._id}`,
+        `http://localhost:4000/api/v1/comment/reply-on/${comment._id}`,
         { message: replyText },
         {
           withCredentials: "include",

@@ -14,6 +14,8 @@ const Comment = ({ comment }) => {
   const [isReplyPatching, setIsReplyPatching] = useState(false);
   const [likesCount, setLikesCount] = useState(comment.likesCount);
   const [isLiked, setIsLiked] = useState(comment.isLiked);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
 
   const fetchSomeReplies = async () => {
     if (
@@ -37,12 +39,30 @@ const Comment = ({ comment }) => {
   };
 
   const handleReply = async () => {
+    if (replyText.trim() === "") {
+      alert("Empty string");
+      return;
+    }
     try {
       setIsReplyPatching(true);
       const response = await axios.patch(
-        `http://localhost:4000/api/v1/comment/reply-on/${comment._id}`
+        `http://localhost:4000/api/v1/comment/reply-on/${comment._id}`,
+        { message: replyText },
+        {
+          withCredentials: "include",
+          headers: {},
+        }
       );
-    } catch (error) {}
+      if (response.status === 200) {
+        alert("Reply added");
+      }
+      setReplyText("");
+      setIsReplyPatching(false);
+    } catch (error) {
+      setReplyText("");
+      console.error(error);
+      setIsReplyPatching(false);
+    }
   };
   const handleLike = async () => {
     try {
@@ -67,8 +87,26 @@ const Comment = ({ comment }) => {
     }
   };
 
+  const deleteReply = async () => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:4000/api/v1/comment/delete-comment/${comment._id}`,
+        {},
+        { withCredentials: "include", headers: {} }
+      );
+      if (response.status === 200) {
+        setIsDeleted(true);
+        alert("Comment deleted!");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  if (isDeleted) return null;
+
   return (
-    <div className="ml-6 mt-2 bg-gray-900">
+    <div className="relative ml-6 mt-2 bg-gray-900">
       <div className=" p-2 rounded-md ">
         <p className="font-semibold text-gray-600">@{comment.publisher}</p>
 
@@ -100,6 +138,7 @@ const Comment = ({ comment }) => {
           </button>
         </div>
         <svg
+          onClick={() => setIsPopupOpen((prev) => !prev)}
           xmlns="http://www.w3.org/2000/svg"
           height="24px"
           viewBox="0 -960 960 960"
@@ -146,6 +185,13 @@ const Comment = ({ comment }) => {
           </div>
         )}
       </div>
+      {isPopupOpen && (
+        <div className=" items-start flex z-10 flex flex-col absolute p-2 top-2 bg-white/5 left-2 backdrop-blur rounded-xl ">
+          <button onClick={deleteReply}>Remove</button>
+          <button>Report</button>
+          <button>Copy</button>
+        </div>
+      )}
     </div>
   );
 };
@@ -215,8 +261,8 @@ const PostComments = ({ comments }) => {
       </form>
 
       <div className="space-y-2">
-        {comments.map((comment, index) => (
-          <Comment key={index} comment={comment} />
+        {comments.map((comment) => (
+          <Comment key={comment._id} comment={comment} />
         ))}
       </div>
     </div>
