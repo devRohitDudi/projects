@@ -7,8 +7,6 @@ import {
     getPost,
     likePost,
     addPostComment,
-    deletePostComment,
-    getPostComments,
     getChannelPosts
 } from "../controllers/post.controller.js";
 import multer from "multer";
@@ -26,14 +24,8 @@ router.route("/like-post").patch(verifyJWT, likePost);
 //verified
 router.route("/add-comment").post(verifyJWT, addPostComment);
 
-// TODO POST page and comments pagination
-router.route("/get-post-comments/:post_id").get(verifyJWT, getPostComments);
-
 //verified
 router.route("/get-channel-posts/:username").get(verifyJWT, getChannelPosts);
-
-//verified
-router.route("/delete-comment").delete(verifyJWT, deletePostComment);
 
 //verified
 router.route("/dislike-post").get(verifyJWT, dislikePost);

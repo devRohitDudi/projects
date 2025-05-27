@@ -9,7 +9,8 @@ import { Like } from "../models/like.model.js";
 import { Dislike } from "../models/dislike.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from "cloudinary";
-
+import { ObjectId } from "mongoose";
+import { mongoose } from "mongoose";
 const getVideoComments = asyncHandler(async (req, res) => {
     const { video_obj_id } = req.params;
     const page = parseInt(req.query.page);
@@ -284,72 +285,307 @@ const getReplies = asyncHandler(async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    const replies = await Comment.find({ onComment: comment_obj_id })
-        .populate("publisher")
-        .populate("likeCount") // number of likes using virtual
-        .skip(skip)
-        .limit(limit);
-    if (!replies) {
-        throw new ApiError("error while querying comments");
-    }
-    const userId = req.user?._id || null;
+    const user = req.user;
 
-    if (userId) {
-        const repliesWithLikeInfo = await Promise.all(
-            replies.map(async (reply) => {
-                const isLiked = await Like.exists({
-                    onComment: reply._id,
-                    user: userId
-                });
-                //on Dislike schema
-                const isDisliked = await Dislike.exists({
-                    onComment: reply._id,
-                    user: userId
-                });
-                // this is on Comment schema
-                const replyCount = await Comment.countDocuments({
-                    onComment: reply._id
-                });
-                return {
-                    ...reply.toObject(),
-                    isLiked: !!isLiked,
-                    isDisliked: !!isDisliked,
-                    replyCount
-                };
-            })
-        );
-        return res
-            .status(200)
-            .json(
-                new ApiResponse(
-                    200,
-                    { replies: repliesWithLikeInfo },
-                    "some comments fetched with like info"
-                )
-            );
-    } else {
-        const repliesWithReplyCount = await Promise.all(
-            replies.map(async (reply) => {
-                const replyCount = await Comment.countDocuments({
-                    onComment: reply._id
-                });
-                return {
-                    ...reply.toObject(),
-                    replyCount
-                };
-            })
-        );
+    const replies = await Comment.aggregate([
+        { $match: { onComment: new mongoose.Types.ObjectId(comment_obj_id) } },
+        { $skip: skip },
+        { $limit: limit },
 
-        return res
-            .status(200)
-            .json(
-                new ApiResponse(
-                    200,
-                    { replies: repliesWithReplyCount },
-                    "Some replies are fetched"
-                )
-            );
+        // Lookup Like by current user on each comment
+        {
+            $lookup: {
+                from: "likes",
+                let: { commentId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$onComment", "$$commentId"] },
+                                    {
+                                        $eq: [
+                                            "$user",
+                                            new mongoose.Types.ObjectId(
+                                                user._id
+                                            )
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                as: "userLike"
+            }
+        },
+
+        // Lookup Dislike by current user on each comment
+        {
+            $lookup: {
+                from: "dislikes",
+                let: { commentId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$onComment", "$$commentId"] },
+                                    {
+                                        $eq: [
+                                            "$user",
+                                            new mongoose.Types.ObjectId(
+                                                user._id
+                                            )
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                as: "userDislike"
+            }
+        },
+
+        // Lookup publisher (user) data
+        {
+            $lookup: {
+                from: "users",
+                localField: "publisher",
+                foreignField: "_id",
+                as: "publisherData"
+            }
+        },
+        {
+            $unwind: {
+                path: "$publisherData",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $addFields: {
+                publisher: "$publisherData.username"
+            }
+        },
+
+        // Lookup replies count
+        {
+            $lookup: {
+                from: "comments",
+                localField: "_id",
+                foreignField: "onComment",
+                as: "replies"
+            }
+        },
+        {
+            $addFields: {
+                repliesCount: { $size: "$replies" }
+            }
+        },
+
+        // Lookup likes count
+        {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "onComment",
+                as: "likes"
+            }
+        },
+        {
+            $addFields: {
+                likesCount: { $size: "$likes" }
+            }
+        },
+
+        // Add fields to indicate like/dislike status
+        {
+            $addFields: {
+                isLiked: { $gt: [{ $size: "$userLike" }, 0] },
+                isDisliked: { $gt: [{ $size: "$userDislike" }, 0] }
+            }
+        },
+
+        // Clean up
+        {
+            $project: {
+                _id: 1,
+                message: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                publisher: 1,
+                isLiked: 1,
+                isDisliked: 1,
+                message: 1,
+                repliesCount: 1,
+                likesCount: 1
+            }
+        }
+    ]);
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                { replies: replies },
+                "Some replies are fetched"
+            )
+        );
+});
+const getPostComments = asyncHandler(async (req, res) => {
+    const { post_id } = req.params;
+    const user = req.user;
+
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    if (!post_id) {
+        throw new ApiError("Where is fucking post_id eh?");
     }
+
+    const comments = await Comment.aggregate([
+        { $match: { onPost: new mongoose.Types.ObjectId(post_id) } },
+        { $skip: skip },
+        { $limit: limit },
+
+        // Lookup Like by current user on each comment
+        {
+            $lookup: {
+                from: "likes",
+                let: { commentId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$onComment", "$$commentId"] },
+                                    {
+                                        $eq: [
+                                            "$user",
+                                            new mongoose.Types.ObjectId(
+                                                user._id
+                                            )
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                as: "userLike"
+            }
+        },
+
+        // Lookup Dislike by current user on each comment
+        {
+            $lookup: {
+                from: "dislikes",
+                let: { commentId: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$onComment", "$$commentId"] },
+                                    {
+                                        $eq: [
+                                            "$user",
+                                            new mongoose.Types.ObjectId(
+                                                user._id
+                                            )
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                as: "userDislike"
+            }
+        },
+
+        // Lookup publisher (user) data
+        {
+            $lookup: {
+                from: "users",
+                localField: "publisher",
+                foreignField: "_id",
+                as: "publisherData"
+            }
+        },
+        {
+            $unwind: {
+                path: "$publisherData",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $addFields: {
+                publisher: "$publisherData.username"
+            }
+        },
+
+        // Lookup replies count
+        {
+            $lookup: {
+                from: "comments",
+                localField: "_id",
+                foreignField: "onComment",
+                as: "replies"
+            }
+        },
+        {
+            $addFields: {
+                repliesCount: { $size: "$replies" }
+            }
+        },
+
+        // Lookup likes count
+        {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "onComment",
+                as: "likes"
+            }
+        },
+        {
+            $addFields: {
+                likesCount: { $size: "$likes" }
+            }
+        },
+
+        // Add fields to indicate like/dislike status
+        {
+            $addFields: {
+                isLiked: { $gt: [{ $size: "$userLike" }, 0] },
+                isDisliked: { $gt: [{ $size: "$userDislike" }, 0] }
+            }
+        },
+
+        // Clean up
+        {
+            $project: {
+                _id: 1,
+                content: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                publisher: 1,
+                isLiked: 1,
+                isDisliked: 1,
+                message: 1,
+                repliesCount: 1,
+                likesCount: 1
+            }
+        }
+    ]);
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, { comments }, "Some comments fetched"));
 });
 export {
     getVideoComments,
@@ -358,5 +594,6 @@ export {
     deleteComment,
     dislikeComment,
     replyOn,
-    getReplies
+    getReplies,
+    getPostComments
 };

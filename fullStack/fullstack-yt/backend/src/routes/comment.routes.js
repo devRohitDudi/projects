@@ -9,7 +9,8 @@ import {
     deleteComment,
     dislikeComment,
     replyOn,
-    getReplies
+    getReplies,
+    getPostComments
 } from "../controllers/comment.controller.js";
 
 const router = Router();
@@ -20,6 +21,12 @@ router.route("/add-comment/:video_obj_id").post(verifyJWT, addComment);
 // verified
 router.route("/delete-comment/:comment_obj_id").patch(verifyJWT, deleteComment);
 
+// TODO POST page and comments pagination
+router.route("/get-post-comments/:post_id").get(verifyJWT, getPostComments);
+
+//
+router.route("/get-replies/:comment_obj_id").get(verifyJWT, getReplies);
+
 // verified
 router.route("/like-comment/:comment_obj_id").patch(verifyJWT, likeComment);
 router.route("/reply-on/:comment_obj_id").patch(verifyJWT, replyOn);
@@ -28,7 +35,5 @@ router.route("/reply-on/:comment_obj_id").patch(verifyJWT, replyOn);
 router
     .route("/dislike-comment/:comment_obj_id")
     .patch(verifyJWT, dislikeComment);
-
-router.route("/get-replies/:comment_obj_id").get(verifyJWT, getReplies);
 
 export default router;

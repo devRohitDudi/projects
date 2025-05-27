@@ -29,7 +29,7 @@ const commentSchema = new mongoose.Schema(
 );
 
 commentSchema.plugin(mongooseAggregatePaginate);
-commentSchema.virtual("likeCount", {
+commentSchema.virtual("likesCount", {
     ref: "Like",
     localField: "_id",
     foreignField: "onComment",
