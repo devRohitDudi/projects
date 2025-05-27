@@ -2,39 +2,54 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore.js";
 import axios from "axios";
-const Comment = ({ comment }) => {
+const CommentCard = ({ comment }) => {
   const [showReplies, setShowReplies] = useState(false);
   const [replies, setReplies] = useState([]);
   const [replyText, setReplyText] = useState("");
   const [repliesCount, setRepliesCount] = useState(comment.repliesCount);
   const [isRepliesFetched, setIsRepliesFetched] = useState(false);
-  const [isFetching, setIsFetching] = useState(false);
-  const [fetchedRepliesCount, setFetchedReliesCount] = useState(null);
+  const [fetchedRepliesCount, setFetchedRepliesCount] = useState(0);
   const [isReplying, setIsReplying] = useState(false);
   const [isReplyPatching, setIsReplyPatching] = useState(false);
   const [likesCount, setLikesCount] = useState(comment.likesCount);
   const [isLiked, setIsLiked] = useState(comment.isLiked);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
-
+  const [isRepliesFatching, setIsRepliesFatching] = useState(false);
+  const [repliesPage, setRepliesPage] = useState(1);
+  const { userAvatar } = useAuthStore();
   const fetchSomeReplies = async () => {
     if (
       repliesCount <= 0 ||
       fetchedRepliesCount >= repliesCount ||
-      isFetching ||
+      isRepliesFatching ||
       isRepliesFetched
     ) {
+      console.log("returned");
       return;
     }
     try {
-      setIsFetching(true);
+      setIsRepliesFatching(true);
       const response = await axios.get(
-        `http://localhost:4000/api/v1/video/get-replies/${comment._id}`
+        `http://localhost:4000/api/v1/comment/get-replies/${comment._id}?page=${repliesPage}&limit=10`,
+        { withCredentials: "include" }
       );
-      setIsFetching(false);
+      console.log("resplies response:", response);
+      const fetchedReplies = response.data.message.replies;
+
+      if (response.status === 200) {
+        setReplies(fetchedReplies);
+        if (fetchedReplies === 0) {
+          setIsRepliesFetched(true);
+        }
+        setFetchedRepliesCount((prev) => prev + fetchedReplies.length);
+        setRepliesPage((prev) => prev + 1);
+      }
+
+      setIsRepliesFatching(false);
     } catch (error) {
-      setIsFetching(false);
-      console.log(error);
+      setIsRepliesFatching(false);
+      console.error(error);
     }
   };
 
@@ -106,9 +121,14 @@ const Comment = ({ comment }) => {
   if (isDeleted) return null;
 
   return (
-    <div className="relative ml-6 mt-2 bg-gray-900">
+    <div
+      className=" border-l border-b rounded-bl-2xl  border-l-gray-600 border-b-gray-600
+ relative ml-6 mt-2 bg-zinc-900"
+    >
       <div className=" p-2 rounded-md ">
-        <p className="font-semibold text-gray-600">@{comment.publisher}</p>
+        <p className="font-semibold text-gray-600">
+          @{comment.publisher || comment.publisher.username}
+        </p>
 
         <p className="flex">{comment.message}</p>
       </div>
@@ -152,6 +172,11 @@ const Comment = ({ comment }) => {
         <div className="flex gap-3 p-2">
           {!isReplyPatching ? (
             <>
+              <img
+                src={userAvatar}
+                alt="avatar"
+                className="flex h-6 w-6 rounded-full"
+              />
               <input
                 className="border-blue bg-gray-800 pr-2 pl-2 rounded-sm"
                 placeholder="Reply..."
@@ -169,7 +194,7 @@ const Comment = ({ comment }) => {
       <div>
         {!showReplies ? (
           <button
-            className="text-sm text-blue-600 mt-1"
+            className="text-sm pb-2 pl-2  text-blue-600 mt-1"
             onClick={() => {
               setShowReplies(true);
               fetchSomeReplies();
@@ -178,13 +203,26 @@ const Comment = ({ comment }) => {
             Show all {comment.repliesCount} replies
           </button>
         ) : (
-          <div className="mt-2">
-            {replies((r) => (
-              <PostComments key={r._id} reply={r} />
-            ))}
+          <div>
+            {isRepliesFatching ? (
+              <p className="pb-2 pl-2 ">Loading...</p>
+            ) : (
+              <PostReplies replies={replies} />
+            )}
+
+            <button
+              className="pb-2 pl-2 "
+              onClick={() => {
+                setIsRepliesFatching(false);
+                setShowReplies((prev) => !prev);
+              }}
+            >
+              Hide replies
+            </button>
           </div>
         )}
       </div>
+
       {isPopupOpen && (
         <div className=" items-start flex z-10 flex flex-col absolute p-2 top-2 bg-white/5 left-2 backdrop-blur rounded-xl ">
           <button onClick={deleteReply}>Remove</button>
@@ -192,6 +230,44 @@ const Comment = ({ comment }) => {
           <button>Copy</button>
         </div>
       )}
+    </div>
+  );
+};
+
+const PostReplies = ({ replies }) => {
+  const [replyText, setReplyText] = useState("");
+  const [isDeleted, setIsDeleted] = useState(false);
+  const { post_id } = useParams();
+  const { userAvatar } = useAuthStore();
+  //   const handleComment = async () => {
+  //     try {
+  //       if (replyText.trim() === "") {
+  //         return;
+  //       }
+
+  //       const response = await axios.post(
+  //         `http://localhost:4000/api/v1/comment/reply-on`,
+  //         { post_id, message: commentText },
+  //         { withCredentials: "include", headers: {} }
+  //       );
+  //       console.log(response);
+
+  //       if (response.status === 200) {
+  //         alert("comment added");
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+
+  return (
+    <div className="mt-8">
+      <p className="pb-2 pl-2 text-gray-500">{replies.length} replies</p>
+      <div className="space-y-2">
+        {replies.map((comment) => (
+          <CommentCard key={comment._id} comment={comment} />
+        ))}
+      </div>
     </div>
   );
 };
@@ -224,8 +300,7 @@ const PostComments = ({ comments }) => {
 
   return (
     <div className="mt-8">
-      <h2 className="text-xl font-semibold mb-4">Comments</h2>
-      <p>{comments.length} comments</p>
+      <p>{comments.length} Comments</p>
       <form onSubmit={handleComment} className="mb-6">
         <div className="flex gap-3">
           <img
@@ -262,7 +337,7 @@ const PostComments = ({ comments }) => {
 
       <div className="space-y-2">
         {comments.map((comment) => (
-          <Comment key={comment._id} comment={comment} />
+          <CommentCard key={comment._id} comment={comment} />
         ))}
       </div>
     </div>

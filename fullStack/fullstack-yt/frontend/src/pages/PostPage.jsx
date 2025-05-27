@@ -76,7 +76,7 @@ export default function PostPage() {
     try {
       setCommentsFetching(true);
       const response = await axios.get(
-        `http://localhost:4000/api/v1/post/get-post-comments/${post_id}?page=${commentsPage}&limit=10`,
+        `http://localhost:4000/api/v1/comment/get-post-comments/${post_id}?page=${commentsPage}&limit=10`,
         { withCredentials: "include", headers: {} }
       );
       console.log("comments response:", response);
@@ -89,7 +89,6 @@ export default function PostPage() {
 
       if (response.status === 200) {
         setCommentsPage((prev) => prev + 1);
-        const fetchedComments = response.data.message.comments;
         setComments((prev) => [...prev, ...fetchedComments]);
         setFetchedCommentsCount((prev) => prev + fetchedComments.length);
       }
